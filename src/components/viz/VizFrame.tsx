@@ -6,10 +6,9 @@ export function VizFrame({ section, id, title, caption }: { section: string; id:
   return (
     <figure className="glass overflow-hidden !rounded-[26px]">
       <div className="flex items-center gap-2 px-5 pt-4 pb-2">
-        <Sparkles className="size-4" style={{ color: "var(--accent)" }} />
+        <Sparkles className="size-4" strokeWidth={1.75} style={{ color: "var(--accent)" }} />
         <span className="text-sm font-semibold tracking-tight">{title}</span>
-        <span className="ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase"
-          style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-2))" }}>
+        <span className="icon-tile ml-auto !rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase">
           інтерактив
         </span>
       </div>

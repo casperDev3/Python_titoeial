@@ -33,6 +33,33 @@ export type Hero = {
  */
 export type Inline = string;
 
+/** Вузол блок-схеми. col/row — позиція в сітці (0-based), схема розкладається автоматично. */
+export type FlowNode = {
+  id: string;
+  /** start/end — овал, process — прямокутник, decision — ромб, io — паралелограм (input/print), call — виклик функції */
+  kind: "start" | "end" | "process" | "decision" | "io" | "call";
+  /** Текст; "\n" — новий рядок. Тримай ≤ 22 символів у рядку */
+  label: string;
+  col: number;
+  row: number;
+};
+
+export type FlowEdge = {
+  from: string;
+  to: string;
+  /** Підпис на стрілці: "Так" / "Ні" / "True" / "наступний" … */
+  label?: string;
+  /** З якого боку виходить стрілка. Для «Ні»-гілок умов і повернень у цикл. */
+  side?: "left" | "right";
+};
+
+export type FlowScenario = {
+  /** Назва сценарію, напр. "x = 5" */
+  name: string;
+  /** Шлях виконання: послідовність вузлів + необов'язкова примітка (стан змінних, вивід) */
+  steps: { node: string; note?: Inline }[];
+};
+
 export type Block =
   | { type: "heading"; text: string; id?: string }
   | { type: "text"; md: Inline }
@@ -64,6 +91,15 @@ export type Block =
       options: string[];
       answer: number; // індекс правильної відповіді
       explain: Inline;
+    }
+  | {
+      /** Інтерактивна блок-схема алгоритму з покроковим проходженням сценаріїв */
+      type: "flow";
+      title: string;
+      caption?: Inline;
+      nodes: FlowNode[];
+      edges: FlowEdge[];
+      scenarios?: FlowScenario[];
     }
   | {
       type: "table";

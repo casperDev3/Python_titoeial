@@ -4,7 +4,6 @@ import "./globals.css";
 import { navItems } from "@/content/nav";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { ThemeSync } from "@/components/shell/ThemeSync";
-import { AmbientBackground } from "@/components/shell/AmbientBackground";
 import { MobileBar } from "@/components/shell/MobileBar";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin", "cyrillic"] });
@@ -20,18 +19,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f2f2f7" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
-  ],
+  themeColor: "#f5f5f7",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="uk" className={`${inter.variable} ${mono.variable} h-full`}>
+    <html lang="uk" data-scroll-behavior="smooth" className={`${inter.variable} ${mono.variable} h-full`}>
       <body className="min-h-full">
         <ThemeSync items={navItems} />
-        <AmbientBackground />
         <Sidebar items={navItems} />
         <MobileBar items={navItems} />
         <div className="lg:pl-[calc(var(--sidebar-w)+24px)]">{children}</div>

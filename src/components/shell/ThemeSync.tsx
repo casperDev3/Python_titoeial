@@ -24,6 +24,8 @@ export function ThemeSync({ items }: { items: NavItem[] }) {
     b.setProperty("--accent-2", "accent2" in t ? t.accent2 : DEFAULT.accent2);
     b.setProperty("--glow", t.glow);
     if (slug && item) markVisited(slug);
+    // Новий розділ завжди відкривається з початку сторінки
+    if (!location.hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [pathname, items]);
 
   return null;

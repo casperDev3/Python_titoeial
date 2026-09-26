@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, PartyPopper, RotateCcw, XCircle } from "lucide-react";
 import { useState } from "react";
 import { Prose, renderInline } from "./Inline";
 
@@ -64,7 +64,10 @@ export function Quiz({
             className="overflow-hidden"
           >
             <div className="mt-4 rounded-2xl bg-separator/40 p-4">
-              <div className="mb-1 font-semibold">{correct ? "🎉 Точно в ціль!" : "🙈 Майже! Ось чому:"}</div>
+              <div className="mb-1 flex items-center gap-2 font-semibold">
+                {correct ? <PartyPopper className="size-4 text-[#248a3d]" strokeWidth={1.75} /> : <RotateCcw className="size-4 text-[#d70015]" strokeWidth={1.75} />}
+                {correct ? "Точно в ціль!" : "Майже! Ось чому:"}
+              </div>
               <Prose md={explain} className="!text-[15px]" />
               {!correct && (
                 <button onClick={() => setPicked(null)} className="pill pill-glass mt-3">

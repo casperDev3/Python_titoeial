@@ -13,7 +13,7 @@ function read(): ThemeColors {
     glow: v("--glow", "#5e5ce6"),
     label: v("--label", "#1c1c1e"),
     label2: v("--label-2", "#666"),
-    dark: matchMedia("(prefers-color-scheme: dark)").matches,
+    dark: false, // сайт лише у світлій темі
   };
 }
 

@@ -45,7 +45,7 @@ export default async function LearnPage({ params }: PageProps<"/learn/[slug]">) 
                 <ArrowLeft className="size-3.5" /> Попередній
               </div>
               <div className="mt-1 text-lg font-bold tracking-tight">
-                {prev.icon} {prev.title}
+                {prev.title}
               </div>
             </Link>
           ) : (
@@ -57,7 +57,7 @@ export default async function LearnPage({ params }: PageProps<"/learn/[slug]">) 
                 Далі <ArrowRight className="size-3.5" />
               </div>
               <div className="mt-1 text-lg font-bold tracking-tight">
-                {next.icon} {next.title}
+                {next.title}
               </div>
             </Link>
           )}

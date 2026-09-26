@@ -5,6 +5,7 @@ import { Joke, Tip, Warning } from "./Callouts";
 import { Prose } from "./Inline";
 import { Quiz } from "./Quiz";
 import { Table } from "./Table";
+import { Flowchart } from "./Flowchart";
 import { VizFrame } from "../viz/VizFrame";
 
 export const slugify = (s: string) =>
@@ -27,13 +28,15 @@ function BlockView({ block, section }: { block: Block; section: Section }) {
     case "warning":
       return <Warning {...block} />;
     case "joke":
-      return <Joke md={block.md} hero={block.hero ?? section.hero.name} emoji={section.hero.emoji} />;
+      return <Joke md={block.md} hero={block.hero ?? section.hero.name} />;
     case "viz":
       return <VizFrame section={section.slug} {...block} />;
     case "quiz":
       return <Quiz {...block} />;
     case "table":
       return <Table {...block} />;
+    case "flow":
+      return <Flowchart {...block} />;
     case "compare":
       return (
         <div className="space-y-3">

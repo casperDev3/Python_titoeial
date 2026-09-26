@@ -9,7 +9,15 @@ import type { NavItem } from "@/content/nav";
 import { useVisited } from "@/lib/progress";
 import { SectionIcon } from "@/components/ui/SectionIcon";
 
-export function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => void }) {
+export function NavList({
+  items,
+  onNavigate,
+  collapsed = false,
+}: {
+  items: NavItem[];
+  onNavigate?: () => void;
+  collapsed?: boolean;
+}) {
   const pathname = usePathname();
   const visited = useVisited();
   const [q, setQ] = useState("");
@@ -32,7 +40,7 @@ export function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: 
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="px-4 pb-3">
+      <div className={`px-4 pb-3 ${collapsed ? "hidden" : ""}`}>
         <div className="mb-3 flex items-center justify-between text-xs font-medium text-label-2">
           <span>Прогрес курсу</span>
           <span className="tabular-nums">{pct}%</span>
@@ -57,12 +65,16 @@ export function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: 
         </label>
       </div>
 
-      <nav className="thin-scroll min-h-0 flex-1 overflow-y-auto px-3 pb-6">
+      <nav className={`thin-scroll min-h-0 flex-1 overflow-y-auto pb-6 ${collapsed ? "px-2" : "px-3"}`}>
         {groups.map(([group, list]) => (
           <div key={group} className="mt-3">
-            <div className="px-3 pb-1.5 text-[11px] font-semibold tracking-wider text-label-3 uppercase">
-              {group}
-            </div>
+            {collapsed ? (
+              <div className="mx-auto mb-2 h-px w-8 bg-separator" />
+            ) : (
+              <div className="px-3 pb-1.5 text-[11px] font-semibold tracking-wider text-label-3 uppercase">
+                {group}
+              </div>
+            )}
             <ul className="space-y-0.5">
               {list.map((item) => {
                 const href = `/learn/${item.slug}`;
@@ -73,7 +85,9 @@ export function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: 
                     <Link
                       href={href}
                       onClick={onNavigate}
-                      className="group relative flex items-center gap-3 rounded-xl px-3 py-2 outline-none"
+                      title={collapsed ? item.title : undefined}
+                      aria-label={collapsed ? item.title : undefined}
+                      className={`group relative flex items-center gap-3 rounded-xl py-2 outline-none ${collapsed ? "justify-center px-0" : "px-3"}`}
                     >
                       {active && (
                         <motion.span
@@ -91,12 +105,16 @@ export function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: 
                         color={item.theme.accent}
                         className="relative transition-transform duration-500 group-hover:scale-105"
                       />
+                      {!collapsed && (
+                        <>
                       <span className="relative min-w-0 flex-1">
                         <span className="block truncate text-[13.5px] font-semibold">{item.title}</span>
                         <span className="block truncate text-[11.5px] text-label-2">{item.short}</span>
                       </span>
                       {done && !active && (
                         <Check className="relative size-3.5 shrink-0" style={{ color: item.theme.accent }} />
+                      )}
+                        </>
                       )}
                     </Link>
                   </li>

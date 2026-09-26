@@ -54,7 +54,7 @@ export function Scene3D({
   }, []);
 
   return (
-    <div ref={ref} className="relative w-full touch-pan-y" style={{ height }}>
+    <div ref={ref} className="relative w-full touch-pan-y" style={{ height: `var(--scene-h, ${height}px)` }}>
       {mounted && (
         <Canvas
           frameloop={visible ? "always" : "never"}

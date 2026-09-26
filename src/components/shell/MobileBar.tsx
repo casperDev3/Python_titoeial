@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { NavItem } from "@/content/nav";
 import { Brand } from "./Brand";
 import { NavList } from "./NavList";
+import { Credit } from "./Credit";
 
 export function MobileBar({ items }: { items: NavItem[] }) {
   const [open, setOpen] = useState(false);
@@ -45,6 +46,9 @@ export function MobileBar({ items }: { items: NavItem[] }) {
                 </button>
               </div>
               <NavList items={items} onNavigate={() => setOpen(false)} />
+              <div className="border-t border-separator px-5 py-3">
+                <Credit />
+              </div>
             </motion.aside>
           </>
         )}

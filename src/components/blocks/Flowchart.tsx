@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "motion/react";
-import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw, Workflow } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FlowEdge, FlowNode, FlowScenario } from "@/content/types";
 import { Segmented } from "@/components/viz/kit/Controls";
 import { Prose, renderInline } from "./Inline";
+import { FullscreenFigure } from "../ui/FullscreenFigure";
 
 const COL_W = 224;
 const ROW_H = 100;
@@ -180,16 +181,19 @@ export function Flowchart({
   const uid = useMemo(() => title.replace(/[^\p{L}\p{N}]+/gu, "-"), [title]);
 
   return (
-    <figure className="glass overflow-hidden !rounded-[24px]">
-      <div className="flex items-center gap-2 px-5 pt-4 pb-1">
-        <Workflow className="size-4 text-accent" strokeWidth={1.75} />
-        <span className="text-sm font-semibold tracking-tight">{title}</span>
-        <span className="icon-tile ml-auto !rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase">
-          блок-схема
-        </span>
-      </div>
-
-      <div className="thin-scroll overflow-x-auto px-2">
+    <FullscreenFigure
+      icon="flow"
+      title={title}
+      badge="блок-схема"
+      footer={
+        caption && (
+          <figcaption className="border-t border-separator px-5 py-3">
+            <Prose md={caption} className="!text-[14px] !text-label-2" />
+          </figcaption>
+        )
+      }
+    >
+      <div className="flow-canvas thin-scroll overflow-x-auto px-2">
         <svg
           viewBox={`0 0 ${layout.width} ${layout.height}`}
           style={{ width: "100%", minWidth: Math.min(layout.width, 540), maxWidth: layout.width, display: "block", margin: "0 auto" }}
@@ -336,11 +340,6 @@ export function Flowchart({
         </div>
       )}
 
-      {caption && (
-        <figcaption className="border-t border-separator px-5 py-3">
-          <Prose md={caption} className="!text-[14px] !text-label-2" />
-        </figcaption>
-      )}
-    </figure>
+    </FullscreenFigure>
   );
 }

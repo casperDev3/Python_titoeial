@@ -15,7 +15,7 @@ const section: Section = {
     "why": "Гоку постійно трансформується — як значення змінюють тип при приведенні."
   },
   "theme": {
-    "accent": "#ff6a00",
+    "accent": "#e35d00",
     "accent2": "#2f7bff",
     "glow": "#ff9d3a"
   },
@@ -49,6 +49,69 @@ print("Після тренування:", power)`,
       id: "name-tags",
       title: "Імена → об'єкти: покрокова пам'ять",
       caption: "Тисни **Крок** і стеж за стрілками. `goku = power` не копіює число — обидва імені вказують на **той самий** об'єкт. Об'єкт, на який не лишилось жодного імені (лічильник посилань 0), Python прибирає з пам'яті.",
+    },
+    {
+      type: "flow",
+      title: "Що робить x = вираз",
+      nodes: [
+        { id: "s", kind: "start", label: "x = вираз", col: 0, row: 0 },
+        { id: "ev", kind: "process", label: "обчислити вираз\n→ об'єкт", col: 0, row: 1 },
+        { id: "bind", kind: "process", label: "x → об'єкт\nrefcount += 1", col: 0, row: 2 },
+        { id: "old", kind: "decision", label: "у x був старий\nоб'єкт?", col: 0, row: 3 },
+        { id: "dec", kind: "process", label: "старий об'єкт:\nrefcount -= 1", col: 1, row: 4 },
+        { id: "zero", kind: "decision", label: "refcount == 0?", col: 1, row: 5 },
+        { id: "free", kind: "process", label: "звільнити\nпам'ять", col: 1, row: 6 },
+        { id: "e", kind: "end", label: "Готово", col: 0, row: 7 },
+      ],
+      edges: [
+        { from: "s", to: "ev" },
+        { from: "ev", to: "bind" },
+        { from: "bind", to: "old" },
+        { from: "old", to: "dec", label: "Так", side: "right" },
+        { from: "old", to: "e", label: "Ні" },
+        { from: "dec", to: "zero" },
+        { from: "zero", to: "free", label: "Так" },
+        { from: "zero", to: "e", label: "Ні", side: "left" },
+        { from: "free", to: "e" },
+      ],
+      scenarios: [
+        {
+          name: "hero = \"Goku\"",
+          steps: [
+            { node: "s", note: "Перше присвоєння: імені `hero` ще немає" },
+            { node: "ev", note: "Створено рядок `'Goku'`" },
+            { node: "bind", note: "`hero` → `'Goku'` (1 ім'я-посилання)" },
+            { node: "old", note: "Ні — `hero` щойно з'явилось" },
+            { node: "e", note: "Готово. Жодного копіювання не було" },
+          ],
+        },
+        {
+          name: "hero = \"Vegeta\"",
+          steps: [
+            { node: "s", note: "Було: `hero = \"Goku\"`, `saiyan = hero`" },
+            { node: "ev", note: "Створено новий рядок `'Vegeta'`" },
+            { node: "bind", note: "`hero` → `'Vegeta'`" },
+            { node: "old", note: "Так — раніше `hero` вказував на `'Goku'`" },
+            { node: "dec", note: "`'Goku'`: 2 → 1 посилання (лишився `saiyan`)" },
+            { node: "zero", note: "Ні — `'Goku'` живе далі" },
+            { node: "e", note: "`hero == 'Vegeta'`, `saiyan == 'Goku'`" },
+          ],
+        },
+        {
+          name: "saiyan = None",
+          steps: [
+            { node: "s", note: "Тепер на `'Goku'` вказує лише `saiyan`" },
+            { node: "ev", note: "`None` уже існує — новий об'єкт не створюється" },
+            { node: "bind", note: "`saiyan` → `None`" },
+            { node: "old", note: "Так — раніше було `'Goku'`" },
+            { node: "dec", note: "`'Goku'`: 1 → 0 посилань" },
+            { node: "zero", note: "Так — на `'Goku'` ніхто не вказує" },
+            { node: "free", note: "CPython одразу звільняє пам'ять `'Goku'`" },
+            { node: "e", note: "`saiyan is None` → `True`" },
+          ],
+        },
+      ],
+      caption: "Присвоєння ніколи не копіює об'єкт — воно лише переклеює ярлик. `refcount` тут — спрощено: кількість імен, що вказують на об'єкт.",
     },
     {
       type: "joke",
@@ -273,6 +336,63 @@ True True True True True
       title: "Сортувальник Truthy / Falsy",
       caption: "Обери значення і вгадай, куди його відправить `bool()`. Правильні відповіді набирають «рівень сили».",
     },
+    {
+      type: "flow",
+      title: "Як bool(x) вирішує: True чи False",
+      nodes: [
+        { id: "s", kind: "start", label: "bool(x)", col: 0, row: 0 },
+        { id: "hb", kind: "decision", label: "type(x) має\n__bool__?", col: 0, row: 1 },
+        { id: "cb", kind: "call", label: "x.__bool__()", col: 2, row: 2 },
+        { id: "rb", kind: "end", label: "те, що поверне\n__bool__()", col: 2, row: 3 },
+        { id: "hl", kind: "decision", label: "type(x) має\n__len__?", col: 0, row: 3 },
+        { id: "z", kind: "decision", label: "len(x) == 0?", col: 1, row: 4 },
+        { id: "t", kind: "end", label: "True\n(за замовчуванням)", col: 0, row: 4 },
+        { id: "f", kind: "end", label: "False", col: 1, row: 5 },
+        { id: "t2", kind: "end", label: "True", col: 2, row: 5 },
+      ],
+      edges: [
+        { from: "s", to: "hb" },
+        { from: "hb", to: "cb", label: "Так", side: "right" },
+        { from: "hb", to: "hl", label: "Ні" },
+        { from: "cb", to: "rb" },
+        { from: "hl", to: "z", label: "Так", side: "right" },
+        { from: "hl", to: "t", label: "Ні" },
+        { from: "z", to: "f", label: "Так" },
+        { from: "z", to: "t2", label: "Ні", side: "right" },
+      ],
+      scenarios: [
+        {
+          name: "x = 0",
+          steps: [
+            { node: "s", note: "`bool(0)`" },
+            { node: "hb", note: "Так — у `int` є `__bool__` (так само у `float`, `bool`, `None`)" },
+            { node: "cb", note: "`(0).__bool__()` → нуль, отже `False`" },
+            { node: "rb", note: "`bool(0)` → `False`" },
+          ],
+        },
+        {
+          name: "x = \"0\"",
+          steps: [
+            { node: "s", note: "`bool(\"0\")` — рядок із символом нуля" },
+            { node: "hb", note: "Ні — у `str` немає `__bool__`" },
+            { node: "hl", note: "Так — у рядка є довжина" },
+            { node: "z", note: "`len(\"0\")` → `1`, не нуль" },
+            { node: "t2", note: "`bool(\"0\")` → `True`. Вміст рядка не важливий — лише довжина!" },
+          ],
+        },
+        {
+          name: "x = []",
+          steps: [
+            { node: "s", note: "`bool([])`" },
+            { node: "hb", note: "Ні — у `list` немає `__bool__`" },
+            { node: "hl", note: "Так — у списку є `__len__`" },
+            { node: "z", note: "`len([])` → `0`" },
+            { node: "f", note: "`bool([])` → `False`. Тому `if senzu_beans:` — ідіоматична перевірка на порожнечу" },
+          ],
+        },
+      ],
+      caption: "`if x:` робить те саме, що `if bool(x):`. Об'єкт без `__bool__` і `__len__` (наприклад, `object()`) завжди truthy.",
+    },
 
     // ─────────────────────────── 7. Приведення типів
     { type: "heading", text: "Приведення типів: трансформації", id: "casting" },
@@ -401,6 +521,62 @@ l += [3]                # list: зміна на місці
 print(l, l_alias, l is l_alias)`,
       output: `(1, 2, 3) (1, 2) False
 [1, 2, 3] [1, 2, 3] True`,
+    },
+    {
+      type: "flow",
+      title: "Що насправді робить a += b",
+      nodes: [
+        { id: "s", kind: "start", label: "a += b", col: 0, row: 0 },
+        { id: "ia", kind: "decision", label: "type(a) має\n__iadd__?", col: 0, row: 1 },
+        { id: "inplace", kind: "process", label: "змінити об'єкт\nна місці", col: 1, row: 2 },
+        { id: "same", kind: "process", label: "a → той самий\nоб'єкт", col: 1, row: 3 },
+        { id: "e1", kind: "end", label: "id(a) не змінився", col: 1, row: 4 },
+        { id: "new", kind: "process", label: "tmp = a + b\n(новий об'єкт)", col: 0, row: 2 },
+        { id: "rebind", kind: "process", label: "a → tmp", col: 0, row: 3 },
+        { id: "e2", kind: "end", label: "id(a) змінився", col: 0, row: 4 },
+      ],
+      edges: [
+        { from: "s", to: "ia" },
+        { from: "ia", to: "inplace", label: "Так", side: "right" },
+        { from: "ia", to: "new", label: "Ні" },
+        { from: "inplace", to: "same" },
+        { from: "same", to: "e1" },
+        { from: "new", to: "rebind" },
+        { from: "rebind", to: "e2" },
+      ],
+      scenarios: [
+        {
+          name: "list",
+          steps: [
+            { node: "s", note: "`l = [1, 2]`, `l_alias = l`, потім `l += [3]`" },
+            { node: "ia", note: "Так — `list` має `__iadd__` (працює як `extend`)" },
+            { node: "inplace", note: "До того самого списку дописано `3`" },
+            { node: "same", note: "`l` лишається на тому ж об'єкті" },
+            { node: "e1", note: "`l` і `l_alias` — обидва `[1, 2, 3]`, `l is l_alias` → `True`" },
+          ],
+        },
+        {
+          name: "tuple",
+          steps: [
+            { node: "s", note: "`t = (1, 2)`, `t_alias = t`, потім `t += (3,)`" },
+            { node: "ia", note: "Ні — кортеж незмінний, `__iadd__` немає" },
+            { node: "new", note: "Створено **новий** кортеж `(1, 2, 3)`" },
+            { node: "rebind", note: "Ярлик `t` переклеєно на новий кортеж" },
+            { node: "e2", note: "`t == (1, 2, 3)`, а `t_alias == (1, 2)`; `t is t_alias` → `False`" },
+          ],
+        },
+        {
+          name: "int",
+          steps: [
+            { node: "s", note: "`power = 9000`, `level = power`, потім `level += 1`" },
+            { node: "ia", note: "Ні — у `int` немає `__iadd__`" },
+            { node: "new", note: "Обчислено новий об'єкт `9001`" },
+            { node: "rebind", note: "`level` → `9001`" },
+            { node: "e2", note: "`power` лишився `9000` — його ніхто не чіпав" },
+          ],
+        },
+      ],
+      caption: "Той самий оператор `+=` поводиться по-різному: змінні типи змінюються на місці, незмінні — створюють новий об'єкт.",
     },
     {
       type: "code",

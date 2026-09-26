@@ -201,7 +201,7 @@ export function SuperChain() {
                 className="relative rounded-lg border px-2 py-0.5"
                 style={{
                   borderColor: on ? "var(--accent)" : "var(--separator)",
-                  background: on ? "color-mix(in oklab, var(--accent) 18%, transparent)" : n ? "color-mix(in oklab, var(--accent-2) 14%, transparent)" : "transparent",
+                  background: on ? "color-mix(in oklab, var(--accent) 12%, white)" : n ? "color-mix(in oklab, var(--accent-2) 12%, white)" : "transparent",
                 }}
               >
                 {k}
@@ -209,13 +209,13 @@ export function SuperChain() {
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-2 -right-2 rounded-full bg-[#ff453a] px-1.5 text-[10px] font-bold text-white"
+                    className="absolute -top-2 -right-2 rounded-full bg-[#dc2626] px-1.5 text-[10px] font-bold text-white"
                   >
                     ×{n}
                   </motion.span>
                 )}
               </motion.span>
-              {i < MRO.length - 1 && <ChevronRight className="size-3 text-label-3" />}
+              {i < MRO.length - 1 && <ChevronRight className="size-3 text-label-3" strokeWidth={1.75} />}
             </span>
           );
         })}
@@ -243,8 +243,8 @@ export function SuperChain() {
                     style={{
                       background:
                         i === s.stack.length - 1
-                          ? "linear-gradient(135deg, color-mix(in oklab, var(--accent) 26%, transparent), color-mix(in oklab, var(--accent-2) 22%, transparent))"
-                          : "color-mix(in oklab, var(--label-2) 9%, transparent)",
+                          ? "color-mix(in oklab, var(--accent) 14%, white)"
+                          : "color-mix(in oklab, var(--label-2) 7%, white)",
                       border: "1px solid var(--separator)",
                     }}
                   >
@@ -256,10 +256,10 @@ export function SuperChain() {
               {s.stack.length === 0 && <div className="m-auto text-[12px] text-label-3">стек порожній</div>}
             </div>
           </div>
-          <div className="min-h-[70px] rounded-2xl bg-black/80 px-4 py-2.5 font-mono text-[12px] leading-relaxed text-[#e5e5ea]">
-            {s.out.length === 0 && <span className="text-[#8e8e93]"># вивід</span>}
+          <div className="min-h-[70px] rounded-2xl border border-separator bg-[var(--code-bg)] px-4 py-2.5 font-mono text-[12px] leading-relaxed text-label">
+            {s.out.length === 0 && <span className="text-label-3"># вивід</span>}
             {s.out.map((o, i) => (
-              <motion.div key={i} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} style={{ color: counts[o] > 1 && o === "Spider" ? "#ff6961" : undefined }}>
+              <motion.div key={i} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} style={{ color: counts[o] > 1 && o === "Spider" ? "#c42b1c" : undefined }}>
                 {o}
               </motion.div>
             ))}
@@ -275,7 +275,7 @@ export function SuperChain() {
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.18 }}
           className="mx-5 mt-3 min-h-[2.8em] font-mono text-[12.5px] leading-snug"
-          style={{ color: last && mode !== "super" ? "#ff453a" : undefined }}
+          style={{ color: last && mode !== "super" ? "#c42b1c" : undefined }}
         >
           {s.msg}
         </motion.p>
@@ -283,10 +283,10 @@ export function SuperChain() {
 
       <ControlBar>
         <Btn onClick={() => setStep((x) => Math.max(0, x - 1))} disabled={step === 0}>
-          <ChevronLeft className="size-4" />
+          <ChevronLeft className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn variant="accent" onClick={() => setStep((x) => Math.min(snaps.length - 1, x + 1))} disabled={last}>
-          Крок <ChevronRight className="size-4" />
+          Крок <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn
           onClick={() => {
@@ -294,7 +294,7 @@ export function SuperChain() {
             setPlaying((p) => !p);
           }}
         >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />} {playing ? "Пауза" : "Авто"}
+          {playing ? <Pause className="size-4" strokeWidth={1.75} /> : <Play className="size-4" strokeWidth={1.75} />} {playing ? "Пауза" : "Авто"}
         </Btn>
         <Btn
           onClick={() => {
@@ -302,7 +302,7 @@ export function SuperChain() {
             setPlaying(false);
           }}
         >
-          <RotateCcw className="size-4" />
+          <RotateCcw className="size-4" strokeWidth={1.75} />
         </Btn>
         <span className="ml-auto font-mono text-[12px] text-label-2 tabular-nums">
           {step + 1}/{snaps.length}

@@ -5,7 +5,9 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import type { Mesh } from "three";
+import { Folder, MapPin } from "lucide-react";
 import { ControlBar, Scene3D, Segmented, useThemeColors } from "../kit";
+import { A2_INK, CONSOLE_BG, INK, tint } from "./palette";
 
 type Pkg = { id: string; label: string; pos: [number, number, number]; files: string[] };
 
@@ -83,7 +85,7 @@ function Crystal({
         <meshPhysicalMaterial
           color={current ? "#ffffff" : isInit ? initColor : color}
           emissive={isInit ? initColor : color}
-          emissiveIntensity={selected ? 0.8 : 0.18}
+          emissiveIntensity={selected ? 0.55 : 0.12}
           roughness={0.15}
           metalness={0.1}
           clearcoat={1}
@@ -94,10 +96,14 @@ function Crystal({
       {(!compact || selected || current) && (
       <Html position={[0, -0.04, 0.22]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
         <div
-          className="rounded-full px-1.5 py-px font-mono text-[9.5px] whitespace-nowrap text-white"
-          style={{ background: selected ? "rgba(0,0,0,.7)" : "rgba(0,0,0,.35)", backdropFilter: "blur(6px)" }}
+          className="flex items-center gap-0.5 rounded-full border px-1.5 py-px font-mono text-[9.5px] whitespace-nowrap shadow-sm"
+          style={{
+            background: selected ? tint(18) : "rgba(255,255,255,.92)",
+            borderColor: selected ? "var(--accent)" : "var(--separator)",
+            color: selected ? INK : "var(--label)",
+          }}
         >
-          {name}.py{current ? " 📍" : ""}
+          {name}.py{current && <MapPin className="size-3" strokeWidth={1.75} style={{ color: INK }} />}
         </div>
       </Html>
       )}
@@ -109,7 +115,7 @@ function Platform({
   p, active, sel, onPick, c, compact,
 }: {
   p: Pkg; active: boolean; sel: Sel | null; onPick: (s: Sel) => void; compact: boolean;
-  c: { accent: string; accent2: string; dark: boolean };
+  c: { accent: string; accent2: string };
 }) {
   const w = 0.62 * p.files.length + 0.3;
   return (
@@ -124,9 +130,9 @@ function Platform({
         }}
       >
         <meshPhysicalMaterial
-          color={active ? c.accent2 : c.dark ? "#3a3a3c" : "#f2f2f7"}
+          color={active ? c.accent2 : "#ffffff"}
           emissive={c.accent2}
-          emissiveIntensity={active ? 0.35 : 0}
+          emissiveIntensity={active ? 0.2 : 0}
           transmission={0.55}
           thickness={0.5}
           roughness={0.18}
@@ -151,10 +157,15 @@ function Platform({
       ))}
       <Html position={[-w / 2 + 0.05, 0.02, 0.5]} zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
         <div
-          className="rounded-md px-1.5 py-px font-mono text-[10.5px] font-bold whitespace-nowrap text-white"
-          style={{ background: active ? "var(--accent-2)" : "rgba(0,0,0,.45)", transform: "translateY(2px)" }}
+          className="flex items-center gap-1 rounded-md border px-1.5 py-px font-mono text-[10.5px] font-bold whitespace-nowrap shadow-sm"
+          style={{
+            background: active ? tint(16, "--accent-2") : "rgba(255,255,255,.92)",
+            borderColor: active ? "color-mix(in oklab, var(--accent-2) 50%, transparent)" : "var(--separator)",
+            color: active ? A2_INK : "var(--label)",
+            transform: "translateY(2px)",
+          }}
         >
-          📁 {p.label}
+          <Folder className="size-3" strokeWidth={1.75} /> {p.label}
         </div>
       </Html>
     </group>
@@ -178,7 +189,7 @@ function Tree({ sel, onPick }: { sel: Sel | null; onPick: (s: Sel) => void }) {
               [root.pos[0], root.pos[1] - 0.08, root.pos[2]],
               [p.pos[0], p.pos[1] + 0.08, p.pos[2]],
             ]}
-            color={on ? c.accent : c.label2}
+            color={on ? c.accent : "#8e8e93"}
             lineWidth={on ? 3 : 1.2}
             transparent
             opacity={on ? 1 : 0.45}
@@ -219,8 +230,8 @@ export function PackageTree3D() {
       </ControlBar>
 
       <div className="grid gap-2 px-5 pb-4 sm:grid-cols-[1.2fr_1fr]">
-        <div className="rounded-2xl bg-black/80 px-3.5 py-2.5 font-mono text-[12.5px] leading-relaxed text-[#e5e5ea]">
-          <div className="mb-1 font-sans text-[11px] font-bold tracking-wider text-[#8e8e93] uppercase">
+        <div className="rounded-2xl border border-separator px-3.5 py-2.5 font-mono text-[12.5px] leading-relaxed text-label" style={{ background: CONSOLE_BG }}>
+          <div className="mb-1 font-sans text-[11px] font-bold tracking-wider text-label-3 uppercase">
             {d ? d.full : "обери модуль"}
           </div>
           <AnimatePresence mode="wait">
@@ -229,16 +240,16 @@ export function PackageTree3D() {
                 (style === "abs" ? (
                   d.absolute.map((l) => (
                     <div key={l}>
-                      <span style={{ color: "var(--accent)" }}>{l.split(" ")[0]}</span> {l.split(" ").slice(1).join(" ")}
+                      <span className="font-semibold" style={{ color: INK }}>{l.split(" ")[0]}</span> {l.split(" ").slice(1).join(" ")}
                     </div>
                   ))
                 ) : (
-                  <div style={{ color: d.relative.startsWith("#") ? "#8e8e93" : undefined }}>{d.relative}</div>
+                  <div style={{ color: d.relative.startsWith("#") ? "var(--label-3)" : undefined }}>{d.relative}</div>
                 ))}
             </motion.div>
           </AnimatePresence>
         </div>
-        <div className="rounded-2xl px-3.5 py-2.5 text-[12.5px]" style={{ background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}>
+        <div className="rounded-2xl px-3.5 py-2.5 text-[12.5px]" style={{ background: tint(9) }}>
           <div className="mb-1 text-[11px] font-bold tracking-wider text-label-3 uppercase">Що виконається при імпорті</div>
           <AnimatePresence mode="popLayout">
             {d?.order.map((f, i) => (
@@ -250,7 +261,7 @@ export function PackageTree3D() {
                 transition={{ type: "spring", stiffness: 380, damping: 28, delay: i * 0.18 }}
                 className="flex items-center gap-1.5 font-mono text-[11.5px]"
               >
-                <span className="flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white" style={{ background: "var(--accent)" }}>
+                <span className="flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white" style={{ background: INK }}>
                   {i + 1}
                 </span>
                 {f}

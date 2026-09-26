@@ -15,7 +15,7 @@ const section: Section = {
     "why": "Причуда One For All передається від героя до героя — як аргументи передаються у функцію."
   },
   "theme": {
-    "accent": "#22c55e",
+    "accent": "#16a34a",
     "accent2": "#0ea5a4",
     "glow": "#16a34a"
   },
@@ -75,6 +75,144 @@ const section: Section = {
       "code": "def check_quirk(name):\n    if not name:\n        return \"Без причуди\"   # ранній вихід\n    if name == \"One For All\":\n        return \"Легендарна причуда!\"\n    return f\"Причуда: {name}\"\n\nprint(check_quirk(\"\"))\nprint(check_quirk(\"One For All\"))\nprint(check_quirk(\"Explosion\"))",
       "title": "early_return.py",
       "output": "Без причуди\nЛегендарна причуда!\nПричуда: Explosion"
+    },
+    {
+      "type": "flow",
+      "title": "Ранній return: три виходи з функції",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "check_quirk(name)",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "c1",
+          "kind": "decision",
+          "label": "not name ?",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "r1",
+          "kind": "end",
+          "label": "return \"Без причуди\"",
+          "col": 1,
+          "row": 1
+        },
+        {
+          "id": "c2",
+          "kind": "decision",
+          "label": "name ==\n\"One For All\" ?",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "r2",
+          "kind": "end",
+          "label": "return \"Легендарна\nпричуда!\"",
+          "col": 1,
+          "row": 2
+        },
+        {
+          "id": "r3",
+          "kind": "end",
+          "label": "return f\"Причуда:\n{name}\"",
+          "col": 0,
+          "row": 3
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "c1"
+        },
+        {
+          "from": "c1",
+          "to": "r1",
+          "label": "True",
+          "side": "right"
+        },
+        {
+          "from": "c1",
+          "to": "c2",
+          "label": "False"
+        },
+        {
+          "from": "c2",
+          "to": "r2",
+          "label": "True",
+          "side": "right"
+        },
+        {
+          "from": "c2",
+          "to": "r3",
+          "label": "False"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "name = \"\"",
+          "steps": [
+            {
+              "node": "s",
+              "note": "виклик `check_quirk(\"\")`: `name = \"\"`"
+            },
+            {
+              "node": "c1",
+              "note": "`not \"\"` → True: порожній рядок хибний"
+            },
+            {
+              "node": "r1",
+              "note": "`return` одразу завершує функцію → `Без причуди`"
+            }
+          ]
+        },
+        {
+          "name": "\"One For All\"",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`name = \"One For All\"`"
+            },
+            {
+              "node": "c1",
+              "note": "`not name` → False — йдемо далі"
+            },
+            {
+              "node": "c2",
+              "note": "рядки рівні → True"
+            },
+            {
+              "node": "r2",
+              "note": "повертає `Легендарна причуда!`"
+            }
+          ]
+        },
+        {
+          "name": "\"Explosion\"",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`name = \"Explosion\"`"
+            },
+            {
+              "node": "c1",
+              "note": "`not name` → False"
+            },
+            {
+              "node": "c2",
+              "note": "`\"Explosion\" == \"One For All\"` → False"
+            },
+            {
+              "node": "r3",
+              "note": "останній `return` → `Причуда: Explosion`"
+            }
+          ]
+        }
+      ],
+      "caption": "Кожен `return` — окремі двері назовні: після нього решта тіла функції не виконується."
     },
     {
       "type": "tip",
@@ -285,6 +423,210 @@ const section: Section = {
       "output": "local: 100%\nenclosing: 20%\nglobal: 5%\n11"
     },
     {
+      "type": "flow",
+      "title": "Пошук імені за правилом LEGB",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "Python бачить ім'я",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "l",
+          "kind": "decision",
+          "label": "є в Local?",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "lf",
+          "kind": "end",
+          "label": "беремо з L",
+          "col": 1,
+          "row": 1
+        },
+        {
+          "id": "e",
+          "kind": "decision",
+          "label": "є в Enclosing?",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "ef",
+          "kind": "end",
+          "label": "беремо з E",
+          "col": 1,
+          "row": 2
+        },
+        {
+          "id": "g",
+          "kind": "decision",
+          "label": "є в Global?",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "gf",
+          "kind": "end",
+          "label": "беремо з G",
+          "col": 1,
+          "row": 3
+        },
+        {
+          "id": "b",
+          "kind": "decision",
+          "label": "є в Built-in?",
+          "col": 0,
+          "row": 4
+        },
+        {
+          "id": "bf",
+          "kind": "end",
+          "label": "беремо з B",
+          "col": 1,
+          "row": 4
+        },
+        {
+          "id": "err",
+          "kind": "end",
+          "label": "NameError",
+          "col": 0,
+          "row": 5
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "l"
+        },
+        {
+          "from": "l",
+          "to": "lf",
+          "label": "Так",
+          "side": "right"
+        },
+        {
+          "from": "l",
+          "to": "e",
+          "label": "Ні"
+        },
+        {
+          "from": "e",
+          "to": "ef",
+          "label": "Так",
+          "side": "right"
+        },
+        {
+          "from": "e",
+          "to": "g",
+          "label": "Ні"
+        },
+        {
+          "from": "g",
+          "to": "gf",
+          "label": "Так",
+          "side": "right"
+        },
+        {
+          "from": "g",
+          "to": "b",
+          "label": "Ні"
+        },
+        {
+          "from": "b",
+          "to": "bf",
+          "label": "Так",
+          "side": "right"
+        },
+        {
+          "from": "b",
+          "to": "err",
+          "label": "Ні"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "power в inner()",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`print(power)` усередині `inner`"
+            },
+            {
+              "node": "l",
+              "note": "`inner` має своє `power`"
+            },
+            {
+              "node": "lf",
+              "note": "`power = \"local: 100%\"` — далі не шукаємо"
+            }
+          ]
+        },
+        {
+          "name": "len у inner()",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`len(...)` усередині `inner`"
+            },
+            {
+              "node": "l",
+              "note": "локально `len` немає"
+            },
+            {
+              "node": "e",
+              "note": "в `outer` теж немає"
+            },
+            {
+              "node": "g",
+              "note": "на рівні модуля немає"
+            },
+            {
+              "node": "b",
+              "note": "`len` — вбудована функція"
+            },
+            {
+              "node": "bf",
+              "note": "знайдено `<built-in function len>`"
+            }
+          ]
+        },
+        {
+          "name": "titan (опечатка)",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`print(titan)`"
+            },
+            {
+              "node": "l",
+              "note": "немає"
+            },
+            {
+              "node": "e",
+              "note": "немає"
+            },
+            {
+              "node": "g",
+              "note": "немає"
+            },
+            {
+              "node": "b",
+              "note": "немає"
+            },
+            {
+              "node": "err",
+              "note": "`NameError: name 'titan' is not defined`"
+            }
+          ]
+        }
+      ],
+      "caption": "Пошук іде знизу вгору по «кільцях» і зупиняється на **першому** збігу — тому локальне ім'я затуляє глобальне."
+    },
+    {
       "type": "viz",
       "id": "legb-3d",
       "title": "LEGB у 3D: де Python шукає ім'я",
@@ -356,6 +698,152 @@ const section: Section = {
       "code": "def factorial(n):\n    if n <= 1:                # базовий випадок\n        return 1\n    return n * factorial(n - 1)   # рекурсивний крок\n\nprint(factorial(5))\nprint(factorial(10))",
       "title": "factorial.py",
       "output": "120\n3628800"
+    },
+    {
+      "type": "flow",
+      "title": "Рекурсія factorial: спуск і повернення",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "factorial(n)",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "c",
+          "kind": "decision",
+          "label": "n <= 1 ?",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "call",
+          "kind": "call",
+          "label": "factorial(n - 1)",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "res",
+          "kind": "process",
+          "label": "res = результат",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "ret",
+          "kind": "end",
+          "label": "return n * res",
+          "col": 0,
+          "row": 4
+        },
+        {
+          "id": "base",
+          "kind": "end",
+          "label": "return 1",
+          "col": 1,
+          "row": 3
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "c"
+        },
+        {
+          "from": "c",
+          "to": "base",
+          "label": "True",
+          "side": "right"
+        },
+        {
+          "from": "c",
+          "to": "call",
+          "label": "False"
+        },
+        {
+          "from": "call",
+          "to": "s",
+          "label": "новий фрейм",
+          "side": "left"
+        },
+        {
+          "from": "base",
+          "to": "res",
+          "label": "у викликача"
+        },
+        {
+          "from": "res",
+          "to": "ret"
+        },
+        {
+          "from": "ret",
+          "to": "res",
+          "label": "у викликача",
+          "side": "left"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "factorial(3)",
+          "steps": [
+            {
+              "node": "s",
+              "note": "фрейм #1: `n = 3`"
+            },
+            {
+              "node": "c",
+              "note": "`3 <= 1` → False"
+            },
+            {
+              "node": "call",
+              "note": "фрейм #1 чекає на `factorial(2)`"
+            },
+            {
+              "node": "s",
+              "note": "фрейм #2: `n = 2`"
+            },
+            {
+              "node": "c",
+              "note": "`2 <= 1` → False"
+            },
+            {
+              "node": "call",
+              "note": "фрейм #2 чекає на `factorial(1)`"
+            },
+            {
+              "node": "s",
+              "note": "фрейм #3: `n = 1` — стек має 3 фрейми"
+            },
+            {
+              "node": "c",
+              "note": "`1 <= 1` → True — базовий випадок"
+            },
+            {
+              "node": "base",
+              "note": "фрейм #3 повертає `1` і зникає"
+            },
+            {
+              "node": "res",
+              "note": "фрейм #2: `res = 1`"
+            },
+            {
+              "node": "ret",
+              "note": "фрейм #2 повертає `2 * 1 = 2`"
+            },
+            {
+              "node": "res",
+              "note": "фрейм #1: `res = 2`"
+            },
+            {
+              "node": "ret",
+              "note": "фрейм #1 повертає `3 * 2 = 6` → вивід `6`"
+            }
+          ]
+        }
+      ],
+      "caption": "Спуск — поки не спрацює базовий випадок; далі кожен фрейм домножує результат і віддає його тому, хто його викликав."
     },
     {
       "type": "viz",

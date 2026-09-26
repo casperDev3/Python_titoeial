@@ -64,15 +64,16 @@ export function SliceLab() {
                 className="relative grid aspect-[4/5] w-full place-items-center rounded-[12px] font-mono text-[15px] font-bold sm:text-[18px]"
                 style={{
                   background: on
-                    ? "linear-gradient(160deg, var(--accent), var(--accent-2))"
-                    : "color-mix(in oklab, var(--label) 6%, transparent)",
-                  color: on ? "white" : "var(--label)",
+                    ? "color-mix(in oklab, var(--accent) 20%, white)"
+                    : "color-mix(in oklab, var(--label) 5%, white)",
+                  color: on ? "color-mix(in oklab, var(--accent) 45%, var(--label))" : "var(--label)",
+                  border: on ? "1.5px solid var(--accent)" : "1.5px solid transparent",
                   boxShadow: isStart
                     ? "0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--accent)"
                     : isStop
                       ? "0 0 0 2px var(--bg-elevated), 0 0 0 4px color-mix(in oklab, var(--label) 35%, transparent)"
                       : on
-                        ? "0 6px 16px -6px color-mix(in oklab, var(--accent) 70%, transparent)"
+                        ? "0 4px 10px -6px color-mix(in oklab, var(--accent) 60%, transparent)"
                         : "none",
                   outline: isStop ? "1.5px dashed var(--label-3)" : "none",
                   outlineOffset: 5,
@@ -86,7 +87,7 @@ export function SliceLab() {
                     animate={{ scale: 1 }}
                     transition={{ ...spring, delay: (k ?? 0) * 0.04 }}
                     className="absolute -top-2 -right-1.5 grid size-[17px] place-items-center rounded-full bg-elevated text-[10px] font-bold shadow"
-                    style={{ color: "var(--accent)" }}
+                    style={{ color: "color-mix(in oklab, var(--accent) 60%, var(--label))" }}
                   >
                     {k}
                   </motion.span>
@@ -111,11 +112,11 @@ export function SliceLab() {
       <motion.div
         layout
         className="mx-5 mt-4 flex flex-wrap items-center justify-center gap-2 rounded-2xl px-4 py-3 font-mono"
-        style={{ background: "color-mix(in oklab, var(--accent) 11%, transparent)" }}
+        style={{ background: "color-mix(in oklab, var(--accent) 9%, white)" }}
       >
         <span className="text-[15px] font-bold">{expr}</span>
         <span className="text-label-2">→</span>
-        <motion.span key={result + expr} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-[16px] font-bold" style={{ color: "var(--accent)" }}>
+        <motion.span key={result + expr} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-[16px] font-bold" style={{ color: "color-mix(in oklab, var(--accent) 60%, var(--label))" }}>
           {pyRepr(result)}
         </motion.span>
         <span className="w-full text-center text-[11.5px] text-label-2">
@@ -186,8 +187,9 @@ function NullableStepper({
             onClick={() => onChange(isNone ? 0 : null)}
             className="rounded-full px-2 py-0.5 font-mono text-[11px] font-semibold transition-colors"
             style={{
-              background: isNone ? "var(--accent)" : "color-mix(in oklab, var(--label) 8%, transparent)",
-              color: isNone ? "white" : "var(--label-2)",
+              background: isNone ? "color-mix(in oklab, var(--accent) 18%, white)" : "color-mix(in oklab, var(--label) 8%, transparent)",
+              color: isNone ? "color-mix(in oklab, var(--accent) 55%, var(--label))" : "var(--label-2)",
+              boxShadow: isNone ? "inset 0 0 0 1.5px var(--accent)" : "none",
             }}
           >
             None

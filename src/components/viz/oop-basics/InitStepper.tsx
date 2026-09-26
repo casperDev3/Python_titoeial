@@ -165,7 +165,7 @@ export function InitStepper() {
             <motion.div
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-2 rounded-xl bg-black/80 px-3 py-2 font-mono text-[12.5px] text-[#e5e5ea]"
+              className="mt-2 rounded-xl border border-separator bg-[var(--code-bg)] px-3 py-2 font-mono text-[12.5px] text-label"
             >
               {snap.out}
             </motion.div>
@@ -252,8 +252,8 @@ export function InitStepper() {
                       key={m}
                       className="rounded-md px-1.5 py-0.5 text-[11px]"
                       style={{
-                        background: snap.fresh === "fire" && m === "fire" ? "var(--accent-2)" : "color-mix(in oklab, var(--accent-2) 16%, transparent)",
-                        color: snap.fresh === "fire" && m === "fire" ? "white" : undefined,
+                        background: snap.fresh === "fire" && m === "fire" ? "color-mix(in oklab, var(--accent-2) 34%, white)" : "color-mix(in oklab, var(--accent-2) 14%, white)",
+                        fontWeight: snap.fresh === "fire" && m === "fire" ? 700 : undefined,
                       }}
                     >
                       ƒ {m}
@@ -273,7 +273,7 @@ export function InitStepper() {
                     className="relative overflow-hidden rounded-2xl border p-2.5 font-mono text-[12px]"
                     style={{
                       borderColor: "color-mix(in oklab, var(--accent) 45%, transparent)",
-                      background: "linear-gradient(135deg, color-mix(in oklab, var(--accent) 14%, transparent), color-mix(in oklab, var(--accent-2) 12%, transparent))",
+                      background: "color-mix(in oklab, var(--accent) 7%, white)",
                       boxShadow: snap.fresh === "self" || snap.fresh === "mark" ? "0 0 0 2px var(--accent), 0 8px 28px -8px var(--accent)" : undefined,
                     }}
                   >
@@ -328,10 +328,10 @@ export function InitStepper() {
 
       <ControlBar>
         <Btn onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
-          <ChevronLeft className="size-4" /> Назад
+          <ChevronLeft className="size-4" strokeWidth={1.75} /> Назад
         </Btn>
         <Btn variant="accent" onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))} disabled={last}>
-          Крок <ChevronRight className="size-4" />
+          Крок <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn
           onClick={() => {
@@ -339,7 +339,7 @@ export function InitStepper() {
             setPlaying((p) => !p);
           }}
         >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />} {playing ? "Пауза" : "Авто"}
+          {playing ? <Pause className="size-4" strokeWidth={1.75} /> : <Play className="size-4" strokeWidth={1.75} />} {playing ? "Пауза" : "Авто"}
         </Btn>
         <Btn
           onClick={() => {
@@ -347,7 +347,7 @@ export function InitStepper() {
             setPlaying(false);
           }}
         >
-          <RotateCcw className="size-4" />
+          <RotateCcw className="size-4" strokeWidth={1.75} />
         </Btn>
       </ControlBar>
     </div>

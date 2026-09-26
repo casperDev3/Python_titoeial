@@ -5,6 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Html, RoundedBox } from "@react-three/drei";
 import { AnimatePresence, motion } from "motion/react";
 import * as THREE from "three";
+import { Play } from "lucide-react";
 import { Btn, ControlBar, Scene3D, Segmented, useThemeColors } from "../kit";
 
 type StageId = "src" | "compile" | "pvm" | "out";
@@ -103,26 +104,26 @@ function Station({
       >
         <RoundedBox args={[1.5, 1.5, 1.5]} radius={0.22} smoothness={4}>
           <meshPhysicalMaterial
-            color={color}
-            transmission={0.55}
+            color={active || lit ? color : "#ffffff"}
+            transmission={0.6}
             thickness={1.2}
-            roughness={0.18}
+            roughness={0.2}
             clearcoat={1}
             transparent
-            opacity={0.82}
+            opacity={active || lit ? 0.55 : 0.8}
             emissive={color}
-            emissiveIntensity={lit ? 0.9 : active ? 0.35 : 0.08}
+            emissiveIntensity={lit ? 0.5 : active ? 0.12 : 0}
           />
         </RoundedBox>
-        <StationCore i={i} color={c.dark ? "#ffffff" : "#1c1c1e"} />
+        <StationCore i={i} color={color} />
       </group>
       <Html center position={[0, -1.25, 0]} distanceFactor={9} style={{ pointerEvents: "none" }}>
         <div
-          className="rounded-full px-2.5 py-1 text-[12px] font-semibold whitespace-nowrap backdrop-blur-md"
+          className="rounded-full px-2.5 py-1 text-[12px] font-semibold whitespace-nowrap shadow-sm"
           style={{
-            background: active ? "var(--accent)" : "var(--glass-bg-strong)",
+            background: active ? "var(--accent)" : "#ffffff",
             color: active ? "#fff" : "var(--label)",
-            border: "1px solid var(--glass-border)",
+            border: active ? "1px solid var(--accent)" : "1px solid rgb(60 60 67 / 0.2)",
           }}
         >
           {i + 1}. {stage.short}
@@ -192,7 +193,7 @@ function ChakraOrb({ runRef, onStage }: { runRef: RefObject<number>; onStage: (i
     <>
       <mesh ref={orb} scale={0}>
         <sphereGeometry args={[0.18, 24, 24]} />
-        <meshStandardMaterial color={c.accent2} emissive={c.accent2} emissiveIntensity={2} />
+        <meshStandardMaterial color={c.accent2} emissive={c.accent2} emissiveIntensity={0.6} />
       </mesh>
       <mesh ref={halo} scale={0}>
         <sphereGeometry args={[0.18, 24, 24]} />
@@ -208,7 +209,7 @@ function Rail() {
   return (
     <mesh>
       <tubeGeometry args={[curve, 64, 0.05, 8, false]} />
-      <meshStandardMaterial color={c.accent} emissive={c.accent} emissiveIntensity={0.4} transparent opacity={0.6} />
+      <meshStandardMaterial color={c.accent} roughness={0.4} transparent opacity={0.7} />
     </mesh>
   );
 }
@@ -267,7 +268,10 @@ export function InterpreterPipeline3D() {
 
       <ControlBar>
         <Btn variant="accent" onClick={run} disabled={running}>
-          {running ? "Виконується…" : "▶ Запустити"}
+          <span className="inline-flex items-center gap-1.5">
+            <Play className="size-4" strokeWidth={1.75} />
+            {running ? "Виконується…" : "Запустити"}
+          </span>
         </Btn>
         <Segmented
           id="intro-pipeline"

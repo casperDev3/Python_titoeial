@@ -1,6 +1,6 @@
 "use client";
 
-import { Html, RoundedBox } from "@react-three/drei";
+import { Edges, Html, RoundedBox } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Color, type Group, type MeshPhysicalMaterial } from "three";
@@ -16,16 +16,19 @@ type Fm = keyof typeof FORMULAS;
 type Mode = "grid" | "flat";
 
 function Cube({
-  i, j, n, value, visible, current, flat, selected, onPick, a, b,
+  i, j, n, value, visible, current, flat, selected, onPick, a,
 }: {
   i: number; j: number; n: number; value: number; visible: boolean; current: boolean; flat: boolean;
-  selected: boolean; onPick: () => void; a: string; b: string;
+  selected: boolean; onPick: () => void; a: string;
 }) {
   const g = useRef<Group>(null);
   const mat = useRef<MeshPhysicalMaterial>(null);
   const N = n * n;
   const t = i * n + j;
-  const tint = useMemo(() => new Color(a).lerp(new Color(b), n > 1 ? i / (n - 1) : 0), [a, b, i, n]);
+  // світле «скло»: білі кубики, активний — ледь тонований акцентом
+  const pale = useMemo(() => new Color("#ffffff").lerp(new Color(a), 0.06), [a]);
+  const hot = useMemo(() => new Color("#ffffff").lerp(new Color(a), 0.35), [a]);
+  const accent = useMemo(() => new Color(a), [a]);
   const spacing = Math.min(0.62, 4.8 / N);
   const target = flat
     ? { x: (t - (N - 1) / 2) * spacing, y: -0.2, z: 0, s: spacing / 0.8 }
@@ -45,10 +48,10 @@ function Cube({
     grp.scale.set(sc, sc, sc);
     const m = mat.current;
     if (m) {
-      const eg = current ? 0.9 : selected ? 0.5 : 0.12;
+      const eg = current ? 0.2 : selected ? 0.12 : 0;
       m.emissiveIntensity += (eg - m.emissiveIntensity) * k;
-      m.color.copy(tint);
-      m.emissive.copy(tint);
+      m.color.copy(current || selected ? hot : pale);
+      m.emissive.copy(accent);
     }
   });
 
@@ -63,11 +66,12 @@ function Cube({
           onPick();
         }}
       >
-        <meshPhysicalMaterial ref={mat} transmission={0.45} thickness={0.5} roughness={0.2} clearcoat={1} transparent opacity={0.92} />
+        <meshPhysicalMaterial ref={mat} transmission={0.3} thickness={0.5} roughness={0.2} clearcoat={1} transparent opacity={0.95} emissiveIntensity={0} />
+        <Edges threshold={20} color={a} />
       </RoundedBox>
       {visible && (
         <Html position={[0, 0, 0.4]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
-          <span className="font-mono text-[12px] font-bold text-white" style={{ textShadow: "0 1px 3px rgba(0,0,0,.6)" }}>
+          <span className="font-mono text-[12px] font-bold text-label">
             {value}
           </span>
         </Html>
@@ -142,11 +146,11 @@ export function NestedGrid3D() {
       <div className="mx-5 overflow-x-auto rounded-2xl border border-separator bg-[var(--code-bg)] px-3.5 py-2 font-mono text-[12.5px] leading-relaxed whitespace-nowrap thin-scroll">
         <div>
           grid = [[<b style={{ color: "var(--accent)" }}>{FORMULAS[fm].code}</b>{" "}
-          <span style={{ background: cj >= 0 ? "color-mix(in oklab, var(--accent-2) 22%, transparent)" : undefined }} className="rounded px-0.5">
+          <span style={{ background: cj >= 0 ? "color-mix(in oklab, var(--accent-2) 20%, white)" : undefined }} className="rounded px-0.5">
             for j in range({n})
           </span>
           ]{" "}
-          <span style={{ background: ci >= 0 ? "color-mix(in oklab, var(--accent) 22%, transparent)" : undefined }} className="rounded px-0.5">
+          <span style={{ background: ci >= 0 ? "color-mix(in oklab, var(--accent) 20%, white)" : undefined }} className="rounded px-0.5">
             for i in range({n})
           </span>
           ]
@@ -177,7 +181,6 @@ export function NestedGrid3D() {
                 selected={sel === t}
                 onPick={() => setSel(t)}
                 a={c.accent}
-                b={c.accent2}
               />
             );
           })}
@@ -186,10 +189,10 @@ export function NestedGrid3D() {
 
       <div className="grid gap-2 px-5 sm:grid-cols-[auto_1fr]">
         <div className="flex gap-2 font-mono text-[12.5px]">
-          <span className="rounded-full px-2.5 py-1" style={{ background: "color-mix(in oklab, var(--accent) 16%, transparent)" }}>
+          <span className="rounded-full px-2.5 py-1" style={{ background: "color-mix(in oklab, var(--accent) 14%, white)" }}>
             i = {selInfo ? selInfo.i : ci >= 0 ? ci : "–"}
           </span>
-          <span className="rounded-full px-2.5 py-1" style={{ background: "color-mix(in oklab, var(--accent-2) 20%, transparent)" }}>
+          <span className="rounded-full px-2.5 py-1" style={{ background: "color-mix(in oklab, var(--accent-2) 16%, white)" }}>
             j = {selInfo ? selInfo.j : cj >= 0 ? cj : "–"}
           </span>
           {selInfo && (
@@ -198,8 +201,8 @@ export function NestedGrid3D() {
             </span>
           )}
         </div>
-        <div className="rounded-xl bg-black/80 px-3 py-1.5 font-mono text-[12px] break-all text-[#e5e5ea]">
-          {filled === 0 ? <span className="text-[#636366]"># натисни «Заповнити»</span> : built}
+        <div className="rounded-xl border border-separator bg-[var(--code-bg)] px-3 py-1.5 font-mono text-[12px] break-all text-label">
+          {filled === 0 ? <span className="text-label-3"># натисни «Заповнити»</span> : built}
         </div>
       </div>
 
@@ -211,10 +214,10 @@ export function NestedGrid3D() {
             setPlaying((p) => !p);
           }}
         >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />} {playing ? "Пауза" : "Заповнити"}
+          {playing ? <Pause className="size-4" strokeWidth={1.75} /> : <Play className="size-4" strokeWidth={1.75} />} {playing ? "Пауза" : "Заповнити"}
         </Btn>
         <Btn onClick={() => setFilled((v) => Math.min(N, v + 1))} disabled={filled >= N}>
-          <SkipForward className="size-4" /> +1
+          <SkipForward className="size-4" strokeWidth={1.75} /> +1
         </Btn>
         <Btn
           onClick={() => {
@@ -223,7 +226,7 @@ export function NestedGrid3D() {
             setSel(null);
           }}
         >
-          <RotateCcw className="size-4" />
+          <RotateCcw className="size-4" strokeWidth={1.75} />
         </Btn>
         <Slider
           label="n"

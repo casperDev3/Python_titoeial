@@ -6,11 +6,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Btn, ControlBar, Scene3D, Segmented, Slider, useThemeColors } from "../kit";
 import { CodePane } from "./CodePane";
+import { Infinity as InfinityIcon } from "lucide-react";
+import { A2_INK, GREEN, MUTED, RED } from "./palette";
 
 const R = 1.55;
 const SPEED = 0.42; // витків за секунду
-const DEATH = "#ff453a";
-const WIN = "#30d158";
+const DEATH = RED;
+const WIN = GREEN;
 
 const CODE_BREAK = [
   "attempt = 0",
@@ -19,7 +21,7 @@ const CODE_BREAK = [
   "    live_the_day()          # виток спіралі",
   "    if attempt == N:        # чекпоінт",
   "        break               # вихід знайдено",
-  '    print("☠ повернення через смерть")',
+  '    print("повернення через смерть")',
   'print("Вихід знайдено!")',
 ];
 const CODE_INF = [
@@ -29,7 +31,7 @@ const CODE_INF = [
   "    live_the_day()",
   "    # if attempt == N: break   ← забули!",
   "",
-  '    print("☠ повернення через смерть")',
+  '    print("повернення через смерть")',
   "",
 ];
 
@@ -155,7 +157,7 @@ function Spiral({
       {/* вісь часу */}
       <mesh position={[0, y0 + (laps * h) / 2, 0]}>
         <cylinderGeometry args={[0.03, 0.03, laps * h + 0.6, 8]} />
-        <meshStandardMaterial color={"#8e8e93"} transparent opacity={0.3} />
+        <meshStandardMaterial color={MUTED} transparent opacity={0.5} />
       </mesh>
 
       {/* старт */}
@@ -164,7 +166,7 @@ function Spiral({
         <meshPhysicalMaterial color={colors.accent2} emissive={colors.accent2} emissiveIntensity={0.4} roughness={0.2} />
       </mesh>
       <Html center position={[R + 0.2, y0 - 0.35, 0]} zIndexRange={[10, 0]}>
-        <div className="pointer-events-none rounded-full px-2 py-0.5 text-[10.5px] font-semibold whitespace-nowrap text-white" style={{ background: "var(--accent-2)" }}>
+        <div className="pointer-events-none rounded-full px-2 py-0.5 text-[10.5px] font-semibold whitespace-nowrap text-white" style={{ background: A2_INK }}>
           чекпоінт: крамниця
         </div>
       </Html>
@@ -239,12 +241,12 @@ export function ReturnByDeath() {
             />
           </Scene3D>
           <div className="pointer-events-none absolute top-3 left-4 flex flex-col gap-1">
-            <div className="rounded-2xl bg-black/35 px-3 py-1.5 font-mono text-[13px] text-white backdrop-blur-md">
+            <div className="rounded-2xl border border-separator bg-white/90 px-3 py-1.5 font-mono text-[13px] text-label shadow-sm">
               attempt = <b className="text-[16px]">{attempt}</b>
             </div>
             {mode === "inf" && attempt > 4 && (
               <div className="rounded-full px-2.5 py-0.5 text-[11px] font-bold text-white" style={{ background: DEATH }}>
-                ∞ нескінченний цикл
+                <span className="inline-flex items-center gap-1"><InfinityIcon className="size-3.5" strokeWidth={1.75} /> нескінченний цикл</span>
               </div>
             )}
           </div>

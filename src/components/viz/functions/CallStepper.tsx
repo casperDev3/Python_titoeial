@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, CornerDownLeft, Pause, Play, RotateCcw } from "lucide-react";
 import { Btn, ControlBar } from "../kit";
 
 const CODE = [
@@ -167,10 +167,14 @@ export function CallStepper() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ type: "spring", stiffness: 400, damping: 22 }}
-                        className="mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[12px] font-bold text-white"
-                        style={{ background: "linear-gradient(120deg, var(--accent), var(--accent-2))" }}
+                        className="mt-2 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[12px] font-bold"
+                        style={{
+                          background: "color-mix(in oklab, var(--accent) 12%, white)",
+                          borderColor: "color-mix(in oklab, var(--accent) 45%, white)",
+                          color: "color-mix(in oklab, var(--accent) 62%, black)",
+                        }}
                       >
-                        ↩ return {s.ret}
+                        <CornerDownLeft className="size-3.5" strokeWidth={1.75} /> return {s.ret}
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -208,16 +212,16 @@ export function CallStepper() {
         </AnimatePresence>
       </div>
 
-      <div className="mx-5 mt-3 rounded-2xl bg-black/80 px-4 py-2.5 font-mono text-[12.5px] text-[#e5e5ea]">
-        <span className="text-[#8e8e93]">stdout ›</span> {s.out.join(" ") || <span className="text-[#636366]">—</span>}
+      <div className="mx-5 mt-3 rounded-2xl border border-separator bg-[var(--code-bg)] px-4 py-2.5 font-mono text-[12.5px] text-label">
+        <span className="text-label-3">stdout ›</span> {s.out.join(" ") || <span className="text-label-3">—</span>}
       </div>
 
       <ControlBar>
         <Btn onClick={() => setI((v) => Math.max(0, v - 1))} disabled={i === 0}>
-          <ChevronLeft className="size-4" /> Назад
+          <ChevronLeft className="size-4" strokeWidth={1.75} /> Назад
         </Btn>
         <Btn variant="accent" onClick={() => setI((v) => Math.min(last, v + 1))} disabled={i === last}>
-          Крок <ChevronRight className="size-4" />
+          Крок <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn
           onClick={() => {
@@ -225,7 +229,7 @@ export function CallStepper() {
             setPlaying((p) => !p);
           }}
         >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />} {playing ? "Пауза" : "Авто"}
+          {playing ? <Pause className="size-4" strokeWidth={1.75} /> : <Play className="size-4" strokeWidth={1.75} />} {playing ? "Пауза" : "Авто"}
         </Btn>
         <Btn
           onClick={() => {
@@ -233,7 +237,7 @@ export function CallStepper() {
             setI(0);
           }}
         >
-          <RotateCcw className="size-4" /> Скинути
+          <RotateCcw className="size-4" strokeWidth={1.75} /> Скинути
         </Btn>
       </ControlBar>
     </div>

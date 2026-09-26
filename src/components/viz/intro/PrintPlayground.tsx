@@ -87,9 +87,9 @@ export function PrintPlayground() {
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 className="rounded-full border px-3 py-1.5 font-mono text-[13px] font-semibold"
                 style={{
-                  background: active ? "color-mix(in oklab, var(--accent) 20%, var(--glass-bg))" : "var(--glass-bg)",
-                  borderColor: active ? "var(--accent)" : "var(--glass-border)",
-                  color: active ? "var(--label)" : "var(--label-3)",
+                  background: active ? "color-mix(in oklab, var(--accent) 14%, white)" : "#ffffff",
+                  borderColor: active ? "var(--accent)" : "rgb(60 60 67 / 0.2)",
+                  color: active ? "var(--label)" : "var(--label-2)",
                 }}
               >
                 {a.code}

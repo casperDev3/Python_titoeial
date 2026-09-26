@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { Btn, ControlBar, Slider } from "../kit";
 import { CodePane } from "./CodePane";
+import { CornerDownRight } from "lucide-react";
+import { GREEN } from "./palette";
 
 type Branch = { cond: string; test: (s: number) => boolean; grade: string; line: number };
 
@@ -82,7 +84,7 @@ export function BranchFlow() {
             const st = stateOf(i);
             const color =
               st === "run" || st === "true"
-                ? "#30d158"
+                ? GREEN
                 : st === "false"
                   ? "var(--accent)"
                   : "var(--separator)";
@@ -97,7 +99,7 @@ export function BranchFlow() {
                   borderColor: color,
                   background:
                     st === "run"
-                      ? "color-mix(in oklab, #30d158 14%, var(--glass-bg))"
+                      ? `color-mix(in oklab, ${GREEN} 12%, white)`
                       : "var(--glass-bg)",
                 }}
               >
@@ -105,7 +107,7 @@ export function BranchFlow() {
                   className="grid size-8 shrink-0 rotate-45 place-items-center rounded-[8px] border-2 transition-colors duration-300"
                   style={{ borderColor: color }}
                 >
-                  <span className="-rotate-45 text-[11px] font-bold">{i < 3 ? "?" : "↳"}</span>
+                  <span className="-rotate-45 text-[11px] font-bold">{i < 3 ? "?" : <CornerDownRight className="size-3" strokeWidth={2} />}</span>
                 </span>
                 <code className="min-w-0 flex-1 truncate font-mono text-[13px]">
                   {i === 0 ? "if " : i < 3 ? "elif " : ""}
@@ -123,7 +125,7 @@ export function BranchFlow() {
                       color: st === "idle" ? "var(--label-3)" : st === "skip" ? "var(--label-2)" : "white",
                       background:
                         st === "true" || st === "run"
-                          ? "#30d158"
+                          ? GREEN
                           : st === "false"
                             ? "var(--accent)"
                             : "transparent",
@@ -151,7 +153,7 @@ export function BranchFlow() {
                   <span className="text-label-2">Результат:</span>
                   <span
                     className="rounded-xl px-3 py-1 font-mono text-[15px] font-bold text-white"
-                    style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-2))" }}
+                    style={{ background: "var(--accent)" }}
                   >
                     grade = &quot;{BRANCHES[winner].grade}&quot;
                   </span>

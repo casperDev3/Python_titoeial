@@ -1,5 +1,6 @@
 "use client";
 
+import { TriangleAlert } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { ControlBar, Slider } from "../kit";
@@ -52,13 +53,6 @@ export function DivmodLine() {
     <div>
       <div ref={box} className="px-3 sm:px-5">
         <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} className="block h-auto w-full" role="img" aria-label="Числова пряма для // і %">
-          <defs>
-            <linearGradient id="dm-hop" x1="0" x2="1">
-              <stop offset="0%" stopColor="var(--accent)" />
-              <stop offset="100%" stopColor="var(--accent-2)" />
-            </linearGradient>
-          </defs>
-
           {/* основна вісь */}
           <line x1={PAD} x2={W - PAD} y1={Y} y2={Y} stroke="var(--label-3)" strokeWidth={2} strokeLinecap="round" />
 
@@ -88,7 +82,7 @@ export function DivmodLine() {
                 key={`${b}-${q}-${h.i}`}
                 d={`M ${x1} ${Y} Q ${mid} ${Y - lift} ${x2} ${Y}`}
                 fill="none"
-                stroke="url(#dm-hop)"
+                stroke="color-mix(in oklab, var(--accent) 80%, var(--label))"
                 strokeWidth={3}
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
@@ -142,9 +136,10 @@ export function DivmodLine() {
       </div>
       <div className="px-5 pt-2 text-[13px] text-label-2">
         {differs ? (
-          <span>
-            ⚠️ Для від&apos;ємного <b className="text-label">a</b> результати різні: <code className="inline-code">{"//"}</code> округлює
-            вниз (до −∞), а <code className="inline-code">int()</code> просто відкидає дробову частину (до нуля).
+          <span className="inline-flex items-start gap-1.5">
+            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-[#c93400]" strokeWidth={1.75} />
+            <span>Для від&apos;ємного <b className="text-label">a</b> результати різні: <code className="inline-code">{"//"}</code> округлює
+            вниз (до −∞), а <code className="inline-code">int()</code> просто відкидає дробову частину (до нуля).</span>
           </span>
         ) : (
           <span>
@@ -175,11 +170,11 @@ function Stat({
   accent2?: boolean;
   warn?: boolean;
 }) {
-  const color = accent ? "var(--accent)" : accent2 ? "var(--accent-2)" : warn ? "#ff9f0a" : "var(--label-3)";
+  const color = accent ? "var(--accent)" : accent2 ? "var(--accent-2)" : warn ? "#c93400" : "var(--label-3)";
   return (
     <div
       className="rounded-[14px] px-3 py-2"
-      style={{ background: `color-mix(in oklab, ${color} 13%, transparent)`, border: `1px solid color-mix(in oklab, ${color} 35%, transparent)` }}
+      style={{ background: `color-mix(in oklab, ${color} 10%, white)`, border: `1px solid color-mix(in oklab, ${color} 35%, transparent)` }}
     >
       <div className="font-mono text-[11.5px] text-label-2">{label}</div>
       <motion.div

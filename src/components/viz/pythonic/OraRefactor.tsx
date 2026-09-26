@@ -2,8 +2,9 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
 import { Btn, ControlBar } from "../kit";
+import { CONSOLE_BG, GREEN, tint } from "./palette";
 
 const HEAD = `stands = ["Star Platinum", "The World", "Hermit Purple", "Magician's Red"]`;
 
@@ -131,12 +132,7 @@ export function OraRefactor() {
               animate={{ opacity: [0, 1, 1, 0], scale: [0.4, 1.15, 1, 1.1], rotate: -8 }}
               transition={{ duration: 1.1, times: [0, 0.2, 0.7, 1] }}
               className="pointer-events-none absolute top-6 right-8 z-10 text-[34px] font-black italic tracking-tight"
-              style={{
-                background: "linear-gradient(135deg, var(--accent), var(--accent-2))",
-                WebkitBackgroundClip: "text",
-                color: "transparent",
-                filter: "drop-shadow(0 4px 12px color-mix(in oklab, var(--accent) 50%, transparent))",
-              }}
+              style={{ color: "var(--accent)" }}
             >
               {"ORA! ".repeat(Math.min(3, s)).trim()}
             </motion.div>
@@ -151,7 +147,7 @@ export function OraRefactor() {
               <div className="h-1.5 w-20 overflow-hidden rounded-full bg-separator">
                 <motion.div
                   className="h-full rounded-full"
-                  style={{ background: "linear-gradient(90deg, var(--accent), var(--accent-2))" }}
+                  style={{ background: "var(--accent)" }}
                   animate={{ width: `${(step.lines.length / max) * 100}%` }}
                   transition={{ type: "spring", stiffness: 200, damping: 26 }}
                 />
@@ -172,7 +168,7 @@ export function OraRefactor() {
                     transition={{ type: "spring", stiffness: 340, damping: 30 }}
                     className="flex px-3 whitespace-pre transition-[background-color,border-color] duration-700"
                     style={{
-                      background: fresh ? "color-mix(in oklab, var(--accent) 20%, transparent)" : "transparent",
+                      background: fresh ? tint(14) : "transparent",
                       borderLeft: `3px solid ${fresh ? "var(--accent)" : "transparent"}`,
                     }}
                   >
@@ -187,7 +183,7 @@ export function OraRefactor() {
       </div>
 
       <div className="grid gap-2 px-5 pt-3 sm:grid-cols-[1.4fr_1fr]">
-        <div className="min-h-[92px] rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-snug" style={{ background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}>
+        <div className="min-h-[92px] rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-snug" style={{ background: tint(8) }}>
           <div className="mb-1 text-[11px] font-bold tracking-wider text-label-3 uppercase">
             Удар {s}/{last} · {step.title}
           </div>
@@ -197,23 +193,25 @@ export function OraRefactor() {
             </motion.div>
           </AnimatePresence>
         </div>
-        <div className="rounded-2xl bg-black/80 px-3.5 py-2.5 font-mono text-[12px] leading-relaxed text-[#e5e5ea]">
-          <div className="text-[#636366]">$ python3 stands.py</div>
+        <div className="rounded-2xl border border-separator px-3.5 py-2.5 font-mono text-[12px] leading-relaxed text-label" style={{ background: CONSOLE_BG }}>
+          <div className="text-label-3">$ python3 stands.py</div>
           {OUTPUT.map((o) => (
             <motion.div key={`${s}-${o}`} initial={{ opacity: 0.3 }} animate={{ opacity: 1 }}>
               {o}
             </motion.div>
           ))}
-          <div className="mt-1 text-[11px] text-[#86efac]">✓ вивід не змінився</div>
+          <div className="mt-1 flex items-center gap-1 font-sans text-[11px] font-semibold" style={{ color: GREEN }}>
+            <Check className="size-3.5" strokeWidth={1.75} /> вивід не змінився
+          </div>
         </div>
       </div>
 
       <ControlBar>
         <Btn onClick={() => setS((v) => Math.max(0, v - 1))} disabled={s === 0}>
-          <ChevronLeft className="size-4" />
+          <ChevronLeft className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn variant="accent" onClick={() => setS((v) => Math.min(last, v + 1))} disabled={s === last}>
-          ORA! <ChevronRight className="size-4" />
+          ORA! <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn
           onClick={() => {
@@ -221,7 +219,7 @@ export function OraRefactor() {
             setPlaying((p) => !p);
           }}
         >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
+          {playing ? <Pause className="size-4" strokeWidth={1.75} /> : <Play className="size-4" strokeWidth={1.75} />}
         </Btn>
         <Btn
           onClick={() => {
@@ -229,7 +227,7 @@ export function OraRefactor() {
             setS(0);
           }}
         >
-          <RotateCcw className="size-4" />
+          <RotateCcw className="size-4" strokeWidth={1.75} />
         </Btn>
       </ControlBar>
     </div>

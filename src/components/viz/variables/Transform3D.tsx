@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import { AnimatePresence, motion } from "motion/react";
 import * as THREE from "three";
+import { Zap } from "lucide-react";
 import { Btn, ControlBar, Scene3D, Segmented, useThemeColors } from "../kit";
 
 type PyVal =
@@ -134,7 +135,7 @@ function Morph({ kind, burstRef }: { kind: Kind; burstRef: RefObject<number> }) 
       roughness={0.12}
       clearcoat={1}
       emissive={color}
-      emissiveIntensity={0.25}
+      emissiveIntensity={0.08}
       {...extra}
     />
   );
@@ -163,7 +164,7 @@ function Morph({ kind, burstRef }: { kind: Kind; burstRef: RefObject<number> }) 
       </mesh>
       <mesh ref={(m) => { refs.current[5] = m; }}>
         <icosahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial color="#ff453a" emissive="#ff453a" emissiveIntensity={0.5} wireframe />
+        <meshStandardMaterial color="#d70015" wireframe />
       </mesh>
     </group>
   );
@@ -221,7 +222,7 @@ function Aura({ burstRef, kind }: { burstRef: RefObject<number>; kind: Kind }) {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial ref={mat} color={c.dark ? "#ffd23f" : c.accent} size={0.06} transparent depthWrite={false} sizeAttenuation />
+      <pointsMaterial ref={mat} color={c.accent} size={0.06} transparent depthWrite={false} sizeAttenuation />
     </points>
   );
 }
@@ -237,7 +238,7 @@ export function Transform3D() {
   const src = VALUES.find((v) => v.id === valId)!.val;
   const res = convert(fn, src);
   const kind: Kind = !applied ? (src.t as Kind) : res.ok ? (res.val.t as Kind) : "error";
-  const label = !applied ? repr(src) : res.ok ? repr(res.val) : "💥";
+  const label = !applied ? repr(src) : res.ok ? repr(res.val) : "помилка";
   const tname = !applied ? typeName(src) : res.ok ? typeName(res.val) : "Exception";
 
   const transform = () => {
@@ -253,18 +254,18 @@ export function Transform3D() {
           <Aura burstRef={burstRef} kind={kind} />
           <Html center position={[0, 1.95, 0]} style={{ pointerEvents: "none" }}>
             <div
-              className="rounded-full px-3 py-1 font-mono text-[13px] font-semibold whitespace-nowrap backdrop-blur-md"
+              className="rounded-full px-3 py-1 font-mono text-[13px] font-semibold whitespace-nowrap shadow-sm"
               style={{
-                background: kind === "error" ? "rgb(255 69 58 / 0.85)" : "var(--glass-bg-strong)",
+                background: kind === "error" ? "#d70015" : "#ffffff",
                 color: kind === "error" ? "#fff" : "var(--label)",
-                border: "1px solid var(--glass-border)",
+                border: kind === "error" ? "1px solid #d70015" : "1px solid rgb(60 60 67 / 0.2)",
               }}
             >
               {label} <span className="opacity-60">· {tname}</span>
             </div>
           </Html>
         </Scene3D>
-        <div className="pointer-events-none absolute top-2 right-3 rounded-full bg-black/25 px-2.5 py-1 text-[11px] text-white backdrop-blur-md">
+        <div className="pointer-events-none absolute top-2 right-3 rounded-full border border-separator bg-white px-2.5 py-1 text-[11px] font-medium text-label-2 shadow-sm">
           {FORM[kind]}
         </div>
       </div>
@@ -284,8 +285,8 @@ export function Transform3D() {
                 }}
                 className="rounded-full border px-2.5 py-1 font-mono text-[12.5px] font-semibold"
                 style={{
-                  background: on ? "color-mix(in oklab, var(--accent) 22%, var(--glass-bg))" : "var(--glass-bg)",
-                  borderColor: on ? "var(--accent)" : "var(--glass-border)",
+                  background: on ? "color-mix(in oklab, var(--accent) 14%, white)" : "#ffffff",
+                  borderColor: on ? "var(--accent)" : "rgb(60 60 67 / 0.2)",
                 }}
               >
                 {repr(val)}
@@ -306,7 +307,10 @@ export function Transform3D() {
           options={(["int", "float", "str", "bool"] as Fn[]).map((f) => ({ value: f, label: `${f}()` }))}
         />
         <Btn variant="accent" onClick={transform} disabled={applied}>
-          ⚡ Трансформація!
+          <span className="inline-flex items-center gap-1.5">
+            <Zap className="size-4" strokeWidth={1.75} />
+            Трансформація!
+          </span>
         </Btn>
       </ControlBar>
 

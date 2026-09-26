@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { useEffect, useState, type ReactNode } from "react";
+import { Play, RotateCcw } from "lucide-react";
 import { Btn, Console, ControlBar, Segmented, Slider } from "../kit";
 
 /** Детермінований «перемішаний» набір чисел (без Math.random — стабільно для SSR). */
@@ -117,11 +118,12 @@ export function LookupRace() {
                   className="grid aspect-square place-items-center rounded-[5px] font-mono text-[8.5px] sm:text-[9.5px]"
                   style={{
                     background: hit
-                      ? "#30d158"
+                      ? "#248a3d"
                       : checked
-                        ? "color-mix(in oklab, var(--accent) 45%, transparent)"
+                        ? "color-mix(in oklab, var(--accent) 18%, white)"
                         : "var(--separator)",
-                    color: hit || checked ? "white" : "var(--label-2)",
+                    color: hit ? "white" : checked ? "var(--label)" : "var(--label-2)",
+                    boxShadow: checked && !hit ? "inset 0 0 0 1px color-mix(in oklab, var(--accent) 45%, white)" : "none",
                   }}
                 >
                   {v}
@@ -150,7 +152,7 @@ export function LookupRace() {
                   className="grid aspect-square place-items-center rounded-[5px] font-mono text-[8.5px] sm:text-[9.5px]"
                   style={{
                     background: hit
-                      ? "#30d158"
+                      ? "#248a3d"
                       : on
                         ? "var(--accent-2)"
                         : v === null
@@ -170,9 +172,15 @@ export function LookupRace() {
 
       <ControlBar>
         <Btn variant="accent" onClick={start}>
-          ▶ Шукати {target}
+          <span className="inline-flex items-center gap-1">
+            <Play className="size-4" strokeWidth={1.75} aria-hidden />
+            Шукати {target}
+          </span>
         </Btn>
-        <Btn onClick={stop}><span aria-hidden>↺</span><span className="sr-only">Скинути</span></Btn>
+        <Btn onClick={stop}>
+          <RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />
+          <span className="sr-only">Скинути</span>
+        </Btn>
       </ControlBar>
       <Console
         lines={[
@@ -204,7 +212,7 @@ function Lane({ title, badge, done, children }: { title: string; badge: string; 
           animate={{ scale: 1, opacity: 1 }}
           className="rounded-full px-2 py-0.5 font-mono text-[11px] font-bold"
           style={{
-            background: done ? "color-mix(in oklab, #30d158 22%, transparent)" : "var(--separator)",
+            background: done ? "color-mix(in oklab, #30d158 16%, white)" : "var(--separator)",
             color: done ? "#1f9d45" : "var(--label-2)",
           }}
         >

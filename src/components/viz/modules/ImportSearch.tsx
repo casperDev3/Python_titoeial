@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Check, Power, Search, X, Zap } from "lucide-react";
 import { Btn, ControlBar, Segmented } from "../kit";
+import { A2_INK, CONSOLE_BG, GREEN, INK, ORANGE, RED, tint } from "./palette";
 
 type Target = "helpers" | "json" | "requests" | "random" | "dragon_radar";
 
@@ -104,7 +105,7 @@ export function ImportSearch() {
             ? "Знайдено в стандартній бібліотеці — встановлювати нічого не треба."
             : "Знайдено в site-packages — сюди його поставив pip install.",
     };
-  const toneColor = { ok: "#30d158", cache: "var(--accent-2)", warn: "#ff9f0a", err: "#ff453a" }[result.tone];
+  const toneColor = { ok: GREEN, cache: A2_INK, warn: ORANGE, err: RED }[result.tone];
 
   return (
     <div>
@@ -124,8 +125,8 @@ export function ImportSearch() {
       </ControlBar>
 
       <div className="px-5">
-        <div className="mb-2 rounded-xl bg-black/80 px-3 py-2 font-mono text-[12.5px] text-[#e5e5ea]">
-          <span className="text-[#636366]">main.py ›</span> <span style={{ color: "var(--accent)" }}>import</span> {target}
+        <div className="mb-2 rounded-xl border border-separator px-3 py-2 font-mono text-[12.5px] text-label" style={{ background: CONSOLE_BG }}>
+          <span className="text-label-3">main.py ›</span> <span className="font-semibold" style={{ color: INK }}>import</span> {target}
         </div>
         <div className="relative space-y-1.5">
           {ROWS.map((r, i) => {
@@ -143,13 +144,17 @@ export function ImportSearch() {
                   <motion.div
                     layoutId="mod-probe"
                     className="pointer-events-none absolute inset-0 rounded-2xl"
-                    style={{ boxShadow: "0 0 0 2px var(--accent), 0 0 24px -4px var(--accent)" }}
+                    style={{ boxShadow: "0 0 0 2px var(--accent)" }}
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold text-white"
-                  style={{ background: hit ? "#30d158" : miss ? "var(--label-3)" : "color-mix(in oklab, var(--accent) 70%, transparent)" }}>
-                  {hit ? <Check className="size-4" /> : miss ? <X className="size-4" /> : isProbe ? <Search className="size-3.5" /> : i === 0 ? <Zap className="size-3.5" /> : i}
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-full border text-[12px] font-bold"
+                  style={{
+                    background: hit ? GREEN : miss ? "var(--bg)" : tint(14),
+                    color: hit ? "white" : miss ? "var(--label-3)" : INK,
+                    borderColor: hit ? GREEN : miss ? "var(--separator)" : "color-mix(in oklab, var(--accent) 35%, transparent)",
+                  }}>
+                  {hit ? <Check className="size-4" strokeWidth={1.75} /> : miss ? <X className="size-4" strokeWidth={1.75} /> : isProbe ? <Search className="size-3.5" strokeWidth={1.75} /> : i === 0 ? <Zap className="size-3.5" strokeWidth={1.75} /> : i}
                 </div>
                 <div className="w-[118px] shrink-0 leading-tight sm:w-[160px]">
                   <div className="text-[13px] font-semibold">{r.title}</div>
@@ -171,8 +176,8 @@ export function ImportSearch() {
                           transition={{ type: "spring", stiffness: 420, damping: 26 }}
                           className="rounded-[8px] px-1.5 py-0.5 font-mono text-[11px]"
                           style={{
-                            background: glow ? "#30d158" : f === "random.py" && i === 1 ? "color-mix(in oklab, #ff9f0a 25%, transparent)" : "var(--bg-elevated)",
-                            color: glow ? "#fff" : undefined,
+                            background: glow ? GREEN : f === "random.py" && i === 1 ? `color-mix(in oklab, ${ORANGE} 14%, white)` : "var(--bg-elevated)",
+                            color: glow ? "white" : f === "random.py" && i === 1 ? ORANGE : undefined,
                             boxShadow: "0 0 0 1px var(--separator)",
                           }}
                         >
@@ -197,7 +202,7 @@ export function ImportSearch() {
                 exit={{ opacity: 0 }}
                 transition={{ type: "spring", stiffness: 320, damping: 28 }}
                 className="rounded-2xl px-3.5 py-2.5 font-mono text-[12.5px] leading-snug"
-                style={{ background: `color-mix(in oklab, ${toneColor} 14%, transparent)`, borderLeft: `3px solid ${toneColor}` }}
+                style={{ background: `color-mix(in oklab, ${toneColor} 9%, white)`, borderLeft: `3px solid ${toneColor}` }}
               >
                 {result.text}
               </motion.div>
@@ -208,7 +213,7 @@ export function ImportSearch() {
 
       <ControlBar>
         <Btn variant="accent" onClick={run} disabled={phase === "running"}>
-          <Search className="size-4" /> import {target}
+          <Search className="size-4" strokeWidth={1.75} /> import {target}
         </Btn>
         <Btn
           onClick={() => {
@@ -219,7 +224,7 @@ export function ImportSearch() {
         >
           <span
             className="inline-block size-3 rounded-full"
-            style={{ background: shadow ? "#ff9f0a" : "var(--label-3)" }}
+            style={{ background: shadow ? ORANGE : "var(--label-3)" }}
           />
           Мій random.py у теці проєкту
         </Btn>
@@ -230,7 +235,7 @@ export function ImportSearch() {
             setProbe(-1);
           }}
         >
-          <Power className="size-4" /> Перезапустити Python
+          <Power className="size-4" strokeWidth={1.75} /> Перезапустити Python
         </Btn>
       </ControlBar>
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Lock, Trash2 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Btn, ControlBar } from "../kit";
@@ -95,10 +96,6 @@ export function ImmutableMemory() {
               <marker id="imm-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" />
               </marker>
-              <linearGradient id="imm-obj" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.22} />
-                <stop offset="100%" stopColor="var(--accent-2)" stopOpacity={0.22} />
-              </linearGradient>
             </defs>
 
             {/* об'єкти */}
@@ -121,8 +118,8 @@ export function ImmutableMemory() {
                       width={OBJ_W}
                       height={OBJ_H}
                       rx={16}
-                      fill="url(#imm-obj)"
-                      stroke={shaking ? "#ff453a" : garbage ? "var(--label-3)" : "var(--accent)"}
+                      fill={garbage ? "#f2f2f7" : "color-mix(in oklab, var(--accent) 12%, white)"}
+                      stroke={shaking ? "#d70015" : garbage ? "var(--label-3)" : "var(--accent)"}
                       strokeWidth={1.5}
                       strokeDasharray={garbage ? "5 4" : undefined}
                     />
@@ -130,11 +127,13 @@ export function ImmutableMemory() {
                       &quot;{o.val}&quot;
                     </text>
                     <text x={OBJ_X + 14} y={OBJ_Y[o.id] + 43} fontSize={10.5} fill="var(--label-2)" className="font-mono">
-                      str · id {o.addr} {garbage ? "· 🗑 сміття" : ""}
+                      str · id {o.addr} {garbage ? "· сміття" : ""}
                     </text>
-                    <text x={OBJ_X + OBJ_W - 12} y={OBJ_Y[o.id] + 24} textAnchor="end" fontSize={13}>
-                      🔒
-                    </text>
+                    {garbage ? (
+                      <Trash2 x={OBJ_X + OBJ_W - 28} y={OBJ_Y[o.id] + 10} width={16} height={16} stroke="var(--label-2)" strokeWidth={1.75} />
+                    ) : (
+                      <Lock x={OBJ_X + OBJ_W - 28} y={OBJ_Y[o.id] + 10} width={16} height={16} stroke="var(--label-2)" strokeWidth={1.75} />
+                    )}
                   </motion.g>
                 );
               })}
@@ -190,8 +189,8 @@ export function ImmutableMemory() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2 }}
-          className={`mx-5 mt-3 min-h-[44px] rounded-[14px] px-4 py-2.5 text-[13.5px] ${error ? "text-[#ff453a]" : "text-label"}`}
-          style={{ background: error ? "rgb(255 69 58 / 0.1)" : "color-mix(in oklab, var(--accent) 10%, transparent)" }}
+          className={`mx-5 mt-3 min-h-[44px] rounded-[14px] px-4 py-2.5 text-[13.5px] ${error ? "text-[#d70015]" : "text-label"}`}
+          style={{ background: error ? "color-mix(in oklab, #ff3b30 8%, white)" : "color-mix(in oklab, var(--accent) 9%, white)" }}
         >
           {EXPLAIN[step]}
         </motion.p>

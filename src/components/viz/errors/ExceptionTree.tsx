@@ -70,7 +70,7 @@ function Node({
     }
   });
 
-  const color = lit ? colors.accent : special ? colors.accent2 : colors.dark ? "#8e8e93" : "#c7c7cc";
+  const color = lit ? colors.accent : special ? colors.accent2 : "#d1d5db";
 
   return (
     <group position={p.pos}>
@@ -109,7 +109,7 @@ function Node({
           className="rounded-full px-2 py-0.5 font-mono text-[10.5px] whitespace-nowrap backdrop-blur-md transition-all duration-300 select-none"
           style={{
             background: selected
-              ? "var(--accent)"
+              ? "color-mix(in oklab, var(--accent) 78%, black)"
               : lit
                 ? "color-mix(in oklab, var(--accent) 22%, var(--glass-bg-strong))"
                 : "var(--glass-bg-strong)",
@@ -156,7 +156,7 @@ function Tree({ selected, onPick }: { selected: string; onPick: (n: string) => v
           <Line
             key={e.key}
             points={e.points}
-            color={lit ? colors.accent : colors.dark ? "#636366" : "#c7c7cc"}
+            color={lit ? colors.accent : "#b8bcc4"}
             lineWidth={lit ? 3 : 1.4}
             transparent
             opacity={lit ? 0.95 : 0.55}
@@ -191,7 +191,7 @@ export function ExceptionTree() {
         <div className="glass-tint rounded-[16px] border px-3.5 py-2.5 text-[12.5px] leading-snug">
           <div className="font-mono text-[13px]">
             <span className="text-label-3">except </span>
-            <span className="font-bold" style={{ color: "var(--accent)" }}>
+            <span className="font-bold" style={{ color: "color-mix(in oklab, var(--accent) 70%, var(--label))" }}>
               {selected}
             </span>
             <span className="text-label-3">:</span>

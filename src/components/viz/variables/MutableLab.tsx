@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
+import { RotateCcw } from "lucide-react";
 import { Btn, ControlBar, Segmented } from "../kit";
 
 type T = "int" | "str" | "tuple" | "list";
@@ -132,11 +133,13 @@ export function MutableLab() {
         <Btn variant="accent" onClick={apply} disabled={st.n >= 4}>
           <span className="font-mono">{cfg.op(st.n + 1)}</span>
         </Btn>
-        <Btn onClick={() => setSt(init(t))}>↺</Btn>
+        <Btn onClick={() => setSt(init(t))}>
+          <RotateCcw className="size-4" strokeWidth={1.75} aria-label="Скинути" />
+        </Btn>
         <span
           className="ml-auto rounded-full px-2.5 py-1 text-[11.5px] font-bold"
           style={{
-            background: cfg.mutable ? "color-mix(in oklab, var(--accent-2) 22%, transparent)" : "color-mix(in oklab, var(--accent) 22%, transparent)",
+            background: cfg.mutable ? "color-mix(in oklab, var(--accent-2) 14%, white)" : "color-mix(in oklab, var(--accent) 14%, white)",
             color: cfg.mutable ? "var(--accent-2)" : "var(--accent)",
           }}
         >

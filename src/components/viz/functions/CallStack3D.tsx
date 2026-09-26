@@ -1,10 +1,10 @@
 "use client";
 
-import { Html, RoundedBox } from "@react-three/drei";
+import { Edges, Html, RoundedBox } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Color, type Group, type MeshPhysicalMaterial } from "three";
-import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, CornerDownLeft, Hourglass, Pause, Play, RotateCcw } from "lucide-react";
 import { Btn, ControlBar, Scene3D, Slider, useThemeColors } from "../kit";
 
 const fact = (n: number): number => (n <= 1 ? 1 : n * fact(n - 1));
@@ -24,14 +24,14 @@ function Frame({
   k, n, alive, pushed, selected, onPick, colors,
 }: {
   k: number; n: number; alive: number; pushed: number; selected: boolean;
-  onPick: (k: number) => void; colors: { a: string; b: string };
+  onPick: (k: number) => void; colors: { a: string };
 }) {
   const g = useRef<Group>(null);
   const mat = useRef<MeshPhysicalMaterial>(null);
-  const tint = useMemo(
-    () => new Color(colors.a).lerp(new Color(colors.b), n > 1 ? k / (n - 1) : 0),
-    [colors.a, colors.b, k, n],
-  );
+  // світле «скло»: білий корпус, верхній фрейм ледь тонований акцентом
+  const pale = useMemo(() => new Color("#ffffff").lerp(new Color(colors.a), 0.08), [colors.a]);
+  const hot = useMemo(() => new Color("#ffffff").lerp(new Color(colors.a), 0.32), [colors.a]);
+  const accent = useMemo(() => new Color(colors.a), [colors.a]);
   const nk = n - k; // значення n у цьому фреймі
   const exists = k < pushed;
   const gone = exists && k >= alive; // вже повернувся
@@ -51,10 +51,10 @@ function Frame({
     grp.scale.set(sc, sc, sc);
     const m = mat.current;
     if (m) {
-      const goal = isTop ? 0.65 : selected ? 0.35 : 0.08;
+      const goal = isTop ? 0.18 : selected ? 0.1 : 0;
       m.emissiveIntensity += (goal - m.emissiveIntensity) * kk;
-      m.color.copy(tint);
-      m.emissive.copy(tint);
+      m.color.copy(isTop || selected ? hot : pale);
+      m.emissive.copy(accent);
     }
   });
 
@@ -71,24 +71,33 @@ function Frame({
       >
         <meshPhysicalMaterial
           ref={mat}
-          transmission={0.5}
+          transmission={0.35}
           thickness={0.6}
-          roughness={0.15}
+          roughness={0.2}
           clearcoat={1}
           transparent
-          opacity={0.9}
-          emissiveIntensity={0.08}
+          opacity={0.95}
+          emissiveIntensity={0}
         />
+        <Edges threshold={20} color={colors.a} />
       </RoundedBox>
       {exists && !gone && (
         <Html position={[0, 0, 0.78]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
           <div
-            className="flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[11px] font-bold whitespace-nowrap text-white shadow-lg"
-            style={{ background: isTop ? "rgba(0,0,0,.6)" : "rgba(0,0,0,.38)", backdropFilter: "blur(8px)" }}
+            className="flex items-center gap-1.5 rounded-full border bg-white/95 px-2.5 py-0.5 font-mono text-[11px] font-bold whitespace-nowrap text-label shadow-sm"
+            style={{ borderColor: isTop ? "var(--accent)" : "var(--separator)" }}
           >
             factorial({nk})
-            {waiting && <span className="font-normal opacity-75">⏳ чекає</span>}
-            {returned && isTop && <span style={{ color: "#a7f3d0" }}>↩ {fact(nk)}</span>}
+            {waiting && (
+              <span className="flex items-center gap-1 font-normal text-label-2">
+                <Hourglass className="size-3" strokeWidth={1.75} /> чекає
+              </span>
+            )}
+            {returned && isTop && (
+              <span className="flex items-center gap-0.5" style={{ color: "color-mix(in oklab, var(--accent) 65%, black)" }}>
+                <CornerDownLeft className="size-3" strokeWidth={1.75} /> {fact(nk)}
+              </span>
+            )}
           </div>
         </Html>
       )}
@@ -151,19 +160,19 @@ export function CallStack3D() {
               pushed={pushed}
               selected={selK === k}
               onPick={setSel}
-              colors={{ a: c.accent, b: c.accent2 }}
+              colors={{ a: c.accent }}
             />
           ))}
           {/* основа стека */}
           <mesh position={[0, -1.42, 0]}>
             <cylinderGeometry args={[1.9, 1.9, 0.06, 64]} />
-            <meshStandardMaterial color={c.dark ? "#2c2c2e" : "#e5e5ea"} roughness={0.6} />
+            <meshStandardMaterial color="#e5e5ea" roughness={0.6} />
           </mesh>
         </group>
       </Scene3D>
 
       <div className="grid gap-2 px-5 pb-1 sm:grid-cols-[1fr_1fr]">
-        <div className="rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-snug" style={{ background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}>
+        <div className="rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-snug" style={{ background: "color-mix(in oklab, var(--accent) 8%, white)" }}>
           <div className="mb-1 flex items-center gap-2 text-[11px] font-bold tracking-wider text-label-3 uppercase">
             Крок {s}/{total} · глибина стека {alive}
           </div>
@@ -178,17 +187,17 @@ export function CallStack3D() {
             </div>
           )}
         </div>
-        <div className="max-h-[170px] overflow-auto rounded-2xl bg-black/80 px-3.5 py-2.5 font-mono text-[11.5px] leading-relaxed whitespace-pre text-[#e5e5ea] thin-scroll">
-          {lines.length ? lines.join("\n") : <span className="text-[#636366]"># тут з&apos;явиться трасування</span>}
+        <div className="max-h-[170px] overflow-auto rounded-2xl border border-separator bg-[var(--code-bg)] px-3.5 py-2.5 font-mono text-[11.5px] leading-relaxed whitespace-pre text-label thin-scroll">
+          {lines.length ? lines.join("\n") : <span className="text-label-3"># тут з&apos;явиться трасування</span>}
         </div>
       </div>
 
       <ControlBar>
         <Btn onClick={() => setS((v) => Math.max(0, v - 1))} disabled={s === 0}>
-          <ChevronLeft className="size-4" />
+          <ChevronLeft className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn variant="accent" onClick={() => setS((v) => Math.min(total, v + 1))} disabled={s === total}>
-          Крок <ChevronRight className="size-4" />
+          Крок <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn
           onClick={() => {
@@ -196,7 +205,7 @@ export function CallStack3D() {
             setPlaying((p) => !p);
           }}
         >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
+          {playing ? <Pause className="size-4" strokeWidth={1.75} /> : <Play className="size-4" strokeWidth={1.75} />}
         </Btn>
         <Btn
           onClick={() => {
@@ -204,7 +213,7 @@ export function CallStack3D() {
             setS(0);
           }}
         >
-          <RotateCcw className="size-4" />
+          <RotateCcw className="size-4" strokeWidth={1.75} />
         </Btn>
         <Slider
           label="n"

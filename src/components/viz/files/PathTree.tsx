@@ -122,7 +122,7 @@ function Item({ p, onPath, selected, colors, onPick }: { p: Placed; onPath: bool
         ) : (
           <RoundedBox args={[0.46, 0.6, 0.08]} radius={0.04} smoothness={3}>
             <meshPhysicalMaterial
-              color={colors.dark ? "#2c2c2e" : "#ffffff"}
+              color="#ffffff"
               emissive={base}
               emissiveIntensity={onPath ? 0.6 : 0.12}
               roughness={0.15}
@@ -180,7 +180,7 @@ function Lab({ selected, onPick }: { selected: string; onPick: (s: string) => vo
           <Line
             key={`l-${p.path}`}
             points={[from, [from[0], (from[1] + p.pos[1]) / 2, from[2]], [p.pos[0], (from[1] + p.pos[1]) / 2, p.pos[2]], p.pos]}
-            color={lit ? colors.accent : colors.dark ? "#48484a" : "#c7c7cc"}
+            color={lit ? colors.accent : "#b8bcc4"}
             lineWidth={lit ? 3 : 1.3}
           />
         );

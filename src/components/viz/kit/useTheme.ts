@@ -30,14 +30,11 @@ export function useThemeColors(): ThemeColors {
     // ThemeSync міняє змінні після навігації — чекаємо кінця переходу
     const t = setTimeout(update, 50);
     const t2 = setTimeout(update, 950);
-    const mq = matchMedia("(prefers-color-scheme: dark)");
-    mq.addEventListener("change", update);
     const mo = new MutationObserver(() => setTimeout(update, 950));
     mo.observe(document.body, { attributes: true, attributeFilter: ["style"] });
     return () => {
       clearTimeout(t);
       clearTimeout(t2);
-      mq.removeEventListener("change", update);
       mo.disconnect();
     };
   }, []);

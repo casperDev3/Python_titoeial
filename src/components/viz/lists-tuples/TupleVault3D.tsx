@@ -1,13 +1,14 @@
 "use client";
 
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
-import { Html, RoundedBox } from "@react-three/drei";
+import { Edges, Html, RoundedBox } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 import type { Group, Mesh, MeshPhysicalMaterial } from "three";
 import { Btn, Console, ControlBar, Scene3D, useThemeColors, type ThemeColors } from "../kit";
 import { FitCamera, damp, setCanvasCursor } from "./three-utils";
+import { ITEM_ICON } from "./icons";
 
-const POOL = ["🗺️", "💰", "🍖", "⚓", "🍊", "🎩", "🍶", "🦴"];
+const POOL = ["map", "gold", "meat", "anchor", "orange", "gem", "sake", "bone"];
 const GAP = 1.1;
 
 type Line = { text: string; tone: "ok" | "err" | "info" };
@@ -25,16 +26,16 @@ const py = (arr: string[], tuple: boolean) =>
 
 export function TupleVault3D() {
   const colors = useThemeColors();
-  const [list, setList] = useState<string[]>(["🗺️", "💰", "🍖"]);
-  const [tuple, setTuple] = useState<string[]>(["🗺️", "💰", "🍖"]);
+  const [list, setList] = useState<string[]>(["map", "gold", "meat"]);
+  const [tuple, setTuple] = useState<string[]>(["map", "gold", "meat"]);
   const [tupleGen, setTupleGen] = useState(0);
   const [flips, setFlips] = useState<number[]>([0, 0, 0]);
   const [tupleShake, setTupleShake] = useState(0);
   const [listShake, setListShake] = useState(0);
   const [pulse, setPulse] = useState(0);
   const [lines, setLines] = useState<Line[]>([
-    { text: `lst = ${py(["🗺️", "💰", "🍖"], false)}`, tone: "info" },
-    { text: `t = ${py(["🗺️", "💰", "🍖"], true)}`, tone: "info" },
+    { text: `lst = ${py(["map", "gold", "meat"], false)}`, tone: "info" },
+    { text: `t = ${py(["map", "gold", "meat"], true)}`, tone: "info" },
   ]);
 
   const push = (...ls: Line[]) => setLines((old) => [...old, ...ls].slice(-4));
@@ -45,7 +46,7 @@ export function TupleVault3D() {
     const v = nextVal(list[i]);
     setList((l) => l.map((x, j) => (j === i ? v : x)));
     setFlips((f) => f.map((x, j) => (j === i ? x + 1 : x)));
-    push({ text: `lst[${i}] = '${v}'   # ✓ список змінено на місці`, tone: "ok" });
+    push({ text: `lst[${i}] = '${v}'   # OK: список змінено на місці`, tone: "ok" });
   };
 
   const changeTuple = (i: number) => {
@@ -58,7 +59,7 @@ export function TupleVault3D() {
 
   const concat = () => {
     const add = POOL[(tuple.length + 3) % POOL.length];
-    const next = tuple.length >= 5 ? ["🗺️", "💰", "🍖"] : [...tuple, add];
+    const next = tuple.length >= 5 ? ["map", "gold", "meat"] : [...tuple, add];
     const oldId = 0x7f30 + tupleGen * 0x48;
     setTuple(next);
     setTupleGen((g) => g + 1);
@@ -233,7 +234,7 @@ function Row({
         )}
       </group>
       <Html center zIndexRange={[20, 0]} position={[0, 0.9, 0]} style={{ pointerEvents: "none" }}>
-        <span className="rounded-full bg-black/35 px-2 py-0.5 font-mono text-[11px] whitespace-nowrap text-white backdrop-blur-md">
+        <span className="glass !rounded-full px-2 py-0.5 font-mono text-[11px] font-semibold whitespace-nowrap text-label">
           {label}
         </span>
       </Html>
@@ -287,18 +288,29 @@ function Crate({
         onPointerOver={(e) => setCanvasCursor(e, "pointer")}
         onPointerOut={(e) => setCanvasCursor(e, "auto")}
       >
-        <meshPhysicalMaterial color={color} roughness={0.25} clearcoat={1} metalness={0.05} />
+        <meshPhysicalMaterial color="#ffffff" roughness={0.3} clearcoat={1} metalness={0.02} />
+        <Edges threshold={20} color={color} />
       </RoundedBox>
       {kind === "list" && (
         <group ref={lid} position={[0, 0.37, -0.41]}>
           <RoundedBox args={[0.84, 0.06, 0.84]} radius={0.03} position={[0, 0, 0.42]}>
-            <meshPhysicalMaterial color={color} roughness={0.3} clearcoat={1} />
+            <meshPhysicalMaterial color={color} roughness={0.3} clearcoat={1} transparent opacity={0.85} />
           </RoundedBox>
         </group>
       )}
       <Html center zIndexRange={[20, 0]} position={[0, 0, 0.45]} style={{ pointerEvents: "none" }}>
-        <span className="text-[20px] select-none">{value}</span>
+        <ItemBadge value={value} color={color} />
       </Html>
     </group>
+  );
+}
+
+function ItemBadge({ value, color }: { value: string; color: string }) {
+  const I = ITEM_ICON[value];
+  return (
+    <span className="flex select-none flex-col items-center leading-none" style={{ color }}>
+      {I && <I className="size-5" strokeWidth={1.75} aria-hidden />}
+      <span className="mt-0.5 font-mono text-[9.5px] font-semibold text-label">{value}</span>
+    </span>
   );
 }

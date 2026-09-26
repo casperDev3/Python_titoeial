@@ -1,5 +1,6 @@
 "use client";
 
+import { Moon, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Btn, Console, ControlBar, Segmented } from "../kit";
@@ -80,17 +81,14 @@ export function ShortCircuit() {
       <div className="relative mx-5 mt-1 overflow-hidden rounded-[20px] border border-separator px-3 py-6">
         <div
           className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(70% 90% at 50% 100%, color-mix(in oklab, var(--accent) 14%, transparent), transparent 70%)",
-          }}
+          style={{ background: "color-mix(in oklab, var(--accent) 6%, white)" }}
         />
         <div className="relative flex flex-wrap items-center justify-center gap-2 sm:gap-3">
           <Operand val={left} active={stage >= 1} highlight={stage >= 3 && shortCircuit} />
           <motion.span
             layout
             className="rounded-full px-3 py-1 font-mono text-[16px] font-bold"
-            style={{ background: "color-mix(in oklab, var(--accent-2) 18%, transparent)", color: "var(--accent-2)" }}
+            style={{ background: "color-mix(in oklab, var(--accent-2) 12%, white)", color: "color-mix(in oklab, var(--accent-2) 85%, black)" }}
           >
             {op}
           </motion.span>
@@ -111,8 +109,8 @@ export function ShortCircuit() {
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={spring}
-                className="flex items-center gap-2 rounded-2xl px-4 py-2 font-mono text-[15px] font-bold text-white shadow-lg"
-                style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-2))" }}
+                className="flex items-center gap-2 rounded-2xl px-4 py-2 font-mono text-[15px] font-bold text-label shadow-sm"
+                style={{ background: "color-mix(in oklab, var(--accent) 22%, white)", border: "1.5px solid var(--accent)" }}
               >
                 → {result.repr}
               </motion.div>
@@ -141,7 +139,7 @@ export function ShortCircuit() {
           ]}
         />
         <Btn variant="accent" onClick={play}>
-          👊 Удар
+          <Zap className="size-4" strokeWidth={1.75} /> Удар
         </Btn>
         <Btn onClick={step}>Крок {stage}/3</Btn>
       </ControlBar>
@@ -186,10 +184,10 @@ function Operand({
       className="relative flex min-w-[92px] flex-col items-center rounded-[18px] px-4 py-3"
       style={{
         background: highlight
-          ? "color-mix(in oklab, var(--accent) 26%, var(--glass-bg))"
+          ? "color-mix(in oklab, var(--accent) 22%, white)"
           : "var(--glass-bg-strong)",
         border: `1.5px solid ${
-          highlight ? "var(--accent)" : active ? "color-mix(in oklab, var(--accent) 50%, transparent)" : "var(--separator)"
+          highlight ? "var(--accent)" : active ? "color-mix(in oklab, var(--accent) 60%, var(--label))" : "var(--separator)"
         }`,
       }}
     >
@@ -199,12 +197,16 @@ function Operand({
           <motion.span
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            style={{ color: val.truthy ? "#30d158" : "#ff453a" }}
+            style={{ color: val.truthy ? "#248a3d" : "#d70015" }}
           >
             {val.truthy ? "truthy" : "falsy"}
           </motion.span>
         )}
-        {skipped && <span className="text-label-2">пропущено 💤</span>}
+        {skipped && (
+          <span className="inline-flex items-center gap-1 text-label-2">
+            <Moon className="size-3" strokeWidth={1.75} /> пропущено
+          </span>
+        )}
       </span>
     </motion.div>
   );
@@ -223,7 +225,7 @@ function Picker({ title, value, onPick }: { title: string; value: PyVal; onPick:
             style={{
               background:
                 v.id === value.id
-                  ? "color-mix(in oklab, var(--accent) 30%, transparent)"
+                  ? "color-mix(in oklab, var(--accent) 24%, white)"
                   : "color-mix(in oklab, var(--label) 6%, transparent)",
               boxShadow: v.id === value.id ? "inset 0 0 0 1.5px var(--accent)" : "none",
             }}

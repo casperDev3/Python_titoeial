@@ -72,6 +72,203 @@ const section: Section = {
       ]
     },
     {
+      "type": "flow",
+      "title": "Що робить Python у виклику Suit(\"Mark III\")",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "Suit(\"Mark III\")",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "new",
+          "kind": "process",
+          "label": "obj = __new__(Suit)",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "init",
+          "kind": "call",
+          "label": "__init__(obj, ...)",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "attrs",
+          "kind": "process",
+          "label": "self.name = name\nself.energy = energy\nself.damage = 0",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "out",
+          "kind": "io",
+          "label": "print(f\"Зібрано …\")",
+          "col": 0,
+          "row": 4
+        },
+        {
+          "id": "none",
+          "kind": "decision",
+          "label": "__init__ повернув\nNone?",
+          "col": 0,
+          "row": 5
+        },
+        {
+          "id": "e",
+          "kind": "end",
+          "label": "mark = obj",
+          "col": 0,
+          "row": 6
+        },
+        {
+          "id": "err",
+          "kind": "end",
+          "label": "TypeError",
+          "col": 1,
+          "row": 6
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "new"
+        },
+        {
+          "from": "new",
+          "to": "init"
+        },
+        {
+          "from": "init",
+          "to": "attrs"
+        },
+        {
+          "from": "attrs",
+          "to": "out"
+        },
+        {
+          "from": "out",
+          "to": "none"
+        },
+        {
+          "from": "none",
+          "to": "e",
+          "label": "Так"
+        },
+        {
+          "from": "none",
+          "to": "err",
+          "label": "Ні",
+          "side": "right"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "Suit(\"Mark III\")",
+          "steps": [
+            {
+              "node": "s",
+              "note": "Виклик класу як функції: `mark3 = Suit(\"Mark III\")`"
+            },
+            {
+              "node": "new",
+              "note": "`__new__` створює **порожній** об'єкт: `vars(obj) == {}`"
+            },
+            {
+              "node": "init",
+              "note": "`Suit.__init__(obj, \"Mark III\")` — тепер `self` це `obj`, `energy` бере значення за замовчуванням `100`"
+            },
+            {
+              "node": "attrs",
+              "note": "`vars(obj)` → `{'name': 'Mark III', 'energy': 100, 'damage': 0}`"
+            },
+            {
+              "node": "out",
+              "note": "вивід: `🛠  Зібрано Mark III`"
+            },
+            {
+              "node": "none",
+              "note": "`__init__` дійшов до кінця без `return` → повернув `None`"
+            },
+            {
+              "node": "e",
+              "note": "`mark3` посилається на готовий об'єкт: `mark3.energy` → `100`"
+            }
+          ]
+        },
+        {
+          "name": "energy=80",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`mark42 = Suit(\"Mark XLII\", energy=80)`"
+            },
+            {
+              "node": "new",
+              "note": "новий порожній об'єкт — окремий від `mark3`"
+            },
+            {
+              "node": "init",
+              "note": "`Suit.__init__(obj, \"Mark XLII\", energy=80)`"
+            },
+            {
+              "node": "attrs",
+              "note": "`vars(obj)` → `{'name': 'Mark XLII', 'energy': 80, 'damage': 0}`"
+            },
+            {
+              "node": "out",
+              "note": "вивід: `🛠  Зібрано Mark XLII`"
+            },
+            {
+              "node": "none",
+              "note": "повернув `None` — усе правильно"
+            },
+            {
+              "node": "e",
+              "note": "`mark42.energy` → `80`, `mark42 is mark3` → `False`"
+            }
+          ]
+        },
+        {
+          "name": "return у __init__",
+          "steps": [
+            {
+              "node": "s",
+              "note": "Хтось дописав у `__init__` рядок `return self.name`"
+            },
+            {
+              "node": "new",
+              "note": "порожній об'єкт створено"
+            },
+            {
+              "node": "init",
+              "note": "`Suit.__init__(obj, \"Mark III\")`"
+            },
+            {
+              "node": "attrs",
+              "note": "атрибути встигли записатись в `obj`"
+            },
+            {
+              "node": "out",
+              "note": "вивід: `🛠  Зібрано Mark III`"
+            },
+            {
+              "node": "none",
+              "note": "`__init__` повернув `'Mark III'` — а мав `None`"
+            },
+            {
+              "node": "err",
+              "note": "`TypeError: __init__() should return None, not 'str'` — об'єкт так і не дістанеться змінній"
+            }
+          ]
+        }
+      ],
+      "caption": "`__init__` не створює об'єкт — він лише **налаштовує** вже створений `obj`, який приходить у нього як `self`. Тому `__init__` нічого не повертає."
+    },
+    {
       "type": "viz",
       "id": "init-stepper",
       "title": "Як народжується об'єкт: __new__ → __init__ → self",
@@ -164,6 +361,166 @@ const section: Section = {
       ]
     },
     {
+      "type": "flow",
+      "title": "Як Python шукає obj.x",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "obj.x",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "inst",
+          "kind": "decision",
+          "label": "'x' in vars(obj)?",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "fromObj",
+          "kind": "process",
+          "label": "взяти з об'єкта",
+          "col": 1,
+          "row": 1
+        },
+        {
+          "id": "cls",
+          "kind": "decision",
+          "label": "'x' у класі\nабо предках?",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "fromCls",
+          "kind": "process",
+          "label": "взяти з класу",
+          "col": 1,
+          "row": 2
+        },
+        {
+          "id": "err",
+          "kind": "end",
+          "label": "AttributeError",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "e",
+          "kind": "end",
+          "label": "значення",
+          "col": 1,
+          "row": 3
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "inst"
+        },
+        {
+          "from": "inst",
+          "to": "fromObj",
+          "label": "Так"
+        },
+        {
+          "from": "inst",
+          "to": "cls",
+          "label": "Ні"
+        },
+        {
+          "from": "cls",
+          "to": "fromCls",
+          "label": "Так"
+        },
+        {
+          "from": "cls",
+          "to": "err",
+          "label": "Ні"
+        },
+        {
+          "from": "fromObj",
+          "to": "e",
+          "side": "right"
+        },
+        {
+          "from": "fromCls",
+          "to": "e"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "a.maker",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`a = Suit(\"Mark I\")`, читаємо `a.maker`"
+            },
+            {
+              "node": "inst",
+              "note": "`vars(a)` → `{'name': 'Mark I'}` — `maker` там немає"
+            },
+            {
+              "node": "cls",
+              "note": "`'maker' in vars(Suit)` → `True`"
+            },
+            {
+              "node": "fromCls",
+              "note": "беремо спільне значення з креслення"
+            },
+            {
+              "node": "e",
+              "note": "`a.maker` → `'Stark Industries'`"
+            }
+          ]
+        },
+        {
+          "name": "b.maker (тінь)",
+          "steps": [
+            {
+              "node": "s",
+              "note": "після `b.maker = \"Hammer Industries\"` читаємо `b.maker`"
+            },
+            {
+              "node": "inst",
+              "note": "`vars(b)` → `{'name': 'Mark II', 'maker': 'Hammer Industries'}` — є!"
+            },
+            {
+              "node": "fromObj",
+              "note": "до класу Python навіть не доходить: атрибут екземпляра **затіняє** атрибут класу"
+            },
+            {
+              "node": "e",
+              "note": "`b.maker` → `'Hammer Industries'`, а `Suit.maker` досі `'Stark Industries'`"
+            }
+          ]
+        },
+        {
+          "name": "a.color",
+          "steps": [
+            {
+              "node": "s",
+              "note": "читаємо `a.color`, якого ніхто не задавав"
+            },
+            {
+              "node": "inst",
+              "note": "у `vars(a)` немає `color`"
+            },
+            {
+              "node": "cls",
+              "note": "ні в `Suit`, ні в `object` теж немає"
+            },
+            {
+              "node": "err",
+              "note": "`AttributeError: 'Suit' object has no attribute 'color'`"
+            }
+          ]
+        }
+      ],
+      "caption": "Читання йде «знизу вгору»: об'єкт → клас → предки. А **запис** `obj.x = ...` завжди йде в сам об'єкт — тому й виникає «тінь». (Виняток — `@property`: вона в класі перехоплює і читання, і запис.)"
+    },
+    {
       "type": "viz",
       "id": "attr-lookup",
       "title": "Пошук атрибута: спершу об'єкт, потім клас",
@@ -254,6 +611,148 @@ const section: Section = {
         11,
         12
       ]
+    },
+    {
+      "type": "flow",
+      "title": "Що відбувається при arc.energy = value",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "arc.energy = value",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "set",
+          "kind": "call",
+          "label": "setter energy(\nself, value)",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "chk",
+          "kind": "decision",
+          "label": "0 <= value <= 100?",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "err",
+          "kind": "end",
+          "label": "raise ValueError",
+          "col": 1,
+          "row": 2
+        },
+        {
+          "id": "save",
+          "kind": "process",
+          "label": "self._energy = value",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "e",
+          "kind": "end",
+          "label": "Готово",
+          "col": 0,
+          "row": 4
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "set"
+        },
+        {
+          "from": "set",
+          "to": "chk"
+        },
+        {
+          "from": "chk",
+          "to": "save",
+          "label": "Так"
+        },
+        {
+          "from": "chk",
+          "to": "err",
+          "label": "Ні"
+        },
+        {
+          "from": "save",
+          "to": "e"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "= 42",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`arc.energy = 42` — виглядає як звичайне присвоєння"
+            },
+            {
+              "node": "set",
+              "note": "`energy` — property у класі, тож Python викликає setter з `value = 42`"
+            },
+            {
+              "node": "chk",
+              "note": "`0 <= 42 <= 100` → `True`"
+            },
+            {
+              "node": "save",
+              "note": "`arc._energy = 42`"
+            },
+            {
+              "node": "e",
+              "note": "`print(arc.energy)` → getter → `42`"
+            }
+          ]
+        },
+        {
+          "name": "= 150",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`arc.energy = 150`"
+            },
+            {
+              "node": "set",
+              "note": "setter отримує `value = 150`"
+            },
+            {
+              "node": "chk",
+              "note": "`0 <= 150 <= 100` → `False`"
+            },
+            {
+              "node": "err",
+              "note": "`ValueError: енергія 150% поза межами 0–100`; `arc._energy` лишився `42`"
+            }
+          ]
+        },
+        {
+          "name": "Reactor(-5)",
+          "steps": [
+            {
+              "node": "s",
+              "note": "у `__init__` рядок `self.energy = energy` з `energy = -5`"
+            },
+            {
+              "node": "set",
+              "note": "навіть в `__init__` спрацьовує setter"
+            },
+            {
+              "node": "chk",
+              "note": "`0 <= -5 <= 100` → `False`"
+            },
+            {
+              "node": "err",
+              "note": "`ValueError: енергія -5% поза межами 0–100` — зламаний реактор не створиться"
+            }
+          ]
+        }
+      ],
+      "caption": "Setter — це охоронець між присвоєнням і справжнім сховищем `_energy`. Некоректне значення просто не долітає до атрибута."
     },
     {
       "type": "viz",

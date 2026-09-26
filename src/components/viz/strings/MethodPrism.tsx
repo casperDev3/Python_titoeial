@@ -1,5 +1,6 @@
 "use client";
 
+import { Lock } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { chars, pyCapitalize, pyRepr, pySwapcase, pyTitle } from "./util";
@@ -47,9 +48,10 @@ function Tiles({ text, tone }: { text: string; tone: "result" | "orig" }) {
                   tone === "result"
                     ? space
                       ? "color-mix(in oklab, var(--accent) 10%, transparent)"
-                      : "linear-gradient(160deg, color-mix(in oklab, var(--accent) 85%, white), var(--accent-2))"
-                    : "color-mix(in oklab, var(--label) 6%, transparent)",
-                color: tone === "result" && !space ? "white" : space ? "var(--label-3)" : "var(--label)",
+                      : "color-mix(in oklab, var(--accent) 18%, white)"
+                    : "color-mix(in oklab, var(--label) 6%, white)",
+                color: tone === "result" && !space ? "color-mix(in oklab, var(--accent) 45%, var(--label))" : space ? "var(--label-3)" : "var(--label)",
+                boxShadow: tone === "result" && !space ? "inset 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent)" : "none",
                 transformPerspective: 400,
               }}
             >
@@ -99,13 +101,13 @@ export function MethodPrism() {
               <motion.span
                 layoutId="prism-pill"
                 className="absolute inset-0 rounded-full"
-                style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-2))" }}
+                style={{ background: "color-mix(in oklab, var(--accent) 16%, white)", boxShadow: "inset 0 0 0 1.5px var(--accent)" }}
                 transition={spring}
               />
             )}
             <span
               className="relative"
-              style={{ color: m.id === mid ? "white" : "var(--label)" }}
+              style={{ color: m.id === mid ? "color-mix(in oklab, var(--accent) 50%, var(--label))" : "var(--label)" }}
             >
               {m.call}
             </span>
@@ -117,10 +119,7 @@ export function MethodPrism() {
       <div className="relative mx-5 mt-4 overflow-hidden rounded-[20px] border border-separator px-3 py-5">
         <div
           className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(50% 70% at 50% 0%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 70%), radial-gradient(50% 70% at 50% 100%, color-mix(in oklab, var(--accent-2) 16%, transparent), transparent 70%)",
-          }}
+          style={{ background: "color-mix(in oklab, var(--accent) 5%, white)" }}
         />
         <div className="relative mb-3 text-center font-mono text-[13px] font-semibold">
           <span className="text-label-2">&gt;&gt;&gt; </span>
@@ -161,7 +160,8 @@ export function MethodPrism() {
       <div className="mx-5 mt-3 rounded-[16px] px-3 py-3" style={{ background: "color-mix(in oklab, var(--label) 4%, transparent)" }}>
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-[12px] text-label-2">
           <span>
-            <b className="text-label">Оригінал s</b> — без змін 🔒
+            <Lock className="mr-1 inline size-3.5 align-[-2px]" strokeWidth={1.75} />
+            <b className="text-label">Оригінал s</b> — без змін
           </span>
           <span className="font-mono">
             len(s) = {chars(text).length} → {isList ? `len(список) = ${result.length}` : `len(результат) = ${chars(result).length}`}

@@ -64,19 +64,19 @@ type NodeState = "idle" | "out" | "visited" | "current" | "found";
 function ClassNode({
   name, state, onPick, c,
 }: {
-  name: string; state: NodeState; onPick: () => void; c: { accent: string; accent2: string; dark: boolean };
+  name: string; state: NodeState; onPick: () => void; c: { accent: string; accent2: string };
 }) {
   const g = useRef<Group>(null);
   const mat = useRef<MeshPhysicalMaterial>(null);
   const colors = useMemo(
     () => ({
-      idle: new Color(c.accent2),
-      out: new Color(c.dark ? "#3a3a44" : "#c7c7cf"),
+      idle: new Color("#f2f2f6"),
+      out: new Color("#d6d6dc"),
       visited: new Color(c.accent2),
       current: new Color(c.accent),
-      found: new Color("#30d158"),
+      found: new Color("#16a34a"),
     }),
-    [c.accent, c.accent2, c.dark],
+    [c.accent, c.accent2],
   );
   useFrame((st, dt) => {
     const t = st.clock.elapsedTime;
@@ -109,14 +109,15 @@ function ClassNode({
       </group>
       <Html position={[0, -0.44, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
         <div
-          className="flex flex-col items-center rounded-xl px-2 py-0.5 text-center font-mono whitespace-nowrap text-white shadow-lg backdrop-blur-md transition-all duration-300"
+          className="flex flex-col items-center rounded-xl border bg-white/90 px-2 py-0.5 text-center font-mono whitespace-nowrap text-[#1c1c1e] shadow-sm transition-all duration-300"
           style={{
-            background: state === "found" ? "rgba(48,209,88,.85)" : state === "current" ? "rgba(0,0,0,.75)" : "rgba(0,0,0,.42)",
-            opacity: state === "out" ? 0.45 : 1,
+            borderColor: state === "found" ? "#15803d" : state === "current" ? c.accent : "rgba(0,0,0,.12)",
+            color: state === "found" ? "#15803d" : state === "current" ? c.accent : undefined,
+            opacity: state === "out" ? 0.5 : 1,
           }}
         >
           <span className="text-[11.5px] font-bold">{name}</span>
-          {METHODS[name].length > 0 && <span className="text-[9.5px] opacity-75">{METHODS[name].join(" · ")}</span>}
+          {METHODS[name].length > 0 && <span className="text-[9.5px] text-[#6e6e73]">{METHODS[name].join(" · ")}</span>}
         </div>
       </Html>
     </group>
@@ -142,7 +143,7 @@ function SpiderToken({ target, color }: { target: [number, number, number]; colo
     <group ref={g} position={[target[0], target[1] + 0.42, target[2]]}>
       <mesh>
         <sphereGeometry args={[0.09, 20, 20]} />
-        <meshStandardMaterial color="#111" metalness={0.4} roughness={0.3} />
+        <meshStandardMaterial color="#2c2c30" metalness={0.4} roughness={0.3} />
       </mesh>
       <mesh position={[0, 0.02, 0.08]}>
         <sphereGeometry args={[0.055, 16, 16]} />
@@ -283,32 +284,33 @@ export function MroWeb() {
                 className="rounded-lg px-1.5 py-0.5"
                 style={{
                   background:
-                    st === "found" ? "#30d158" : st === "visited" ? "color-mix(in oklab, var(--accent-2) 22%, transparent)" : "transparent",
-                  color: st === "found" ? "white" : undefined,
+                    st === "found" ? "color-mix(in oklab, #15803d 14%, white)" : st === "visited" ? "color-mix(in oklab, var(--accent-2) 18%, white)" : "transparent",
+                  color: st === "found" ? "#15803d" : undefined,
+                  fontWeight: st === "found" ? 700 : undefined,
                   border: "1px solid var(--separator)",
                 }}
               >
                 {k}
               </motion.span>
-              {i < mro.length - 1 && <ChevronRight className="size-3 text-label-3" />}
+              {i < mro.length - 1 && <ChevronRight className="size-3 text-label-3" strokeWidth={1.75} />}
             </span>
           );
         })}
       </div>
 
-      <div className="mx-5 mt-3 rounded-2xl bg-black/80 px-4 py-3 font-mono text-[12px] leading-relaxed text-[#e5e5ea]">
+      <div className="mx-5 mt-3 rounded-2xl border border-separator bg-[var(--code-bg)] px-4 py-3 font-mono text-[12px] leading-relaxed text-label">
         <div>
-          <span className="text-[#8e8e93]">&gt;&gt;&gt; </span>
+          <span className="text-label-3">&gt;&gt;&gt; </span>
           {cls}().{method}
         </div>
         {!done ? (
-          <div className="text-[#8e8e93]"># шукаю в {mro[Math.max(0, pos - 1)]}…</div>
+          <div className="text-label-3"># шукаю в {mro[Math.max(0, pos - 1)]}…</div>
         ) : foundAt >= 0 ? (
-          <div className="text-[#a7f3d0]">
-            &lt;bound method {mro[foundAt]}.{method}&gt; <span className="text-[#8e8e93]"># перевірено {foundAt + 1} з {mro.length}</span>
+          <div className="text-[#15803d]">
+            &lt;bound method {mro[foundAt]}.{method}&gt; <span className="text-label-3"># перевірено {foundAt + 1} з {mro.length}</span>
           </div>
         ) : (
-          <div className="text-[#ff6961]">
+          <div className="text-[#c42b1c]">
             AttributeError: &apos;{cls}&apos; object has no attribute &apos;{method}&apos;
           </div>
         )}
@@ -316,10 +318,10 @@ export function MroWeb() {
 
       <ControlBar>
         <Btn variant="accent" onClick={() => setPos((p) => Math.min(maxPos, p + 1))} disabled={done}>
-          Крок <ChevronRight className="size-4" />
+          Крок <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn onClick={() => restart()}>
-          <Play className="size-4" /> Заново
+          <Play className="size-4" strokeWidth={1.75} /> Заново
         </Btn>
         <Btn
           onClick={() => {
@@ -327,7 +329,7 @@ export function MroWeb() {
             setPlaying(false);
           }}
         >
-          <RotateCcw className="size-4" />
+          <RotateCcw className="size-4" strokeWidth={1.75} />
         </Btn>
       </ControlBar>
     </div>
@@ -341,7 +343,7 @@ function Chip({ on, onClick, children, layoutId }: { on: boolean; onClick: () =>
         <motion.span
           layoutId={layoutId}
           className="absolute inset-0 rounded-xl"
-          style={{ background: "color-mix(in oklab, var(--accent) 18%, transparent)", boxShadow: "inset 0 0 0 1.5px var(--accent)" }}
+          style={{ background: "color-mix(in oklab, var(--accent) 12%, white)", boxShadow: "inset 0 0 0 1.5px var(--accent)" }}
           transition={SPRING}
         />
       )}

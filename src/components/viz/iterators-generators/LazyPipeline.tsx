@@ -1,8 +1,10 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { Check, Pause, Play, RotateCcw, X } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Btn, ControlBar, Segmented, Slider } from "../kit";
+import { INK } from "./shared";
 
 type Mode = "eager" | "lazy";
 type Ev = { x: number; stage: 1 | 2 | 3 };
@@ -117,7 +119,7 @@ export function LazyPipeline() {
         <Slider label="N — розмір range" value={n} min={6} max={14} onChange={(v) => reset(mode, v)} />
       </ControlBar>
 
-      <div className="mx-5 overflow-x-auto rounded-2xl border border-separator bg-black/[0.035] py-2 font-mono text-[11.5px] leading-[1.7] sm:text-[12.5px] dark:bg-white/[0.04]">
+      <div className="mx-5 overflow-x-auto rounded-2xl border border-separator bg-black/[0.035] py-2 font-mono text-[11.5px] leading-[1.7] sm:text-[12.5px]">
         {CODE[mode].map((l, i) => (
           <div key={l} className="relative px-3 whitespace-pre">
             {i === activeLine && (
@@ -125,7 +127,7 @@ export function LazyPipeline() {
                 layoutId="lazy-line"
                 className="absolute inset-0 rounded-md"
                 style={{
-                  background: "color-mix(in oklab, var(--accent) 16%, transparent)",
+                  background: "color-mix(in oklab, var(--accent) 16%, white)",
                   boxShadow: "inset 3px 0 0 var(--accent)",
                 }}
                 transition={{ type: "spring", stiffness: 500, damping: 40 }}
@@ -153,9 +155,9 @@ export function LazyPipeline() {
                     const stage = col === 0 ? 1 : col;
                     const touched = done.has(`${x}-${stage}`);
                     const isCur = !!cur && cur.x === x && (cur.stage === stage || (col === 0 && cur.stage === 1));
-                    let label = "";
+                    let label: ReactNode = "";
                     if (col === 0) label = String(x);
-                    else if (touched) label = col === 0 ? String(x) : col === 1 ? String(sq) : col === 2 ? (even ? "✓" : "✗") : String(sq);
+                    else if (touched) label = col === 0 ? String(x) : col === 1 ? String(sq) : col === 2 ? (even ? <Check className="size-3.5" strokeWidth={2.25} /> : <X className="size-3.5" strokeWidth={2.25} />) : String(sq);
                     const failed = col === 2 && touched && !even;
                     const isResult = col === 3 && touched;
                     return (
@@ -169,9 +171,9 @@ export function LazyPipeline() {
                         className="grid h-[22px] place-items-center rounded-lg font-mono text-[12px] font-semibold tabular-nums"
                         style={{
                           background: isResult
-                            ? "linear-gradient(135deg, var(--accent), var(--accent-2))"
+                            ? INK
                             : touched
-                              ? "color-mix(in oklab, var(--accent) 15%, transparent)"
+                              ? "color-mix(in oklab, var(--accent) 15%, white)"
                               : "transparent",
                           color: isResult ? "white" : failed ? "var(--label-3)" : "var(--label)",
                           border: touched ? "1px solid transparent" : "1px dashed var(--separator)",
@@ -207,7 +209,7 @@ export function LazyPipeline() {
             <div className="mt-1 font-mono text-[12px] tabular-nums">{inMemory} ел.</div>
           </div>
           <div className="rounded-2xl px-3 py-2.5 font-mono text-[12.5px]"
-            style={{ background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}>
+            style={{ background: "color-mix(in oklab, var(--accent) 9%, white)" }}>
             result = [{results.join(", ")}]
           </div>
         </div>
@@ -221,7 +223,14 @@ export function LazyPipeline() {
             setPlay((p) => !p);
           }}
         >
-          {play ? "❚❚ Пауза" : t >= total ? "↻ Ще раз" : "▶ Запустити"}
+          {play ? (
+            <Pause className="size-4" strokeWidth={1.75} />
+          ) : t >= total ? (
+            <RotateCcw className="size-4" strokeWidth={1.75} />
+          ) : (
+            <Play className="size-4" strokeWidth={1.75} />
+          )}
+          {play ? "Пауза" : t >= total ? "Ще раз" : "Запустити"}
         </Btn>
         <Btn onClick={() => setT((v) => Math.min(total, v + 1))} disabled={play || t >= total}>
           Крок

@@ -5,6 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
 import { Color, type Group, type MeshPhysicalMaterial } from "three";
 import { ControlBar, Scene3D, Segmented, useThemeColors } from "../kit";
+import { CONSOLE_BG, INK, tint } from "./palette";
 
 type Mode = "chars" | "words";
 
@@ -78,7 +79,7 @@ function Bar({
       </group>
       <group ref={top} position={[x, -1, 0]}>
         <Html center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
-          <div className="font-mono text-[11px] font-bold" style={{ color: hi || selected ? "var(--accent)" : "var(--label-2)" }}>
+          <div className="font-mono text-[11px] font-bold" style={{ color: hi || selected ? INK : "var(--label-2)" }}>
             {value}
           </div>
         </Html>
@@ -87,8 +88,8 @@ function Bar({
         <div
           className="rounded-md px-1 font-mono text-[11px] font-semibold whitespace-nowrap"
           style={{
-            background: selected ? "var(--accent)" : "transparent",
-            color: selected ? "#fff" : "var(--label)",
+            background: selected ? INK : "rgba(255,255,255,.85)",
+            color: selected ? "white" : "var(--label)",
           }}
         >
           {label}
@@ -108,11 +109,8 @@ function Bars({
   const k = Math.min(1, size.width / size.height / 1.5);
   const max = Math.max(1, ...entries.map((e) => e[1]));
   const n = entries.length;
-  const colors = useMemo(() => {
-    const a = new Color(c.accent);
-    const b = new Color(c.accent2);
-    return Array.from({ length: MAX_BARS }, (_, i) => "#" + a.clone().lerp(b, i / (MAX_BARS - 1)).getHexString());
-  }, [c.accent, c.accent2]);
+  // суцільні кольори: топ-3 — акцент, решта — світлий тон акценту
+  const pale = useMemo(() => "#" + new Color(c.accent).lerp(new Color("#ffffff"), 0.62).getHexString(), [c.accent]);
   return (
     <group scale={k}>
       {entries.map(([key, v], i) => (
@@ -120,7 +118,7 @@ function Bars({
           key={key}
           x={(i - (n - 1) / 2) * GAP}
           h={(v / max) * 2.5}
-          color={colors[i % MAX_BARS]}
+          color={top3.has(key) ? c.accent : pale}
           hi={top3.has(key)}
           selected={sel === key}
           label={show(key)}
@@ -195,17 +193,17 @@ export function Counter3D() {
       </Scene3D>
 
       <div className="grid gap-2 px-5 pb-4 sm:grid-cols-[1.5fr_1fr]">
-        <div className="thin-scroll overflow-x-auto rounded-2xl bg-black/80 px-3.5 py-2.5 font-mono text-[11.5px] leading-relaxed text-[#e5e5ea]">
-          <div className="text-[#8e8e93]">&gt;&gt;&gt; hits = Counter({mode === "words" ? "text.split()" : "text"})</div>
+        <div className="thin-scroll overflow-x-auto rounded-2xl border border-separator px-3.5 py-2.5 font-mono text-[11.5px] leading-relaxed text-label" style={{ background: CONSOLE_BG }}>
+          <div className="text-label-3">&gt;&gt;&gt; hits = Counter({mode === "words" ? "text.split()" : "text"})</div>
           <div className="break-all">{repr}</div>
-          <div className="mt-1 text-[#8e8e93]">&gt;&gt;&gt; hits.most_common(3)</div>
-          <div style={{ color: "var(--accent)" }}>{mc}</div>
-          {entries.length > MAX_BARS && <div className="mt-1 text-[#8e8e93]"># у 3D показано перші {MAX_BARS} ключів</div>}
+          <div className="mt-1 text-label-3">&gt;&gt;&gt; hits.most_common(3)</div>
+          <div className="font-semibold" style={{ color: INK }}>{mc}</div>
+          {entries.length > MAX_BARS && <div className="mt-1 text-label-3"># у 3D показано перші {MAX_BARS} ключів</div>}
         </div>
-        <div className="rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug" style={{ background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}>
+        <div className="rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug" style={{ background: tint(8) }}>
           {sel !== null ? (
             <div className="font-mono text-[13px]">
-              hits[{pyStr(sel)}] → <b style={{ color: "var(--accent)" }}>{selV}</b>
+              hits[{pyStr(sel)}] → <b style={{ color: INK }}>{selV}</b>
             </div>
           ) : (
             <div className="text-label-2">Клацни стовпчик.</div>

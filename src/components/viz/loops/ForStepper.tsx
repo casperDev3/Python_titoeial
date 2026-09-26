@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Btn, ControlBar } from "../kit";
 import { CodePane } from "./CodePane";
+import { ArrowUp } from "lucide-react";
+import { A2_INK, CONSOLE_BG } from "./palette";
 
 const HEROES = ["Субару", "Емілія", "Рем", "Беатріс"];
 
@@ -74,7 +76,7 @@ export function ForStepper() {
                       className="w-full truncate rounded-xl border px-1 py-2 text-center text-[12.5px] font-semibold"
                       style={{
                         borderColor: cur ? "var(--accent)" : "var(--separator)",
-                        background: cur ? "color-mix(in oklab, var(--accent) 16%, var(--glass-bg))" : "var(--glass-bg)",
+                        background: cur ? "color-mix(in oklab, var(--accent) 12%, white)" : "var(--glass-bg)",
                       }}
                     >
                       {h}
@@ -84,10 +86,10 @@ export function ForStepper() {
                         <motion.span
                           layoutId="for-ptr"
                           transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                          className="block text-[13px] leading-none"
+                          className="block leading-none"
                           style={{ color: "var(--accent)" }}
                         >
-                          ▲
+                          <ArrowUp className="size-4" strokeWidth={1.75} />
                         </motion.span>
                       )}
                     </div>
@@ -102,7 +104,7 @@ export function ForStepper() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   className="mt-1 text-center text-[12px] font-semibold"
-                  style={{ color: "var(--accent-2)" }}
+                  style={{ color: A2_INK }}
                 >
                   StopIteration → цикл завершено
                 </motion.div>
@@ -128,7 +130,7 @@ export function ForStepper() {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ type: "spring", stiffness: 480, damping: 28 }}
                     className="font-mono text-[17px] font-bold"
-                    style={{ color: k === "total" ? "var(--accent-2)" : "var(--accent)" }}
+                    style={{ color: k === "total" ? A2_INK : "var(--accent)" }}
                   >
                     {v}
                   </motion.div>
@@ -140,8 +142,8 @@ export function ForStepper() {
 
         <div className="flex min-w-0 flex-col gap-2">
           <CodePane id="for-stepper" lines={CODE} active={s.line} />
-          <div className="min-h-[108px] rounded-2xl bg-black/80 px-3.5 py-2.5 font-mono text-[12px] leading-relaxed text-[#e5e5ea]">
-            <div className="text-[10px] tracking-wider text-white/40 uppercase">stdout</div>
+          <div className="min-h-[108px] rounded-2xl border border-separator px-3.5 py-2.5 font-mono text-[12px] leading-relaxed text-label" style={{ background: CONSOLE_BG }}>
+            <div className="text-[10px] tracking-wider text-label-3 uppercase">stdout</div>
             {s.out.map((l, i) => (
               <motion.div key={i} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}>
                 {l}

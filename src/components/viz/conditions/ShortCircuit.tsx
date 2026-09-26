@@ -3,6 +3,8 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import { Btn, ControlBar, Segmented } from "../kit";
+import { Square } from "lucide-react";
+import { GREEN } from "./palette";
 
 type Val = { repr: string; truthy: boolean };
 
@@ -75,7 +77,7 @@ export function ShortCircuit() {
                 transition={{ delay: i * D, duration: 0.45, type: "tween" }}
                 className="relative flex min-w-[76px] flex-col items-center gap-1 rounded-2xl border-2 px-3 py-2.5"
                 style={{
-                  borderColor: evaluated ? (v.truthy ? "#30d158" : "var(--accent)") : "var(--separator)",
+                  borderColor: evaluated ? (v.truthy ? GREEN : "var(--accent)") : "var(--separator)",
                   background: "var(--glass-bg)",
                   borderStyle: evaluated ? "solid" : "dashed",
                 }}
@@ -83,7 +85,7 @@ export function ShortCircuit() {
                 <span className="font-mono text-[16px] font-semibold">{v.repr}</span>
                 <span
                   className="text-[10px] font-bold tracking-wide uppercase"
-                  style={{ color: evaluated ? (v.truthy ? "#30d158" : "var(--accent)") : "var(--label-3)" }}
+                  style={{ color: evaluated ? (v.truthy ? GREEN : "var(--accent)") : "var(--label-3)" }}
                 >
                   {evaluated ? (v.truthy ? "truthy" : "falsy") : "не обчислено"}
                 </span>
@@ -92,10 +94,11 @@ export function ShortCircuit() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: i * D + 0.35, type: "spring", stiffness: 500, damping: 22 }}
-                    className="absolute -top-2.5 -right-2.5 grid size-6 place-items-center rounded-full text-[12px] text-white shadow"
-                    style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-2))" }}
+                    className="absolute -top-2.5 -right-2.5 grid size-6 place-items-center rounded-full text-white shadow"
+                    style={{ background: "var(--accent)" }}
+                    title="тут обчислення зупинилось"
                   >
-                    ⏹
+                    <Square className="size-3" strokeWidth={2.25} />
                   </motion.span>
                 )}
               </motion.button>

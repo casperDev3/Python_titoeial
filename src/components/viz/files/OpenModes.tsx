@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { Check, X } from "lucide-react";
+import { ArrowRight, Check, Play, TriangleAlert, X } from "lucide-react";
 import { useState } from "react";
 import { Btn, ControlBar, Segmented } from "../kit";
 
@@ -48,11 +48,9 @@ function FileCard({ title, content, tone }: { title: string; content: string | n
         layout
         className="min-h-[108px] rounded-[16px] border p-3 font-mono text-[13px] leading-relaxed"
         style={{
-          borderColor: tone === "new" ? "var(--accent)" : "var(--glass-border)",
-          background:
-            content === null
-              ? "repeating-linear-gradient(135deg, transparent 0 8px, color-mix(in oklab, var(--label) 5%, transparent) 8px 16px)"
-              : "var(--glass-bg-strong)",
+          borderColor: tone === "new" ? "var(--accent)" : content === null ? "var(--separator)" : "var(--glass-border)",
+          borderStyle: content === null ? "dashed" : "solid",
+          background: content === null ? "color-mix(in oklab, var(--label) 3%, white)" : "var(--glass-bg-strong)",
         }}
       >
         {content === null ? (
@@ -91,7 +89,10 @@ export function OpenModes() {
     <span className="flex items-center gap-1">
       <span
         className="grid size-4 place-items-center rounded-full"
-        style={{ background: ok ? "var(--accent)" : "var(--separator)", color: ok ? "white" : "var(--label-3)" }}
+        style={{
+          background: ok ? "color-mix(in oklab, var(--accent) 22%, white)" : "var(--separator)",
+          color: ok ? "color-mix(in oklab, var(--accent) 45%, var(--label))" : "var(--label-3)",
+        }}
       >
         {ok ? <Check className="size-3" strokeWidth={3} /> : <X className="size-3" strokeWidth={3} />}
       </span>
@@ -125,7 +126,8 @@ export function OpenModes() {
         />
         <div className="ml-auto">
           <Btn variant="accent" onClick={() => setRan((n) => n + 1)}>
-            Виконати ▶
+            <Play className="size-3.5" strokeWidth={1.75} />
+            Виконати
           </Btn>
         </div>
       </ControlBar>
@@ -147,7 +149,9 @@ export function OpenModes() {
         <div className="flex flex-col gap-3 sm:flex-row">
           <FileCard title="log.txt до" content={r.before} />
           <div className="grid place-items-center text-2xl text-label-3 sm:pt-6">
-            <motion.span animate={{ rotate: shown ? 0 : -90, opacity: shown ? 1 : 0.4 }}>→</motion.span>
+            <motion.span className="block" animate={{ rotate: shown ? 0 : 90, opacity: shown ? 1 : 0.4 }}>
+              <ArrowRight className="size-6" strokeWidth={1.75} />
+            </motion.span>
           </div>
           <AnimatePresence mode="wait">
             <motion.div
@@ -170,15 +174,16 @@ export function OpenModes() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="rounded-[14px] px-3.5 py-2.5 font-mono text-[12.5px] break-all"
+              className="flex items-start gap-2 rounded-[14px] px-3.5 py-2.5 font-mono text-[12.5px] break-all"
               style={{
                 background: r.error
-                  ? "color-mix(in oklab, var(--accent-2) 14%, transparent)"
-                  : "color-mix(in oklab, var(--accent) 14%, transparent)",
+                  ? "color-mix(in oklab, var(--accent-2) 10%, white)"
+                  : "color-mix(in oklab, var(--accent) 14%, white)",
                 color: r.error ? "var(--accent-2)" : "var(--label)",
               }}
             >
-              {r.error ? `💥 ${r.error}` : r.returned}
+              {r.error && <TriangleAlert className="mt-0.5 size-4 shrink-0" strokeWidth={1.75} />}
+              <span>{r.error ?? r.returned}</span>
             </motion.div>
           )}
         </AnimatePresence>

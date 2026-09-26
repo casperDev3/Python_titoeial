@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Btn, ControlBar } from "../kit";
+import { GREEN, ORANGE } from "./palette";
 
 type Item = { repr: string; truthy: boolean; why: string };
 
@@ -47,13 +48,13 @@ export function TruthySorter() {
   };
 
   const bin = (truthy: boolean) => {
-    const color = truthy ? "#30d158" : "var(--accent)";
+    const color = truthy ? GREEN : "var(--accent)";
     return (
       <button
         onClick={() => guess(truthy)}
         disabled={finished}
         className="glass-interactive flex min-h-[150px] flex-col gap-2 rounded-[20px] border-2 border-dashed p-3 text-left transition-colors"
-        style={{ borderColor: `color-mix(in oklab, ${color} 55%, transparent)`, background: `color-mix(in oklab, ${color} 7%, transparent)` }}
+        style={{ borderColor: `color-mix(in oklab, ${color} 55%, transparent)`, background: `color-mix(in oklab, ${color} 6%, white)` }}
       >
         <div className="flex items-center justify-between">
           <span className="text-[13px] font-bold tracking-wide uppercase" style={{ color }}>
@@ -73,12 +74,12 @@ export function TruthySorter() {
                   className="rounded-lg px-2 py-0.5 font-mono text-[12.5px]"
                   style={{
                     background: "var(--glass-bg-strong)",
-                    boxShadow: p.guessOk ? `inset 0 0 0 1.5px ${color}` : "inset 0 0 0 1.5px #ff9f0a",
+                    boxShadow: p.guessOk ? `inset 0 0 0 1.5px ${color}` : `inset 0 0 0 1.5px ${ORANGE}`,
                   }}
                   title={p.why}
                 >
                   {p.repr}
-                  {!p.guessOk && <span className="ml-1 text-[#ff9f0a]">!</span>}
+                  {!p.guessOk && <span className="ml-1 text-[#c45500]">!</span>}
                 </motion.span>
               ))}
           </AnimatePresence>
@@ -132,7 +133,7 @@ export function TruthySorter() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
               >
-                <b style={{ color: last.guessOk ? "#30d158" : "#ff9f0a" }}>{last.guessOk ? "Вірно" : "Ні"}</b>
+                <b style={{ color: last.guessOk ? GREEN : ORANGE }}>{last.guessOk ? "Вірно" : "Ні"}</b>
                 <span className="text-label-2">
                   {" "}
                   · <code className="font-mono">bool({last.repr})</code> → {last.truthy ? "True" : "False"}: {last.why}

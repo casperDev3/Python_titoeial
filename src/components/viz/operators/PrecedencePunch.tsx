@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Btn, Console, ControlBar, Segmented } from "../kit";
@@ -262,11 +263,8 @@ export function PrecedencePunch() {
 
       <div className="relative mx-5 mt-3 flex min-h-[170px] flex-col items-center justify-center gap-3 overflow-hidden rounded-[20px] border border-separator px-3 py-6">
         <div
-          className="pointer-events-none absolute inset-0 opacity-60"
-          style={{
-            background:
-              "radial-gradient(60% 80% at 50% 0%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 70%)",
-          }}
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "color-mix(in oklab, var(--accent) 6%, white)" }}
         />
         <AnimatePresence>
           <motion.div
@@ -275,7 +273,7 @@ export function PrecedencePunch() {
             animate={{ scale: 2.4, opacity: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="pointer-events-none absolute size-40 rounded-full"
-            style={{ background: "radial-gradient(circle, var(--accent), transparent 65%)", display: flash ? "block" : "none" }}
+            style={{ border: "3px solid var(--accent)", display: flash ? "block" : "none" }}
           />
         </AnimatePresence>
         <motion.div layout className="relative flex max-w-full flex-wrap items-center justify-center">
@@ -284,7 +282,8 @@ export function PrecedencePunch() {
         <div className="relative text-center text-[13px] text-label-2">
           {done ? (
             <motion.span initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="font-semibold text-label">
-              👊 Один удар — і готово! Результат: {tree.kind === "val" ? fmt(tree.v) : ""}
+              <Zap className="mr-1 inline size-4 align-[-2px]" strokeWidth={1.75} />
+              Один удар — і готово! Результат: {tree.kind === "val" ? fmt(tree.v) : ""}
             </motion.span>
           ) : (
             preset.note
@@ -294,7 +293,7 @@ export function PrecedencePunch() {
 
       <ControlBar>
         <Btn variant="accent" onClick={punch} disabled={done}>
-          👊 Удар
+          <Zap className="size-4" strokeWidth={1.75} /> Удар
         </Btn>
         <Btn onClick={reset}>Скинути</Btn>
         <div className="ml-auto">

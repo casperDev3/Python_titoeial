@@ -4,6 +4,7 @@ import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useState } from "react";
 import { PackageOpen, Undo2 } from "lucide-react";
 import { Btn, ControlBar, Segmented, Slider } from "../kit";
+import { A2_INK, CONSOLE_BG, INK, RED, tint } from "./palette";
 
 type Pattern = "abc" | "rest" | "mid" | "last";
 
@@ -41,8 +42,8 @@ function Chip({ i }: { i: number }) {
     <motion.span
       layoutId={`unp-${i}`}
       transition={{ type: "spring", stiffness: 300, damping: 26 }}
-      className="inline-flex items-center rounded-[10px] px-2.5 py-1 font-mono text-[12.5px] font-semibold text-white shadow-md"
-      style={{ background: `linear-gradient(135deg, var(--accent), var(--accent-2))`, filter: `hue-rotate(${i * 14}deg)` }}
+      className="inline-flex items-center rounded-[10px] px-2.5 py-1 font-mono text-[12.5px] font-semibold text-white shadow-sm"
+      style={{ background: INK, filter: `hue-rotate(${i * 12}deg)` }}
     >
       &quot;{POOL[i]}&quot;
     </motion.span>
@@ -92,8 +93,8 @@ export function UnpackLab() {
 
       <LayoutGroup id="py-unpack-group">
         <div className="px-5">
-          <div className="thin-scroll overflow-x-auto rounded-2xl bg-black/80 px-4 py-2.5 font-mono text-[12.5px] whitespace-nowrap text-[#e5e5ea]">
-            <span style={{ color: "var(--accent)" }}>{label}</span> = {listSrc}
+          <div className="thin-scroll overflow-x-auto rounded-2xl border border-separator px-4 py-2.5 font-mono text-[12.5px] whitespace-nowrap text-label" style={{ background: CONSOLE_BG }}>
+            <span className="font-semibold" style={{ color: INK }}>{label}</span> = {listSrc}
           </div>
 
           {/* список-джерело */}
@@ -120,11 +121,11 @@ export function UnpackLab() {
                   className="flex min-h-[92px] flex-col rounded-2xl border px-2 py-2"
                   style={{
                     borderColor: star ? "var(--accent-2)" : "var(--separator)",
-                    background: star ? "color-mix(in oklab, var(--accent-2) 8%, transparent)" : "var(--bg-elevated)",
+                    background: star ? tint(7, "--accent-2") : "var(--bg-elevated)",
                     opacity: t === "*_" ? 0.75 : 1,
                   }}
                 >
-                  <div className="mb-1.5 text-center font-mono text-[13px] font-bold" style={{ color: star ? "var(--accent-2)" : "var(--accent)" }}>
+                  <div className="mb-1.5 text-center font-mono text-[13px] font-bold" style={{ color: star ? A2_INK : INK }}>
                     {t}
                   </div>
                   <div className="flex flex-1 flex-wrap content-center items-center justify-center gap-1">
@@ -141,8 +142,8 @@ export function UnpackLab() {
       </LayoutGroup>
 
       <div className="mx-5 mt-3 min-h-[44px] rounded-2xl px-3.5 py-2.5 font-mono text-[12.5px]" style={{
-        background: p.ok ? "color-mix(in oklab, var(--accent) 10%, transparent)" : "color-mix(in oklab, #ff453a 12%, transparent)",
-        color: p.ok ? undefined : "#ff453a",
+        background: p.ok ? tint(8) : `color-mix(in oklab, ${RED} 8%, white)`,
+        color: p.ok ? undefined : RED,
       }}>
         <AnimatePresence mode="wait">
           <motion.div key={`${pattern}-${n}-${packed}`} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
@@ -165,7 +166,7 @@ export function UnpackLab() {
 
       <ControlBar>
         <Btn variant="accent" onClick={act}>
-          {packed ? <PackageOpen className="size-4" /> : <Undo2 className="size-4" />}
+          {packed ? <PackageOpen className="size-4" strokeWidth={1.75} /> : <Undo2 className="size-4" strokeWidth={1.75} />}
           {packed ? "Розпакувати" : "Скласти назад"}
         </Btn>
         <Slider

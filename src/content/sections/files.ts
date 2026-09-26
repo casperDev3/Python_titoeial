@@ -18,7 +18,7 @@ const section: Section = {
     "why": "Алхімія вимагає рівноцінного обміну — як with гарантує, що кожен відкритий ресурс буде закрито."
   },
   "theme": {
-    "accent": "#f5b700",
+    "accent": "#b7791f",
     "accent2": "#c2410c",
     "glow": "#d97706"
   },
@@ -93,7 +93,7 @@ with open("log.txt", encoding="utf-8") as f:
       type: "viz",
       id: "with-circle",
       title: "3D: трансмутаційне коло with",
-      caption: "Файл — це ресурс, який ти «позичаєш» в операційної системи. Увійди в `with`, попрацюй із файлом, а потім вийди нормально або кинь виняток — коло *завжди* викличе `__exit__` і поверне ресурс. Перемкнись на «без with» і кинь виняток: файл лишиться відкритим і «протікатиме» 🔥.",
+      caption: "Файл — це ресурс, який ти «позичаєш» в операційної системи. Увійди в `with`, попрацюй із файлом, а потім вийди нормально або кинь виняток — коло *завжди* викличе `__exit__` і поверне ресурс. Перемкнись на «без with» і кинь виняток: файл лишиться відкритим і «протікатиме».",
     },
     {
       type: "compare",
@@ -214,6 +214,65 @@ with open("squad.txt", encoding="utf-8") as f:
       output: py`1 Ед
 2 Ал
 4 Вінрі`,
+    },
+    {
+      type: "flow",
+      title: "Що насправді робить for line in f",
+      nodes: [
+        { id: "s", kind: "start", label: "Старт", col: 0, row: 0 },
+        { id: "op", kind: "call", label: "f = open(\"squad.txt\")", col: 0, row: 1 },
+        { id: "has", kind: "decision", label: "є ще рядок\nпісля курсора?", col: 0, row: 2 },
+        { id: "cl", kind: "process", label: "StopIteration →\nвихід, f.close()", col: 1, row: 3 },
+        { id: "get", kind: "process", label: "number, line =\nnext(...)", col: 0, row: 3 },
+        { id: "e", kind: "end", label: "Кінець", col: 1, row: 4 },
+        { id: "strip", kind: "process", label: "name =\nline.rstrip(\"\\n\")", col: 0, row: 4 },
+        { id: "emp", kind: "decision", label: "not name ?", col: 0, row: 5 },
+        { id: "pr", kind: "io", label: "print(number, name)", col: 0, row: 6 },
+      ],
+      edges: [
+        { from: "s", to: "op" },
+        { from: "op", to: "has" },
+        { from: "has", to: "get", label: "Так" },
+        { from: "has", to: "cl", label: "Ні", side: "right" },
+        { from: "cl", to: "e" },
+        { from: "get", to: "strip" },
+        { from: "strip", to: "emp" },
+        { from: "emp", to: "has", label: "continue", side: "left" },
+        { from: "emp", to: "pr", label: "False" },
+        { from: "pr", to: "has", side: "left" },
+      ],
+      scenarios: [
+        {
+          name: "Ед / Ал / порожній / Вінрі",
+          steps: [
+            { node: "s", note: "У файлі: `Ед\\nАл\\n\\nВінрі\\n`" },
+            { node: "op", note: "Курсор на початку файлу" },
+            { node: "has", note: "Так" },
+            { node: "get", note: "`number = 1`, `line = 'Ед\\n'`" },
+            { node: "strip", note: "`name = 'Ед'`" },
+            { node: "emp", note: "`not 'Ед'` → False" },
+            { node: "pr", note: "вивід: `1 Ед`" },
+            { node: "has", note: "Так" },
+            { node: "get", note: "`number = 2`, `line = 'Ал\\n'`" },
+            { node: "strip", note: "`name = 'Ал'`" },
+            { node: "emp", note: "False" },
+            { node: "pr", note: "вивід: `2 Ал`" },
+            { node: "has", note: "Так" },
+            { node: "get", note: "`number = 3`, `line = '\\n'` — порожній рядок" },
+            { node: "strip", note: "`name = ''`" },
+            { node: "emp", note: "`not ''` → True — `continue`, нічого не друкуємо" },
+            { node: "has", note: "Так" },
+            { node: "get", note: "`number = 4`, `line = 'Вінрі\\n'`" },
+            { node: "strip", note: "`name = 'Вінрі'`" },
+            { node: "emp", note: "False" },
+            { node: "pr", note: "вивід: `4 Вінрі`" },
+            { node: "has", note: "Курсор у кінці файлу — рядків більше немає" },
+            { node: "cl", note: "Ітератор кидає `StopIteration`, `for` тихо завершується; `with` закриває файл" },
+            { node: "e" },
+          ],
+        },
+      ],
+      caption: "Файл — це ітератор: кожен прохід `for` просить *один* наступний рядок і зсуває курсор. Тому в пам'яті одночасно живе лише один рядок, скільки б гігабайтів не важив файл.",
     },
     {
       type: "code",
@@ -454,6 +513,97 @@ print(loaded["inventory"][1], loaded == state)`,
 кільце True`,
     },
     {
+      type: "code",
+      title: "Завантажити збереження або почати заново",
+      code: py`import json
+from pathlib import Path
+
+DEFAULT = {"level": 1, "inventory": []}
+
+def load_save(path):
+    try:
+        with path.open(encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Нове збереження ({type(e).__name__})")
+        return dict(DEFAULT)
+
+path = Path("save.json")
+path.write_text('{"level": 7}', encoding="utf-8")
+print(load_save(path))
+
+path.write_text('{"level": 7,', encoding="utf-8")  # файл обірвався
+print(load_save(path))
+
+path.unlink()
+print(load_save(path))`,
+      output: py`{'level': 7}
+Нове збереження (JSONDecodeError)
+{'level': 1, 'inventory': []}
+Нове збереження (FileNotFoundError)
+{'level': 1, 'inventory': []}`,
+    },
+    {
+      type: "flow",
+      title: "load_save: читаємо або беремо стандартне",
+      nodes: [
+        { id: "s", kind: "start", label: "load_save(path)", col: 0, row: 0 },
+        { id: "op", kind: "call", label: "path.open(...)", col: 0, row: 1 },
+        { id: "ex", kind: "decision", label: "файл існує?", col: 0, row: 2 },
+        { id: "ld", kind: "call", label: "json.load(f)", col: 0, row: 3 },
+        { id: "ok", kind: "decision", label: "JSON коректний?", col: 0, row: 4 },
+        { id: "ret", kind: "end", label: "return data\n(f уже закрито)", col: 0, row: 5 },
+        { id: "exc", kind: "io", label: "except (...) as e:\nprint(f\"Нове …\")", col: 1, row: 5 },
+        { id: "def", kind: "end", label: "return dict(DEFAULT)", col: 1, row: 6 },
+      ],
+      edges: [
+        { from: "s", to: "op" },
+        { from: "op", to: "ex" },
+        { from: "ex", to: "ld", label: "Так" },
+        { from: "ex", to: "exc", label: "Ні", side: "right" },
+        { from: "ld", to: "ok" },
+        { from: "ok", to: "ret", label: "Так" },
+        { from: "ok", to: "exc", label: "Ні", side: "right" },
+        { from: "exc", to: "def" },
+      ],
+      scenarios: [
+        {
+          name: "{\"level\": 7}",
+          steps: [
+            { node: "s", note: "`save.json` містить `{\"level\": 7}`" },
+            { node: "op", note: "Відкриваємо файл у `with`" },
+            { node: "ex", note: "Файл є" },
+            { node: "ld", note: "Парсимо текст" },
+            { node: "ok", note: "JSON валідний → `{'level': 7}`" },
+            { node: "ret", note: "`with` закриває файл, функція повертає `{'level': 7}`" },
+          ],
+        },
+        {
+          name: "Обірваний файл",
+          steps: [
+            { node: "s", note: "`save.json` містить `{\"level\": 7,`" },
+            { node: "op", note: "Відкриваємо файл у `with`" },
+            { node: "ex", note: "Файл є" },
+            { node: "ld", note: "Парсимо текст…" },
+            { node: "ok", note: "`JSONDecodeError`: Expecting property name… Файл закривається ще до `except`" },
+            { node: "exc", note: "вивід: `Нове збереження (JSONDecodeError)`" },
+            { node: "def", note: "Повертаємо *копію* `DEFAULT`: `{'level': 1, 'inventory': []}`" },
+          ],
+        },
+        {
+          name: "Файлу немає",
+          steps: [
+            { node: "s", note: "`save.json` видалено" },
+            { node: "op", note: "`open` у режимі `\"r\"`…" },
+            { node: "ex", note: "…кидає `FileNotFoundError`, до `json.load` не доходимо" },
+            { node: "exc", note: "вивід: `Нове збереження (FileNotFoundError)`" },
+            { node: "def", note: "`{'level': 1, 'inventory': []}`" },
+          ],
+        },
+      ],
+      caption: "Обидві невдачі — «немає файлу» і «файл зіпсовано» — ведуть в один `except`. А `dict(DEFAULT)` повертає копію, щоб гра не зіпсувала сам шаблон.",
+    },
+    {
       type: "tip",
       title: "ensure_ascii=False та indent=2",
       md: "Без `ensure_ascii=False` кирилиця збережеться як `\\u0415\\u0434` — валідно, але нечитабельно. `indent=2` робить файл зручним для людей і для `git diff`. Для нестандартних типів передай `default=str`: `json.dumps(data, default=str)` перетворить, наприклад, `datetime` на рядок.",
@@ -540,6 +690,74 @@ except ValueError as e:
   трансмутую спис
 __exit__: коло стерто (виняток: ValueError)
 Виняток вийшов назовні: не той матеріал`,
+    },
+    {
+      type: "flow",
+      title: "Протокол with: __enter__ і __exit__",
+      nodes: [
+        { id: "s", kind: "start", label: "with Circle(...) as c:", col: 0, row: 0 },
+        { id: "en", kind: "call", label: "c = mgr.__enter__()", col: 0, row: 1 },
+        { id: "body", kind: "process", label: "тіло блоку with", col: 0, row: 2 },
+        { id: "d", kind: "decision", label: "виняток\nу тілі?", col: 0, row: 3 },
+        { id: "ok", kind: "call", label: "__exit__(None,\nNone, None)", col: 0, row: 4 },
+        { id: "exx", kind: "call", label: "__exit__(exc_type,\nexc, tb)", col: 1, row: 4 },
+        { id: "after", kind: "process", label: "код після with", col: 0, row: 5 },
+        { id: "sup", kind: "decision", label: "повернув\nTrue?", col: 1, row: 5 },
+        { id: "e", kind: "end", label: "Кінець", col: 0, row: 6 },
+        { id: "fly", kind: "end", label: "Виняток летить\nдалі", col: 1, row: 6 },
+      ],
+      edges: [
+        { from: "s", to: "en" },
+        { from: "en", to: "body" },
+        { from: "body", to: "d" },
+        { from: "d", to: "ok", label: "Ні" },
+        { from: "d", to: "exx", label: "Так", side: "right" },
+        { from: "ok", to: "after" },
+        { from: "exx", to: "sup" },
+        { from: "sup", to: "after", label: "Так" },
+        { from: "sup", to: "fly", label: "Ні" },
+        { from: "after", to: "e" },
+      ],
+      scenarios: [
+        {
+          name: "Без винятку",
+          steps: [
+            { node: "s", note: "`with Circle(\"спис\") as c:`" },
+            { node: "en", note: "вивід: `__enter__: коло «спис» активне`; `c` — те, що повернув `__enter__`" },
+            { node: "body", note: "вивід: `  трансмутую спис`" },
+            { node: "d", note: "Блок завершився нормально" },
+            { node: "ok", note: "вивід: `__exit__: коло стерто (виняток: None)`" },
+            { node: "after", note: "Виконання йде далі" },
+            { node: "e" },
+          ],
+        },
+        {
+          name: "ValueError",
+          steps: [
+            { node: "s", note: "`with Circle(\"спис\") as c:` усередині `try`" },
+            { node: "en", note: "вивід: `__enter__: коло «спис» активне`" },
+            { node: "body", note: "вивід: `  трансмутую спис`, потім `raise ValueError(\"не той матеріал\")`" },
+            { node: "d", note: "Так — тіло перервано" },
+            { node: "exx", note: "вивід: `__exit__: коло стерто (виняток: ValueError)`" },
+            { node: "sup", note: "`return False` — не ковтаємо" },
+            { node: "fly", note: "Зовнішній `except` друкує: `Виняток вийшов назовні: не той матеріал`" },
+          ],
+        },
+        {
+          name: "suppress",
+          steps: [
+            { node: "s", note: "`with suppress(FileNotFoundError):`" },
+            { node: "en", note: "`suppress` нічого не відкриває, лише запам'ятовує тип" },
+            { node: "body", note: "`os.remove(\"ghost.txt\")` — файлу немає" },
+            { node: "d", note: "Так: `FileNotFoundError`" },
+            { node: "exx", note: "`__exit__` бачить, що це `FileNotFoundError`…" },
+            { node: "sup", note: "…і повертає `True` — виняток проковтнуто" },
+            { node: "after", note: "Програма йде далі, ніби нічого не сталось" },
+            { node: "e" },
+          ],
+        },
+      ],
+      caption: "`__exit__` викликається **завжди** — у цьому вся суть `with`. Різниця лише в аргументах: `None` при нормальному виході або дані винятку, і в тому, що `__exit__` поверне.",
     },
     {
       type: "code",

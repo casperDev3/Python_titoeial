@@ -15,7 +15,7 @@ const section: Section = {
     "why": "Ґоджьо миттєво знаходить ціль — як словник знаходить значення за хешем ключа."
   },
   "theme": {
-    "accent": "#38bdf8",
+    "accent": "#0284c7",
     "accent2": "#a78bfa",
     "glow": "#0ea5e9"
   },
@@ -202,6 +202,50 @@ for word in text.split():
       note: `А ще краще — \`Counter(text.split())\`: він зробить те саме і дасть метод \`most_common()\`.`,
     },
     {
+      type: "flow",
+      title: "Підрахунок слів через get",
+      nodes: [
+        { id: "s", kind: "start", label: "Старт", col: 0, row: 0 },
+        { id: "init", kind: "process", label: "counts = {}", col: 0, row: 1 },
+        { id: "loop", kind: "decision", label: "for w in words:\nє ще w?", col: 0, row: 2 },
+        { id: "out", kind: "io", label: "print(counts)", col: 1, row: 2 },
+        { id: "e", kind: "end", label: "Кінець", col: 1, row: 3 },
+        { id: "get", kind: "call", label: "c = counts.get(w, 0)", col: 0, row: 3 },
+        { id: "set", kind: "process", label: "counts[w] = c + 1", col: 0, row: 4 },
+      ],
+      edges: [
+        { from: "s", to: "init" },
+        { from: "init", to: "loop" },
+        { from: "loop", to: "get", label: "так" },
+        { from: "loop", to: "out", label: "ні" },
+        { from: "out", to: "e" },
+        { from: "get", to: "set" },
+        { from: "set", to: "loop", side: "left" },
+      ],
+      scenarios: [
+        {
+          name: "words = [\"gojo\", \"sukuna\", \"gojo\"]",
+          steps: [
+            { node: "s" },
+            { node: "init", note: "`counts = {}`" },
+            { node: "loop", note: "`w = 'gojo'`" },
+            { node: "get", note: "ключа немає → `c = 0` (default)" },
+            { node: "set", note: "`counts = {'gojo': 1}`" },
+            { node: "loop", note: "`w = 'sukuna'`" },
+            { node: "get", note: "ключа немає → `c = 0`" },
+            { node: "set", note: "`counts = {'gojo': 1, 'sukuna': 1}`" },
+            { node: "loop", note: "`w = 'gojo'`" },
+            { node: "get", note: "ключ є → `c = 1`" },
+            { node: "set", note: "`counts = {'gojo': 2, 'sukuna': 1}`" },
+            { node: "loop", note: "слова закінчились" },
+            { node: "out", note: "вивід: `{'gojo': 2, 'sukuna': 1}`" },
+            { node: "e" },
+          ],
+        },
+      ],
+      caption: "`get` із default прибирає гілку `if w in counts`: для нового слова він повертає `0`, для відомого — поточний лічильник.",
+    },
+    {
       type: "code",
       title: "counter_defaultdict.py",
       code: `from collections import Counter, defaultdict
@@ -308,6 +352,63 @@ print(elite)`,
 - Коли таблиця заповнюється приблизно на 2/3, вона **збільшується**, і всі ключі перерозкладаються.
 
 Звідси головне правило: ключ **не може змінюватися**. Якби список міг бути ключем і ти змінив би його після вставки, хеш став би іншим — і словник шукав би його не в тій комірці. Тому \`list\`, \`dict\`, \`set\` — «unhashable».`,
+    },
+    {
+      type: "flow",
+      title: "Пошук d[key] у хеш-таблиці",
+      nodes: [
+        { id: "s", kind: "start", label: "d[key]", col: 0, row: 0 },
+        { id: "h", kind: "process", label: "i = hash(key) % 8", col: 0, row: 1 },
+        { id: "empty", kind: "decision", label: "слот i порожній?", col: 0, row: 2 },
+        { id: "err", kind: "end", label: "KeyError", col: 1, row: 2 },
+        { id: "eq", kind: "decision", label: "ключ у слоті\n== key ?", col: 0, row: 3 },
+        { id: "ret", kind: "end", label: "return значення", col: 1, row: 3 },
+        { id: "next", kind: "process", label: "i = (i + 1) % 8", col: 0, row: 4 },
+      ],
+      edges: [
+        { from: "s", to: "h" },
+        { from: "h", to: "empty" },
+        { from: "empty", to: "err", label: "так" },
+        { from: "empty", to: "eq", label: "ні" },
+        { from: "eq", to: "ret", label: "так" },
+        { from: "eq", to: "next", label: "ні" },
+        { from: "next", to: "empty", side: "left" },
+      ],
+      scenarios: [
+        {
+          name: "d[3] — одразу",
+          steps: [
+            { node: "s", note: "`d = {3: 'Gojo', 11: 'Yuji'}`: 3 лежить у слоті 3, 11 — у слоті 4 (колізія)" },
+            { node: "h", note: "`hash(3) = 3`, `3 % 8 = 3`" },
+            { node: "empty", note: "слот 3 зайнятий" },
+            { node: "eq", note: "`3 == 3` → так" },
+            { node: "ret", note: "`'Gojo'` — одна перевірка" },
+          ],
+        },
+        {
+          name: "d[11] — колізія",
+          steps: [
+            { node: "s", note: "`d = {3: 'Gojo', 11: 'Yuji'}`" },
+            { node: "h", note: "`hash(11) = 11`, `11 % 8 = 3`" },
+            { node: "empty", note: "слот 3 зайнятий" },
+            { node: "eq", note: "там ключ `3`, `3 == 11` → ні" },
+            { node: "next", note: "`i = 4`" },
+            { node: "empty", note: "слот 4 зайнятий" },
+            { node: "eq", note: "`11 == 11` → так" },
+            { node: "ret", note: "`'Yuji'` — дві перевірки" },
+          ],
+        },
+        {
+          name: "d[5] — немає",
+          steps: [
+            { node: "s", note: "`d = {3: 'Gojo', 11: 'Yuji'}`" },
+            { node: "h", note: "`hash(5) = 5`, `5 % 8 = 5`" },
+            { node: "empty", note: "слот 5 порожній — такого ключа точно немає" },
+            { node: "err", note: "`KeyError: 5`" },
+          ],
+        },
+      ],
+      caption: "Спрощена модель: таблиця на 8 слотів і пошук «наступного слота» через `+1`. Справжній CPython обирає наступний слот хитріше (з «перемішуванням» бітів хешу), але ідея та сама: пошук починається одразу з потрібного місця, а не з початку.",
     },
     {
       type: "viz",
@@ -461,6 +562,54 @@ print(list(dict.fromkeys(visits)))   # унікальні, ЗБЕРІГАЮЧИ 
       output: `4
 ['Gojo', 'Megumi', 'Nobara', 'Yuji']
 ['Yuji', 'Gojo', 'Megumi', 'Nobara']`,
+    },
+    {
+      type: "flow",
+      title: "Прибрати дублікати зі збереженням порядку",
+      nodes: [
+        { id: "s", kind: "start", label: "Старт", col: 0, row: 0 },
+        { id: "init", kind: "process", label: "seen = set()\nout = []", col: 0, row: 1 },
+        { id: "loop", kind: "decision", label: "for x in visits:\nє ще x?", col: 0, row: 2 },
+        { id: "print", kind: "io", label: "print(out)", col: 1, row: 2 },
+        { id: "e", kind: "end", label: "Кінець", col: 1, row: 3 },
+        { id: "in", kind: "decision", label: "x in seen ?", col: 0, row: 3 },
+        { id: "add", kind: "process", label: "seen.add(x)", col: 0, row: 4 },
+        { id: "app", kind: "process", label: "out.append(x)", col: 0, row: 5 },
+      ],
+      edges: [
+        { from: "s", to: "init" },
+        { from: "init", to: "loop" },
+        { from: "loop", to: "in", label: "так" },
+        { from: "loop", to: "print", label: "ні" },
+        { from: "print", to: "e" },
+        { from: "in", to: "loop", label: "continue", side: "left" },
+        { from: "in", to: "add", label: "False" },
+        { from: "add", to: "app" },
+        { from: "app", to: "loop", side: "left" },
+      ],
+      scenarios: [
+        {
+          name: "[\"Yuji\", \"Gojo\", \"Yuji\"]",
+          steps: [
+            { node: "s" },
+            { node: "init", note: "`seen = set()`, `out = []`" },
+            { node: "loop", note: "`x = 'Yuji'`" },
+            { node: "in", note: "`'Yuji' in seen` → False (O(1))" },
+            { node: "add", note: "`seen = {'Yuji'}`" },
+            { node: "app", note: "`out = ['Yuji']`" },
+            { node: "loop", note: "`x = 'Gojo'`" },
+            { node: "in", note: "`'Gojo' in seen` → False" },
+            { node: "add", note: "`seen = {'Yuji', 'Gojo'}`" },
+            { node: "app", note: "`out = ['Yuji', 'Gojo']`" },
+            { node: "loop", note: "`x = 'Yuji'`" },
+            { node: "in", note: "`'Yuji' in seen` → True — дублікат, пропускаємо" },
+            { node: "loop", note: "елементи закінчились" },
+            { node: "print", note: "вивід: `['Yuji', 'Gojo']`" },
+            { node: "e" },
+          ],
+        },
+      ],
+      caption: "Множина `seen` відповідає на «я це вже бачив?» за O(1), а список `out` зберігає порядок першої появи. Саме так під капотом працює і трюк `list(dict.fromkeys(xs))`.",
     },
     {
       type: "tip",

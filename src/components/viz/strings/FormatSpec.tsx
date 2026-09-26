@@ -6,7 +6,7 @@ import { ControlBar, Segmented, Slider } from "../kit";
 import { chars } from "./util";
 import { formatFull, VALUES, type Align, type Group, type Type } from "./format";
 
-const FILLS = [" ", "*", "0", "·", "✨"] as const;
+const FILLS = [" ", "*", "0", "·", "~"] as const;
 
 const spring = { type: "spring" as const, stiffness: 480, damping: 32 };
 
@@ -45,7 +45,7 @@ export function FormatSpec() {
               onClick={() => setVid(x.id)}
               className="rounded-full px-2.5 py-1 font-mono text-[12.5px] font-semibold"
               style={{
-                background: x.id === vid ? "color-mix(in oklab, var(--accent) 28%, transparent)" : "color-mix(in oklab, var(--label) 6%, transparent)",
+                background: x.id === vid ? "color-mix(in oklab, var(--accent) 18%, white)" : "color-mix(in oklab, var(--label) 6%, transparent)",
                 boxShadow: x.id === vid ? "inset 0 0 0 1.5px var(--accent)" : "none",
               }}
             >
@@ -93,10 +93,10 @@ export function FormatSpec() {
                     className="grid h-9 w-[22px] place-items-center rounded-[7px] font-mono text-[15px] font-bold"
                     style={{
                       background: c.pad
-                        ? "color-mix(in oklab, var(--label) 5%, transparent)"
-                        : "linear-gradient(160deg, var(--accent), var(--accent-2))",
-                      color: c.pad ? "var(--label-3)" : "white",
-                      border: c.pad ? "1px dashed var(--separator)" : "none",
+                        ? "color-mix(in oklab, var(--label) 4%, white)"
+                        : "color-mix(in oklab, var(--accent) 18%, white)",
+                      color: c.pad ? "var(--label-3)" : "color-mix(in oklab, var(--accent) 45%, var(--label))",
+                      border: c.pad ? "1px dashed var(--label-3)" : "1px solid color-mix(in oklab, var(--accent) 60%, transparent)",
                     }}
                   >
                     {c.ch === " " ? "·" : c.ch}
@@ -114,7 +114,7 @@ export function FormatSpec() {
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: [0, -6, 6, -3, 0] }}
               exit={{ opacity: 0 }}
-              className="px-3 text-center font-mono text-[13px] font-semibold text-[#ff453a]"
+              className="px-3 text-center font-mono text-[13px] font-semibold text-[#d70015]"
             >
               {core.err}
             </motion.div>
@@ -168,7 +168,7 @@ export function FormatSpec() {
             onClick={() => setFill(f)}
             className="grid size-8 place-items-center rounded-[10px] font-mono text-[14px] font-bold disabled:opacity-30"
             style={{
-              background: f === fill ? "color-mix(in oklab, var(--accent) 28%, transparent)" : "color-mix(in oklab, var(--label) 6%, transparent)",
+              background: f === fill ? "color-mix(in oklab, var(--accent) 18%, white)" : "color-mix(in oklab, var(--label) 6%, transparent)",
               boxShadow: f === fill ? "inset 0 0 0 1.5px var(--accent)" : "none",
             }}
             aria-label={`заповнювач ${f === " " ? "пробіл" : f}`}

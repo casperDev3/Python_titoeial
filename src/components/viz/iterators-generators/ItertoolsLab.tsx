@@ -1,9 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { Btn, ControlBar } from "../kit";
-import { tokenize } from "./shared";
+import { INK, WARN, tokenize } from "./shared";
 
 type Tool = {
   id: string;
@@ -106,7 +107,7 @@ export function ItertoolsLab() {
               <motion.span
                 layoutId="itertools-chip"
                 className="absolute inset-0 rounded-full"
-                style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-2))" }}
+                style={{ background: INK }}
                 transition={{ type: "spring", stiffness: 420, damping: 32 }}
               />
             )}
@@ -117,7 +118,7 @@ export function ItertoolsLab() {
       </div>
 
       <div className="px-5 pt-4">
-        <div className="overflow-x-auto rounded-2xl border border-separator bg-black/[0.035] px-3 py-2 font-mono text-[12.5px] whitespace-pre dark:bg-white/[0.04]">
+        <div className="overflow-x-auto rounded-2xl border border-separator bg-black/[0.035] px-3 py-2 font-mono text-[12.5px] whitespace-pre">
           {tokenize(`it = ${tool.code}`, "itl")}
           {tool.infinite && <span className="ml-2 text-label-3">  # ∞</span>}
         </div>
@@ -148,8 +149,8 @@ export function ItertoolsLab() {
                 className="rounded-xl px-2.5 py-1.5 font-mono text-[12.5px] font-semibold"
                 style={{
                   background: i === shown.length - 1 && !finished
-                    ? "linear-gradient(135deg, var(--accent), var(--accent-2))"
-                    : "color-mix(in oklab, var(--accent) 14%, transparent)",
+                    ? INK
+                    : "color-mix(in oklab, var(--accent) 14%, white)",
                   color: i === shown.length - 1 && !finished ? "white" : "var(--label)",
                 }}
               >
@@ -162,7 +163,7 @@ export function ItertoolsLab() {
                 initial={{ opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="rounded-full px-3 py-1 font-mono text-[12px] font-bold text-white"
-                style={{ background: "#ff9f0a" }}
+                style={{ background: WARN }}
               >
                 StopIteration
               </motion.span>
@@ -187,8 +188,9 @@ export function ItertoolsLab() {
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="mt-3 rounded-2xl px-3 py-2 text-[13px]" style={{ background: "rgb(255 159 10 / 0.14)" }}>
-                ⚠️ {warn}
+              <div className="mt-3 flex items-start gap-2 rounded-2xl px-3 py-2 text-[13px]" style={{ background: "#fff7ed" }}>
+                <TriangleAlert className="mt-0.5 size-4 shrink-0" strokeWidth={1.75} style={{ color: WARN }} />
+                <span>{warn}</span>
               </div>
             </motion.div>
           )}

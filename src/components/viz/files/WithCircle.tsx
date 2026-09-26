@@ -2,6 +2,7 @@
 
 import { Html, Line, RoundedBox } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { TriangleAlert, Zap } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Btn, Console, ControlBar, Scene3D, Segmented, useThemeColors, type ThemeColors } from "../kit";
@@ -30,7 +31,7 @@ function Circle({ active, leak, colors }: { active: boolean; leak: boolean; colo
   const spin = useRef<THREE.Group>(null);
   const ring = useRef<THREE.MeshStandardMaterial>(null);
   const glyphs = useGlyphs();
-  const glow = active ? colors.accent : leak ? colors.accent2 : colors.dark ? "#636366" : "#b0b0b8";
+  const glow = active ? colors.accent : leak ? colors.accent2 : "#a1a1aa";
   const target = useMemo(() => new THREE.Color(glow), [glow]);
 
   useFrame((_, dt) => {
@@ -67,7 +68,7 @@ function Scroll({ state, runes, colors }: { state: FileState; runes: number; col
   const mat = useRef<THREE.MeshPhysicalMaterial>(null);
   const isOpen = state === "open" || state === "leak";
   const tint = useMemo(
-    () => new THREE.Color(state === "leak" ? colors.accent2 : state === "open" ? colors.accent : colors.dark ? "#8e8e93" : "#d1d1d6"),
+    () => new THREE.Color(state === "leak" ? colors.accent2 : state === "open" ? colors.accent : "#f4f4f6"),
     [state, colors],
   );
 
@@ -94,7 +95,7 @@ function Scroll({ state, runes, colors }: { state: FileState; runes: number; col
       <RoundedBox args={[1.2, 1.55, 0.14]} radius={0.06} smoothness={4}>
         <meshPhysicalMaterial
           ref={mat}
-          color="#d1d1d6"
+          color="#f4f4f6"
           emissive="#000000"
           roughness={0.2}
           clearcoat={1}
@@ -111,14 +112,15 @@ function Scroll({ state, runes, colors }: { state: FileState; runes: number; col
       ))}
       <Html center position={[0, 1.05, 0]} zIndexRange={[20, 0]}>
         <div
-          className="rounded-full px-2.5 py-1 font-mono text-[11px] whitespace-nowrap backdrop-blur-md select-none"
+          className="flex items-center gap-1 rounded-full px-2.5 py-1 font-mono text-[11px] whitespace-nowrap backdrop-blur-md select-none"
           style={{
             background: "var(--glass-bg-strong)",
             border: "1px solid var(--glass-border)",
             color: state === "leak" ? "var(--accent-2)" : "var(--label)",
           }}
         >
-          log.txt · {state === "outside" ? "не відкрито" : state === "closed" ? "closed=True" : state === "leak" ? "⚠ відкрито й забуто" : "closed=False"}
+          {state === "leak" && <TriangleAlert className="size-3.5" strokeWidth={1.75} />}
+          log.txt · {state === "outside" ? "не відкрито" : state === "closed" ? "closed=True" : state === "leak" ? "відкрито й забуто" : "closed=False"}
         </div>
       </Html>
     </group>
@@ -152,11 +154,11 @@ export function WithCircle() {
   const boom = () => {
     if (mode === "with") {
       setState("closed");
-      say("💥 ValueError у блоці", "# __exit__(ValueError, ...) → f.close() ✓, виняток летить далі");
+      say("ValueError у блоці", "# __exit__(ValueError, ...) → f.close() ✓, виняток летить далі");
     } else {
       setState("leak");
       setLeaks((n) => n + 1);
-      say("💥 ValueError до f.close()", "# close() не викликано — файл лишився відкритим!");
+      say("ValueError до f.close()", "# close() не викликано — файл лишився відкритим!");
     }
   };
 
@@ -193,7 +195,8 @@ export function WithCircle() {
             {mode === "with" ? "Вийти з блоку" : "f.close()"}
           </Btn>
           <Btn onClick={boom} disabled={!inside}>
-            💥 Виняток
+            <Zap className="size-3.5" strokeWidth={1.75} />
+            Виняток
           </Btn>
         </div>
       </ControlBar>
@@ -205,7 +208,11 @@ export function WithCircle() {
         {mode === "manual" && leaks > 0 && (
           <div
             className="absolute top-2 right-3 rounded-full px-2.5 py-1 text-[11.5px] font-semibold backdrop-blur-md"
-            style={{ background: "color-mix(in oklab, var(--accent-2) 20%, transparent)", color: "var(--accent-2)" }}
+            style={{
+              background: "color-mix(in oklab, var(--accent-2) 10%, white)",
+              border: "1px solid color-mix(in oklab, var(--accent-2) 25%, transparent)",
+              color: "var(--accent-2)",
+            }}
           >
             «протекло» дескрипторів: {leaks}
           </div>

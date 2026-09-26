@@ -15,7 +15,7 @@ const section: Section = {
     "why": "Леві робить за секунду те, на що іншим треба хвилина — як comprehension замість циклу на 5 рядків."
   },
   "theme": {
-    "accent": "#14b8a6",
+    "accent": "#0f9488",
     "accent2": "#94a3b8",
     "glow": "#0d9488"
   },
@@ -74,6 +74,146 @@ const section: Section = {
       "output": "[15, 60, 13]\n['DEDICATE', 'YOUR', 'HEART', 'CAUSE']\n[0, 6, 12, 18]"
     },
     {
+      "type": "flow",
+      "title": "Як виконується comprehension з фільтром",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "[w.upper() for w in\nwords if len(w) > 3]",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "init",
+          "kind": "process",
+          "label": "result = []",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "next",
+          "kind": "decision",
+          "label": "є наступний w?",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "cond",
+          "kind": "decision",
+          "label": "len(w) > 3 ?",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "app",
+          "kind": "process",
+          "label": "result.append(\n    w.upper())",
+          "col": 0,
+          "row": 4
+        },
+        {
+          "id": "e",
+          "kind": "end",
+          "label": "готовий список",
+          "col": 1,
+          "row": 3
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "init"
+        },
+        {
+          "from": "init",
+          "to": "next"
+        },
+        {
+          "from": "next",
+          "to": "cond",
+          "label": "Так"
+        },
+        {
+          "from": "next",
+          "to": "e",
+          "label": "Ні",
+          "side": "right"
+        },
+        {
+          "from": "cond",
+          "to": "app",
+          "label": "True"
+        },
+        {
+          "from": "cond",
+          "to": "next",
+          "label": "False",
+          "side": "left"
+        },
+        {
+          "from": "app",
+          "to": "next",
+          "side": "left"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "[\"your\", \"to\", \"heart\"]",
+          "steps": [
+            {
+              "node": "s"
+            },
+            {
+              "node": "init",
+              "note": "новий порожній список"
+            },
+            {
+              "node": "next",
+              "note": "`w = \"your\"`"
+            },
+            {
+              "node": "cond",
+              "note": "`4 > 3` → True"
+            },
+            {
+              "node": "app",
+              "note": "`result = ['YOUR']`"
+            },
+            {
+              "node": "next",
+              "note": "`w = \"to\"`"
+            },
+            {
+              "node": "cond",
+              "note": "`2 > 3` → False — пропускаємо"
+            },
+            {
+              "node": "next",
+              "note": "`w = \"heart\"`"
+            },
+            {
+              "node": "cond",
+              "note": "`5 > 3` → True"
+            },
+            {
+              "node": "app",
+              "note": "`result = ['YOUR', 'HEART']`"
+            },
+            {
+              "node": "next",
+              "note": "елементи скінчились"
+            },
+            {
+              "node": "e",
+              "note": "`['YOUR', 'HEART']`"
+            }
+          ]
+        }
+      ],
+      "caption": "Фільтр `if` перевіряється **до** виразу: відкинутий елемент просто не потрапляє в `append`."
+    },
+    {
       "type": "heading",
       "text": "if-else у виразі: трансформація, а не фільтр"
     },
@@ -121,6 +261,166 @@ const section: Section = {
       "code": "# кілька for — як вкладені цикли\npairs = [(squad, n) for squad in \"AB\" for n in range(1, 4)]\nprint(pairs)\n\n# матриця 3×3: comprehension у comprehension\ngrid = [[r * 3 + c for c in range(3)] for r in range(3)]\nprint(grid)\n\n# «розплющити» матрицю в один список\nflat = [x for row in grid for x in row]\nprint(flat)\n\n# транспонування\nprint([[row[i] for row in grid] for i in range(3)])",
       "title": "nested_comp.py",
       "output": "[('A', 1), ('A', 2), ('A', 3), ('B', 1), ('B', 2), ('B', 3)]\n[[0, 1, 2], [3, 4, 5], [6, 7, 8]]\n[0, 1, 2, 3, 4, 5, 6, 7, 8]\n[[0, 3, 6], [1, 4, 7], [2, 5, 8]]"
+    },
+    {
+      "type": "flow",
+      "title": "Два for: зовнішній цикл і вкладений",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "[(s, n) for s in \"AB\"\n for n in range(1, 3)]",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "ox",
+          "kind": "decision",
+          "label": "є наступний s?",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "e",
+          "kind": "end",
+          "label": "готовий список",
+          "col": 1,
+          "row": 1
+        },
+        {
+          "id": "iy",
+          "kind": "process",
+          "label": "range(1, 3)\nзнову з початку",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "oy",
+          "kind": "decision",
+          "label": "є наступний n?",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "app",
+          "kind": "process",
+          "label": "append((s, n))",
+          "col": 0,
+          "row": 4
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "ox"
+        },
+        {
+          "from": "ox",
+          "to": "e",
+          "label": "Ні",
+          "side": "right"
+        },
+        {
+          "from": "ox",
+          "to": "iy",
+          "label": "Так"
+        },
+        {
+          "from": "iy",
+          "to": "oy"
+        },
+        {
+          "from": "oy",
+          "to": "app",
+          "label": "Так"
+        },
+        {
+          "from": "oy",
+          "to": "ox",
+          "label": "Ні",
+          "side": "left"
+        },
+        {
+          "from": "app",
+          "to": "oy",
+          "side": "right"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "s in \"AB\", n in 1..2",
+          "steps": [
+            {
+              "node": "s"
+            },
+            {
+              "node": "ox",
+              "note": "`s = \"A\"`"
+            },
+            {
+              "node": "iy",
+              "note": "внутрішній цикл стартує заново"
+            },
+            {
+              "node": "oy",
+              "note": "`n = 1`"
+            },
+            {
+              "node": "app",
+              "note": "`[('A', 1)]`"
+            },
+            {
+              "node": "oy",
+              "note": "`n = 2`"
+            },
+            {
+              "node": "app",
+              "note": "`[('A', 1), ('A', 2)]`"
+            },
+            {
+              "node": "oy",
+              "note": "`range` вичерпано"
+            },
+            {
+              "node": "ox",
+              "note": "`s = \"B\"`"
+            },
+            {
+              "node": "iy",
+              "note": "знову `n` від 1"
+            },
+            {
+              "node": "oy",
+              "note": "`n = 1`"
+            },
+            {
+              "node": "app",
+              "note": "додано `('B', 1)`"
+            },
+            {
+              "node": "oy",
+              "note": "`n = 2`"
+            },
+            {
+              "node": "app",
+              "note": "додано `('B', 2)`"
+            },
+            {
+              "node": "oy",
+              "note": "вичерпано"
+            },
+            {
+              "node": "ox",
+              "note": "рядок `\"AB\"` скінчився"
+            },
+            {
+              "node": "e",
+              "note": "`[('A', 1), ('A', 2), ('B', 1), ('B', 2)]`"
+            }
+          ]
+        }
+      ],
+      "caption": "Правий `for` крутиться швидше: на кожне `s` він проходить увесь `range` від початку."
     },
     {
       "type": "viz",
@@ -262,6 +562,183 @@ const section: Section = {
       "code": "hp = [100, 45, 0, 80]\n\nprint(any(h == 0 for h in hp))       # чи є загиблі?\nprint(all(h > 0 for h in hp))        # чи всі живі?\nprint(all(h <= 100 for h in hp))\n\nprint(any([]), all([]))              # порожня колекція: any → False, all → True\n\ndef check(h):\n    print(f\"  перевіряю {h}\")\n    return h == 0\n\nprint(any(check(h) for h in hp))     # зупиниться на 0 — 80 вже не перевірить",
       "title": "any_all.py",
       "output": "True\nFalse\nTrue\nFalse True\n  перевіряю 100\n  перевіряю 45\n  перевіряю 0\nTrue"
+    },
+    {
+      "type": "flow",
+      "title": "any(): коротке замикання",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "any(items)",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "it",
+          "kind": "process",
+          "label": "it = iter(items)",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "next",
+          "kind": "decision",
+          "label": "є наступний x?",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "f",
+          "kind": "end",
+          "label": "return False",
+          "col": 1,
+          "row": 2
+        },
+        {
+          "id": "chk",
+          "kind": "decision",
+          "label": "bool(x) ?",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "t",
+          "kind": "end",
+          "label": "return True",
+          "col": 1,
+          "row": 3
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "it"
+        },
+        {
+          "from": "it",
+          "to": "next"
+        },
+        {
+          "from": "next",
+          "to": "f",
+          "label": "Ні",
+          "side": "right"
+        },
+        {
+          "from": "next",
+          "to": "chk",
+          "label": "Так"
+        },
+        {
+          "from": "chk",
+          "to": "t",
+          "label": "True",
+          "side": "right"
+        },
+        {
+          "from": "chk",
+          "to": "next",
+          "label": "False",
+          "side": "left"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "[0, \"\", 5, 0]",
+          "steps": [
+            {
+              "node": "s"
+            },
+            {
+              "node": "it"
+            },
+            {
+              "node": "next",
+              "note": "`x = 0`"
+            },
+            {
+              "node": "chk",
+              "note": "`bool(0)` → False"
+            },
+            {
+              "node": "next",
+              "note": "`x = \"\"`"
+            },
+            {
+              "node": "chk",
+              "note": "порожній рядок → False"
+            },
+            {
+              "node": "next",
+              "note": "`x = 5`"
+            },
+            {
+              "node": "chk",
+              "note": "`bool(5)` → True"
+            },
+            {
+              "node": "t",
+              "note": "`True` — останній `0` навіть не перевірявся"
+            }
+          ]
+        },
+        {
+          "name": "[0, None]",
+          "steps": [
+            {
+              "node": "s"
+            },
+            {
+              "node": "it"
+            },
+            {
+              "node": "next",
+              "note": "`x = 0`"
+            },
+            {
+              "node": "chk",
+              "note": "False"
+            },
+            {
+              "node": "next",
+              "note": "`x = None`"
+            },
+            {
+              "node": "chk",
+              "note": "False"
+            },
+            {
+              "node": "next",
+              "note": "елементи скінчились"
+            },
+            {
+              "node": "f",
+              "note": "`False`"
+            }
+          ]
+        },
+        {
+          "name": "[] (порожній)",
+          "steps": [
+            {
+              "node": "s"
+            },
+            {
+              "node": "it"
+            },
+            {
+              "node": "next",
+              "note": "одразу порожньо"
+            },
+            {
+              "node": "f",
+              "note": "`any([])` → `False`"
+            }
+          ]
+        }
+      ],
+      "caption": "`all()` — дзеркальна схема: виходить з `False` на першому хибному елементі, а на порожньому повертає `True`."
     },
     {
       "type": "viz",

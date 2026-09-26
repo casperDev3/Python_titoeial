@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
+import { Check, RotateCcw, X } from "lucide-react";
 import { Btn, ControlBar } from "../kit";
 
 type Item = { id: string; code: string; truthy: boolean; why: string };
@@ -69,12 +70,12 @@ export function TruthySorter() {
         style={{
           background:
             p === "truthy"
-              ? "rgb(48 209 88 / 0.16)"
+              ? "color-mix(in oklab, #248a3d 12%, white)"
               : p === "falsy"
-                ? "rgb(255 69 58 / 0.14)"
+                ? "color-mix(in oklab, #d70015 10%, white)"
                 : isSel
-                  ? "color-mix(in oklab, var(--accent) 24%, var(--bg-elevated))"
-                  : "var(--bg-elevated)",
+                  ? "color-mix(in oklab, var(--accent) 14%, white)"
+                  : "#ffffff",
           borderColor: isSel ? "var(--accent)" : "var(--separator)",
           boxShadow: isSel ? "0 0 0 3px color-mix(in oklab, var(--accent) 25%, transparent)" : undefined,
         }}
@@ -84,9 +85,9 @@ export function TruthySorter() {
     );
   };
 
-  const bins: { key: "truthy" | "falsy"; title: string; color: string }[] = [
-    { key: "truthy", title: "Truthy ✓", color: "#30d158" },
-    { key: "falsy", title: "Falsy ✗", color: "#ff453a" },
+  const bins: { key: "truthy" | "falsy"; title: string; color: string; Icon: typeof Check }[] = [
+    { key: "truthy", title: "Truthy", color: "#248a3d", Icon: Check },
+    { key: "falsy", title: "Falsy", color: "#d70015", Icon: X },
   ];
 
   const total = ITEMS.length;
@@ -118,7 +119,9 @@ export function TruthySorter() {
               False
             </Btn>
           </motion.div>
-          <Btn onClick={reset}><span aria-hidden>↺</span><span className="sr-only">Скинути</span></Btn>
+          <Btn onClick={reset}>
+            <RotateCcw className="size-4" strokeWidth={1.75} aria-label="Скинути" />
+          </Btn>
         </ControlBar>
 
         <div className="grid grid-cols-2 gap-3 px-5">
@@ -126,9 +129,10 @@ export function TruthySorter() {
             <div
               key={b.key}
               className="min-h-[108px] rounded-2xl border p-3"
-              style={{ borderColor: `${b.color}55`, background: `color-mix(in oklab, ${b.color} 7%, var(--glass-bg))` }}
+              style={{ borderColor: `${b.color}55`, background: `color-mix(in oklab, ${b.color} 5%, white)` }}
             >
-              <div className="mb-2 text-[13px] font-bold" style={{ color: b.color }}>
+              <div className="mb-2 flex items-center gap-1 text-[13px] font-bold" style={{ color: b.color }}>
+                <b.Icon className="size-4" strokeWidth={1.75} />
                 {b.title}
               </div>
               <div className="flex flex-wrap gap-1.5">{ITEMS.filter((i) => pos(i.id) === b.key).map(chip)}</div>
@@ -147,13 +151,13 @@ export function TruthySorter() {
             transition={spring}
             className="rounded-2xl px-4 py-2.5 text-[13.5px]"
             style={{
-              background: !msg ? "var(--glass-bg)" : msg.ok ? "rgb(48 209 88 / 0.14)" : "rgb(255 159 10 / 0.16)",
+              background: !msg ? "#ffffff" : msg.ok ? "color-mix(in oklab, #248a3d 10%, white)" : "color-mix(in oklab, #ff9f0a 14%, white)",
             }}
           >
             {!msg
               ? "Обери значення і натисни True чи False — що поверне bool()?"
               : placed === total
-                ? `Усі ${total} розсортовано! Рівень сили: ${score * 1000}${score === total ? " — це більше 9000! 🐉" : ""}`
+                ? `Усі ${total} розсортовано! Рівень сили: ${score * 1000}${score === total ? " — це більше 9000!" : ""}`
                 : `${msg.ok ? "Так! " : "Майже… "}${msg.text}`}
           </motion.div>
         </AnimatePresence>

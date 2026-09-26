@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
+import { ChevronLeft, ChevronRight, Layers, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { Btn, ControlBar, Segmented } from "../kit";
 import { CodePane, INK } from "./shared";
@@ -88,7 +89,7 @@ export function WrapperFlow() {
         />
         <span
           className="rounded-full px-2.5 py-1 text-[11px] font-bold tracking-wide uppercase"
-          style={{ color: INK, background: "color-mix(in oklab, var(--accent) 16%, transparent)" }}
+          style={{ color: INK, background: "color-mix(in oklab, var(--accent) 16%, white)" }}
         >
           час {st.phase}
         </span>
@@ -116,7 +117,7 @@ export function WrapperFlow() {
                     color: st.addTo === "wrapper" ? INK : "var(--label)",
                     background:
                       st.addTo === "wrapper"
-                        ? "color-mix(in oklab, var(--accent) 20%, transparent)"
+                        ? "color-mix(in oklab, var(--accent) 20%, white)"
                         : "var(--glass-bg)",
                   }}
                 >
@@ -138,7 +139,7 @@ export function WrapperFlow() {
                 <motion.div
                   layoutId="wf-log"
                   className="mb-2 inline-flex items-center gap-2 rounded-xl px-3 py-1.5 font-mono text-[12px]"
-                  style={{ background: "color-mix(in oklab, var(--accent-2) 18%, transparent)" }}
+                  style={{ background: "color-mix(in oklab, var(--accent-2) 16%, white)" }}
                 >
                   <Pulse /> log(func=add) виконується…
                 </motion.div>
@@ -153,11 +154,12 @@ export function WrapperFlow() {
                   className="rounded-2xl border-2 p-3"
                   style={{
                     borderColor: INK,
-                    background: "color-mix(in oklab, var(--accent) 9%, transparent)",
+                    background: "color-mix(in oklab, var(--accent) 9%, white)",
                   }}
                 >
                   <div className="mb-2 flex items-center gap-2 font-mono text-[12px] font-bold" style={{ color: INK }}>
-                    🦇 wrapper(*args)
+                    <Layers className="size-4" strokeWidth={1.75} />
+                    wrapper(*args)
                     {st.pulse === "wrapper" && <Pulse />}
                   </div>
                   <div className="mb-1 font-mono text-[11px] text-label-2">до → func(*args) → після</div>
@@ -188,7 +190,7 @@ export function WrapperFlow() {
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         className="mx-5 mt-3 flex gap-2 rounded-2xl px-4 py-3 text-[13.5px]"
-        style={{ background: "color-mix(in oklab, var(--accent) 12%, transparent)" }}
+        style={{ background: "color-mix(in oklab, var(--accent) 12%, white)" }}
       >
         <span className="font-mono text-[11px] font-bold text-label-3 tabular-nums">
           {i}/{last}
@@ -198,12 +200,17 @@ export function WrapperFlow() {
 
       <ControlBar>
         <Btn onClick={() => setI((v) => Math.max(0, v - 1))} disabled={i === 0}>
-          ← Назад
+          <ChevronLeft className="size-4" strokeWidth={1.75} />
+          Назад
         </Btn>
         <Btn variant="accent" onClick={() => setI((v) => Math.min(last, v + 1))} disabled={i === last}>
-          Крок →
+          Крок
+          <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
-        <Btn onClick={() => setI(0)}>Скинути</Btn>
+        <Btn onClick={() => setI(0)}>
+          <RotateCcw className="size-4" strokeWidth={1.75} />
+          Скинути
+        </Btn>
       </ControlBar>
     </div>
   );
@@ -218,7 +225,7 @@ function Orig({ active }: { active: boolean }) {
       className="rounded-xl border px-3 py-2 font-mono text-[12px]"
       style={{
         borderColor: active ? INK : "var(--separator)",
-        background: "var(--glass-bg-strong)",
+        background: "white",
         boxShadow: active ? "0 0 0 3px color-mix(in oklab, var(--accent) 35%, transparent)" : "none",
       }}
     >

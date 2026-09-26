@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { Check, ChevronRight, RotateCcw, X } from "lucide-react";
 import { Btn, ControlBar, Segmented } from "../kit";
 
 type Mode = "ok" | "name" | "syntax";
@@ -116,7 +117,7 @@ export function StepRunner() {
       : st.phase === "syntax"
         ? "Компіляція впала — жоден рядок не виконано"
         : st.phase === "compiled"
-          ? "✓ Компіляція в байткод — ок. Виконуємо…"
+          ? "Компіляція в байткод — ок. Виконуємо…"
           : st.phase === "running"
             ? `Виконання: рядок ${st.pc + 1}`
             : st.phase === "crashed"
@@ -138,9 +139,14 @@ export function StepRunner() {
         />
         <div className="ml-auto flex gap-2">
           <Btn variant="accent" onClick={step} disabled={finished}>
-            {st.phase === "idle" ? "Компілювати" : "Крок ▸"}
+            <span className="inline-flex items-center gap-1">
+              {st.phase === "idle" ? "Компілювати" : "Крок"}
+              <ChevronRight className="size-4" strokeWidth={1.75} />
+            </span>
           </Btn>
-          <Btn onClick={() => reset()}>↺</Btn>
+          <Btn onClick={() => reset()}>
+            <RotateCcw className="size-4" strokeWidth={1.75} aria-label="Скинути" />
+          </Btn>
         </div>
       </ControlBar>
 
@@ -156,11 +162,11 @@ export function StepRunner() {
             className="rounded-full px-2.5 py-1"
             style={{
               background: p.bad
-                ? "rgb(255 69 58 / 0.18)"
+                ? "rgb(255 59 48 / 0.12)"
                 : p.on
-                  ? "color-mix(in oklab, var(--accent) 22%, transparent)"
+                  ? "color-mix(in oklab, var(--accent) 16%, white)"
                   : "var(--separator)",
-              color: p.bad ? "#ff453a" : "var(--label)",
+              color: p.bad ? "#d70015" : "var(--label)",
             }}
           >
             {p.label}
@@ -184,7 +190,7 @@ export function StepRunner() {
                     layoutId="intro-runner-pc"
                     className="absolute inset-x-1.5 inset-y-0 rounded-lg"
                     style={{
-                      background: crashed || isSyntax ? "rgb(255 69 58 / 0.18)" : "color-mix(in oklab, var(--accent) 22%, transparent)",
+                      background: crashed || isSyntax ? "rgb(255 59 48 / 0.12)" : "color-mix(in oklab, var(--accent) 14%, white)",
                       boxShadow: crashed || isSyntax ? "inset 0 0 0 1px rgb(255 69 58 / 0.5)" : "inset 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent)",
                     }}
                     transition={{ type: "spring", stiffness: 420, damping: 34 }}
@@ -197,8 +203,12 @@ export function StepRunner() {
                 >
                   {l.code}
                 </span>
-                <span className="relative w-4 text-center">
-                  {done ? <span style={{ color: "#30d158" }}>✓</span> : crashed || isSyntax ? <span className="text-[#ff453a]">✗</span> : null}
+                <span className="relative flex w-4 justify-center">
+                  {done ? (
+                    <Check className="size-3.5 text-[#248a3d]" strokeWidth={2} />
+                  ) : crashed || isSyntax ? (
+                    <X className="size-3.5 text-[#d70015]" strokeWidth={2} />
+                  ) : null}
                 </span>
               </div>
             );

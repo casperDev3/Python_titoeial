@@ -15,7 +15,7 @@ const section: Section = {
     "why": "Стрендж переглядає майбутнє по одному варіанту — як генератор ліниво видає значення лише на запит."
   },
   "theme": {
-    "accent": "#22c55e",
+    "accent": "#16a34a",
     "accent2": "#f97316",
     "glow": "#15803d"
   },
@@ -91,6 +91,58 @@ const section: Section = {
       "output": "бачу: перемога\nбачу: поразка\nбачу: нічия\n---\nбачу: перемога\nбачу: поразка\nбачу: нічия"
     },
     {
+      type: "flow",
+      title: "Цикл for під капотом",
+      nodes: [
+        { id: "s", kind: "start", label: "for v in visions:", col: 0, row: 0 },
+        { id: "it", kind: "call", label: "it = iter(visions)", col: 0, row: 1 },
+        { id: "nx", kind: "call", label: "v = next(it)", col: 0, row: 2 },
+        { id: "stop", kind: "decision", label: "StopIteration?", col: 0, row: 3 },
+        { id: "body", kind: "io", label: "print(\"бачу:\", v)", col: 0, row: 4 },
+        { id: "e", kind: "end", label: "Вихід з циклу", col: 1, row: 5 },
+      ],
+      edges: [
+        { from: "s", to: "it" },
+        { from: "it", to: "nx" },
+        { from: "nx", to: "stop" },
+        { from: "stop", to: "body", label: "Ні" },
+        { from: "stop", to: "e", label: "Так", side: "right" },
+        { from: "body", to: "nx", side: "left" },
+      ],
+      scenarios: [
+        {
+          name: "3 бачення",
+          steps: [
+            { node: "s", note: "`visions = [\"перемога\", \"поразка\", \"нічия\"]`" },
+            { node: "it", note: "`iter()` повертає ітератор-«закладку» на початку списку" },
+            { node: "nx", note: "`v = \"перемога\"`" },
+            { node: "stop", note: "значення є — винятку немає" },
+            { node: "body", note: "вивід: `бачу: перемога`" },
+            { node: "nx", note: "`v = \"поразка\"`" },
+            { node: "stop", note: "винятку немає" },
+            { node: "body", note: "вивід: `бачу: поразка`" },
+            { node: "nx", note: "`v = \"нічия\"`" },
+            { node: "stop", note: "винятку немає" },
+            { node: "body", note: "вивід: `бачу: нічия`" },
+            { node: "nx", note: "елементи скінчились — `next()` кидає `StopIteration`" },
+            { node: "stop", note: "так, `StopIteration`" },
+            { node: "e", note: "`for` тихо ловить виняток і завершується; `v` лишається `\"нічия\"`" },
+          ],
+        },
+        {
+          name: "порожній список",
+          steps: [
+            { node: "s", note: "`visions = []`" },
+            { node: "it", note: "ітератор порожнього списку" },
+            { node: "nx", note: "першого ж разу — `StopIteration`" },
+            { node: "stop", note: "так" },
+            { node: "e", note: "тіло не виконалось жодного разу, нічого не виведено" },
+          ],
+        },
+      ],
+      caption: "`for` — це `iter()` один раз і `next()` у циклі, доки не прилетить `StopIteration`. Ніякої магії з індексами.",
+    },
+    {
       "type": "joke",
       "md": "Вонг: «Ти знову взяв книгу без дозволу?» — Я: «Ні, я просто викликав `iter()` на бібліотеці». — Вонг: «А повертати хто буде?» — Я: «`StopIteration` сам усе закриє».",
       "hero": "Доктор Стрендж"
@@ -105,6 +157,57 @@ const section: Section = {
       "code": "it = iter([10, 20, 30, 40])\nprint(20 in it)        # шукає... і з'їдає 10 та 20\nprint(list(it))        # лишилось тільки те, що після\n\ngen = (x * 2 for x in range(3))\nprint(list(gen))\nprint(list(gen))       # вдруге — порожньо!",
       "title": "exhausted.py",
       "output": "True\n[30, 40]\n[0, 2, 4]\n[]"
+    },
+    {
+      type: "flow",
+      title: "Як in шукає в ітераторі (і з'їдає його)",
+      nodes: [
+        { id: "s", kind: "start", label: "20 in it", col: 0, row: 0 },
+        { id: "nx", kind: "call", label: "x = next(it)", col: 0, row: 1 },
+        { id: "stop", kind: "decision", label: "StopIteration?", col: 0, row: 2 },
+        { id: "eq", kind: "decision", label: "x == 20 ?", col: 0, row: 3 },
+        { id: "yes", kind: "end", label: "True", col: 0, row: 4 },
+        { id: "no", kind: "end", label: "False", col: 1, row: 3 },
+      ],
+      edges: [
+        { from: "s", to: "nx" },
+        { from: "nx", to: "stop" },
+        { from: "stop", to: "eq", label: "Ні" },
+        { from: "stop", to: "no", label: "Так", side: "right" },
+        { from: "eq", to: "yes", label: "Так" },
+        { from: "eq", to: "nx", label: "Ні", side: "left" },
+      ],
+      scenarios: [
+        {
+          name: "20 in iter([10, 20, 30, 40])",
+          steps: [
+            { node: "s", note: "`it = iter([10, 20, 30, 40])`" },
+            { node: "nx", note: "`x = 10` — елемент спожито" },
+            { node: "stop", note: "ні" },
+            { node: "eq", note: "`10 == 20` → False" },
+            { node: "nx", note: "`x = 20` — теж спожито" },
+            { node: "stop", note: "ні" },
+            { node: "eq", note: "`20 == 20` → True" },
+            { node: "yes", note: "результат `True`; у `it` лишились тільки `[30, 40]`" },
+          ],
+        },
+        {
+          name: "50 in iter([10, 20])",
+          steps: [
+            { node: "s", note: "`it = iter([10, 20])`" },
+            { node: "nx", note: "`x = 10`" },
+            { node: "stop", note: "ні" },
+            { node: "eq", note: "`10 == 50` → False" },
+            { node: "nx", note: "`x = 20`" },
+            { node: "stop", note: "ні" },
+            { node: "eq", note: "`20 == 50` → False" },
+            { node: "nx", note: "елементів немає — `StopIteration`" },
+            { node: "stop", note: "так" },
+            { node: "no", note: "результат `False`; `list(it)` тепер `[]` — ітератор вичерпано" },
+          ],
+        },
+      ],
+      caption: "Пошук у списку можна повторювати скільки завгодно, а в ітераторі кожна перевірка `next()` безповоротно зсуває закладку.",
     },
     {
       "type": "heading",
@@ -146,6 +249,65 @@ const section: Section = {
         4
       ],
       "output": "generator\nСтарт відліку\n3\n2\nКінець\n[1]"
+    },
+    {
+      type: "flow",
+      title: "next() і yield: генератор на паузі",
+      nodes: [
+        { id: "s", kind: "start", label: "Старт", col: 0, row: 0 },
+        { id: "mk", kind: "call", label: "gen = countdown(n)", col: 0, row: 1 },
+        { id: "nx", kind: "call", label: "next(gen)", col: 0, row: 2 },
+        { id: "run", kind: "process", label: "виконати тіло з\nмісця паузи", col: 0, row: 3 },
+        { id: "cond", kind: "decision", label: "while n > 0 ?", col: 0, row: 4 },
+        { id: "y", kind: "io", label: "yield n", col: 0, row: 5 },
+        { id: "fin", kind: "io", label: "print(\"Кінець\")", col: 1, row: 5 },
+        { id: "stop", kind: "end", label: "StopIteration", col: 1, row: 6 },
+      ],
+      edges: [
+        { from: "s", to: "mk" },
+        { from: "mk", to: "nx" },
+        { from: "nx", to: "run" },
+        { from: "run", to: "cond" },
+        { from: "cond", to: "y", label: "True" },
+        { from: "cond", to: "fin", label: "False", side: "right" },
+        { from: "y", to: "nx", label: "пауза", side: "left" },
+        { from: "fin", to: "stop" },
+      ],
+      scenarios: [
+        {
+          name: "countdown(2)",
+          steps: [
+            { node: "s" },
+            { node: "mk", note: "тіло ще **не** виконується; стан `GEN_CREATED`" },
+            { node: "nx", note: "перший `next()` — запускаємо з першого рядка" },
+            { node: "run", note: "вивід: `Старт відліку`; `n = 2`" },
+            { node: "cond", note: "`2 > 0` → True" },
+            { node: "y", note: "`next()` повертає `2`; функція заморожена (`GEN_SUSPENDED`), `n = 2` збережено" },
+            { node: "nx", note: "другий `next()` — розморожуємо після `yield`" },
+            { node: "run", note: "`n -= 1` → `n = 1`" },
+            { node: "cond", note: "`1 > 0` → True" },
+            { node: "y", note: "`next()` повертає `1`; знову пауза" },
+            { node: "nx", note: "третій `next()`" },
+            { node: "run", note: "`n -= 1` → `n = 0`" },
+            { node: "cond", note: "`0 > 0` → False — вихід з while" },
+            { node: "fin", note: "вивід: `Кінець`" },
+            { node: "stop", note: "функція дійшла до кінця → `StopIteration`, стан `GEN_CLOSED`" },
+          ],
+        },
+        {
+          name: "countdown(0)",
+          steps: [
+            { node: "s" },
+            { node: "mk", note: "`GEN_CREATED`, нічого не надруковано" },
+            { node: "nx", note: "перший `next()`" },
+            { node: "run", note: "вивід: `Старт відліку`; `n = 0`" },
+            { node: "cond", note: "`0 > 0` → False" },
+            { node: "fin", note: "вивід: `Кінець`" },
+            { node: "stop", note: "жодного `yield` — перший же `next()` кидає `StopIteration`" },
+          ],
+        },
+      ],
+      caption: "Кожен `next()` проганяє тіло лише до найближчого `yield`. Між викликами генератор «спить» разом з усіма локальними змінними.",
     },
     {
       "type": "viz",

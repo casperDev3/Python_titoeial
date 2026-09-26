@@ -25,7 +25,7 @@ const PRESETS: Record<string, Tok[]> = {
     { kind: "pos", value: "3" },
     { kind: "pos", value: '"Цую"' },
     { kind: "kw", name: "speed", value: "9" },
-    { kind: "kw", name: "mood", value: '"😊"' },
+    { kind: "kw", name: "mood", value: '"calm"' },
   ],
   d: [
     { kind: "kw", name: "rank", value: "2" },
@@ -70,19 +70,19 @@ function explain(toks: Tok[], k: number): string {
 }
 
 function Chip({ id, children, tone = "accent" }: { id: string; children: ReactNode; tone?: "accent" | "kw" | "def" }) {
-  const bg =
-    tone === "kw"
-      ? "linear-gradient(120deg, var(--accent-2), color-mix(in oklab, var(--accent-2) 60%, var(--accent)))"
-      : tone === "def"
-        ? "color-mix(in oklab, var(--label-3) 55%, transparent)"
-        : "linear-gradient(120deg, var(--accent), color-mix(in oklab, var(--accent) 70%, var(--accent-2)))";
+  const base = tone === "kw" ? "var(--accent-2)" : tone === "def" ? "var(--label-3)" : "var(--accent)";
+  const style = {
+    background: `color-mix(in oklab, ${base} 13%, white)`,
+    borderColor: `color-mix(in oklab, ${base} 45%, white)`,
+    color: tone === "def" ? "var(--label-2)" : `color-mix(in oklab, ${base} 62%, black)`,
+  };
   return (
     <motion.span
       layoutId={id}
       layout
       transition={{ type: "spring", stiffness: 260, damping: 24 }}
-      className="inline-flex items-center rounded-[9px] px-2 py-0.5 font-mono text-[12px] font-semibold whitespace-nowrap text-white shadow-sm"
-      style={{ background: bg }}
+      className="inline-flex items-center rounded-[9px] border px-2 py-0.5 font-mono text-[12px] font-semibold whitespace-nowrap"
+      style={style}
     >
       {children}
     </motion.span>
@@ -230,13 +230,13 @@ export function ArgsBinder() {
 
       <ControlBar>
         <Btn variant="accent" onClick={() => setK((v) => Math.min(toks.length + 1, v + 1))} disabled={done}>
-          Далі <ChevronRight className="size-4" />
+          Далі <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn onClick={() => setK(toks.length + 1)} disabled={done}>
           Усе одразу
         </Btn>
         <Btn onClick={() => setK(0)}>
-          <RotateCcw className="size-4" /> Скинути
+          <RotateCcw className="size-4" strokeWidth={1.75} /> Скинути
         </Btn>
       </ControlBar>
     </div>

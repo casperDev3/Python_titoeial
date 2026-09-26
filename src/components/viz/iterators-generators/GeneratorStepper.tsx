@@ -1,9 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { ChevronLeft, ChevronRight, Cpu, Pause, Play, RotateCcw, ScrollText, Snowflake } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Btn, ControlBar } from "../kit";
-import { CodePane, Tag } from "./shared";
+import { CodePane, INK, Tag, WARN } from "./shared";
 
 const GEN_CODE = [
   "def countdown(n):",
@@ -92,7 +93,8 @@ export function GeneratorStepper() {
         {/* Викликач */}
         <div className="min-w-0">
           <div className="mb-1.5 flex items-center gap-2 text-[12px] font-semibold text-label-2">
-            <span>📜 Код, що викликає</span>
+            <ScrollText className="size-4" strokeWidth={1.75} />
+            <span>Код, що викликає</span>
           </div>
           <CodePane lines={CALLER_CODE} active={step.caller} id="gen-caller" tone={step.error ? "warn" : "accent"} />
           <div className="mt-2 min-h-[92px] rounded-2xl bg-black/80 px-3 py-2 font-mono text-[12px] leading-relaxed text-[#e5e5ea]">
@@ -115,7 +117,8 @@ export function GeneratorStepper() {
         {/* Генератор */}
         <div className="relative min-w-0">
           <div className="mb-1.5 flex flex-wrap items-center gap-2 text-[12px] font-semibold text-label-2">
-            <span>🌀 Фрейм генератора</span>
+            <Cpu className="size-4" strokeWidth={1.75} />
+            <span>Фрейм генератора</span>
             <motion.span
               key={step.state}
               initial={{ scale: 0.7, opacity: 0 }}
@@ -137,15 +140,16 @@ export function GeneratorStepper() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="pointer-events-none absolute top-2 right-2 rounded-full px-2 py-0.5 text-[10.5px] font-bold text-white"
-                style={{ background: "#ff9f0a" }}
+                className="pointer-events-none absolute top-2 right-2 flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10.5px] font-bold"
+                style={{ background: "#fff7ed", borderColor: "#fdba74", color: WARN }}
               >
-                ❄ пауза
+                <Snowflake className="size-3" strokeWidth={1.75} />
+                пауза
               </motion.div>
             )}
           </motion.div>
           <div className="mt-2 flex flex-wrap items-center gap-2 rounded-2xl px-3 py-2 font-mono text-[12.5px]"
-            style={{ background: "color-mix(in oklab, var(--accent) 9%, transparent)" }}>
+            style={{ background: "color-mix(in oklab, var(--accent) 9%, white)" }}>
             <span className="text-label-2">локальні:</span>
             {step.n === null ? (
               <span className="text-label-3">—</span>
@@ -156,7 +160,7 @@ export function GeneratorStepper() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 420, damping: 24 }}
               >
-                n = <b style={{ color: "var(--accent)" }}>{step.n}</b>
+                n = <b style={{ color: INK }}>{step.n}</b>
               </motion.span>
             )}
           </div>
@@ -168,7 +172,7 @@ export function GeneratorStepper() {
                 animate={{ opacity: [0, 1, 1, 0], scale: [0.4, 1.15, 1, 0.8], x: [0, -40, -110, -160], y: [0, -20, -30, 10] }}
                 transition={{ duration: 1.05, ease: "easeInOut" }}
                 className="pointer-events-none absolute top-1/2 left-1/2 z-10 hidden size-10 place-items-center rounded-full font-mono text-[15px] font-bold text-white shadow-lg sm:grid"
-                style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-2))" }}
+                style={{ background: INK }}
               >
                 {step.flying}
               </motion.div>
@@ -184,8 +188,8 @@ export function GeneratorStepper() {
         className="mx-5 mt-3 flex items-start gap-2 rounded-2xl px-4 py-3 text-[13.5px]"
         style={{
           background: step.error
-            ? "color-mix(in oklab, #ff9f0a 14%, transparent)"
-            : "color-mix(in oklab, var(--accent-2) 10%, transparent)",
+            ? "color-mix(in oklab, #f59e0b 14%, white)"
+            : "color-mix(in oklab, var(--accent-2) 9%, white)",
         }}
       >
         <span className="font-mono text-[11px] font-bold text-label-3 tabular-nums">
@@ -193,7 +197,7 @@ export function GeneratorStepper() {
         </span>
         <span>
           {step.flying && (
-            <b style={{ color: "var(--accent)" }}>
+            <b style={{ color: INK }}>
               yield → {step.flying}.{" "}
             </b>
           )}
@@ -203,10 +207,12 @@ export function GeneratorStepper() {
 
       <ControlBar>
         <Btn onClick={() => setI((v) => Math.max(0, v - 1))} disabled={i === 0 || play}>
-          ← Назад
+          <ChevronLeft className="size-4" strokeWidth={1.75} />
+          Назад
         </Btn>
         <Btn variant="accent" onClick={() => setI((v) => Math.min(last, v + 1))} disabled={i === last || play}>
-          Крок →
+          Крок
+          <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn
           onClick={() => {
@@ -214,7 +220,8 @@ export function GeneratorStepper() {
             setPlay((p) => !p);
           }}
         >
-          {play ? "❚❚ Пауза" : "▶ Авто"}
+          {play ? <Pause className="size-4" strokeWidth={1.75} /> : <Play className="size-4" strokeWidth={1.75} />}
+          {play ? "Пауза" : "Авто"}
         </Btn>
         <Btn
           onClick={() => {
@@ -222,6 +229,7 @@ export function GeneratorStepper() {
             setI(0);
           }}
         >
+          <RotateCcw className="size-4" strokeWidth={1.75} />
           Скинути
         </Btn>
       </ControlBar>

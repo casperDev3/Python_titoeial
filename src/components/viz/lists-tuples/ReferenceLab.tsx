@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { RotateCcw } from "lucide-react";
 import { Btn, Console, ControlBar, Segmented } from "../kit";
 
 type Mode = "alias" | "copy" | "deep";
@@ -280,7 +281,10 @@ export function ReferenceLab() {
         <Btn onClick={() => act("assign")} disabled={used('b[0] = "Ace"')}>
           b[0] = &quot;Ace&quot;
         </Btn>
-        <Btn onClick={() => changeMode(mode)}>↺</Btn>
+        <Btn onClick={() => changeMode(mode)}>
+          <RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />
+          <span className="sr-only">Скинути</span>
+        </Btn>
       </ControlBar>
 
       <Console

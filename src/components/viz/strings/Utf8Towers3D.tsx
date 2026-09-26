@@ -48,7 +48,7 @@ function ByteCube({
     const s = g.scale.x + (target - g.scale.x) * k;
     g.scale.setScalar(s);
     g.position.y = y + (1 - s) * 0.8;
-    mat.current.emissiveIntensity += ((selected ? 0.5 : 0.12) - mat.current.emissiveIntensity) * k;
+    mat.current.emissiveIntensity += ((selected ? 0.3 : 0.05) - mat.current.emissiveIntensity) * k;
   });
   return (
     <group ref={ref} position-y={init.y} scale={0.001}>
@@ -67,7 +67,7 @@ function ByteCube({
           ref={mat}
           color={color}
           emissive={color}
-          emissiveIntensity={0.12}
+          emissiveIntensity={0.05}
           roughness={0.15}
           transmission={0.3}
           thickness={0.4}
@@ -95,7 +95,7 @@ function Towers({ cs, sel, setSel }: { cs: string[]; sel: number; setSel: (i: nu
       {/* підсвічена «підставка» під вибраною колоною */}
       <mesh ref={disc} position={[0, BASE_Y - CUBE / 2 - 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[0.62, 48]} />
-        <meshBasicMaterial color={c.accent} transparent opacity={0.35} />
+        <meshBasicMaterial color={c.accent} transparent opacity={0.22} />
       </mesh>
       {cs.map((ch, j) => {
         const bytes = utf8(ch);
@@ -159,11 +159,11 @@ export function Utf8Towers3D() {
       </div>
 
       <div className="grid gap-2 px-5 sm:grid-cols-[1.4fr_1fr]">
-        <div className="rounded-[16px] px-4 py-3" style={{ background: "color-mix(in oklab, var(--accent) 11%, transparent)" }}>
+        <div className="rounded-[16px] px-4 py-3" style={{ background: "color-mix(in oklab, var(--accent) 9%, white)" }}>
           {n > 0 ? (
             <>
               <div className="font-mono text-[13px]">
-                <b style={{ color: "var(--accent)" }}>{pyRepr(ch)}</b> <span className="text-label-2">{uplus(ch)} →</span>{" "}
+                <b style={{ color: "color-mix(in oklab, var(--accent) 60%, var(--label))" }}>{pyRepr(ch)}</b> <span className="text-label-2">{uplus(ch)} →</span>{" "}
                 {bytes.map((b) => "\\x" + hex2(b)).join("")}
               </div>
               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -171,11 +171,11 @@ export function Utf8Towers3D() {
                   const bits = bin8(b);
                   const p = prefixLen(b, k === 0, bytes.length);
                   return (
-                    <span key={k} className="rounded-lg bg-black/75 px-2 py-1 font-mono text-[12.5px] tracking-wider text-white">
-                      <span style={{ color: k === 0 ? "var(--accent)" : "var(--accent-2)" }} className="font-bold">
+                    <span key={k} className="rounded-lg bg-white px-2 py-1 font-mono text-[12.5px] tracking-wider text-label ring-1 ring-black/10">
+                      <span style={{ color: k === 0 ? "color-mix(in oklab, var(--accent) 70%, var(--label))" : "color-mix(in oklab, var(--accent-2) 75%, var(--label))" }} className="font-bold">
                         {bits.slice(0, p)}
                       </span>
-                      <span className="opacity-90">{bits.slice(p)}</span>
+                      <span className="text-label-2">{bits.slice(p)}</span>
                     </span>
                   );
                 })}
@@ -193,7 +193,7 @@ export function Utf8Towers3D() {
             len(s) = <b>{n}</b>
           </div>
           <div>
-            len(s.encode(&quot;utf-8&quot;)) = <b style={{ color: "var(--accent)" }}>{total}</b>
+            len(s.encode(&quot;utf-8&quot;)) = <b style={{ color: "color-mix(in oklab, var(--accent) 60%, var(--label))" }}>{total}</b>
           </div>
           <div className="mt-1 text-[11.5px] text-label-2">
             ASCII — 1 байт, кирилиця — 2, € — 3, більшість емодзі — 4.

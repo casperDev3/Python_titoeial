@@ -143,6 +143,227 @@ const section: Section = {
       "output": "мультяшна фізика | БОЇНГ! 💥\nпавуче чуття\n['SpiderHam', 'Toon', 'Spider', 'object']\n['PeterB', 'Spider', 'Toon', 'object']"
     },
     {
+      "type": "flow",
+      "title": "Пошук методу по MRO",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "obj.power()",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "mro",
+          "kind": "process",
+          "label": "mro =\ntype(obj).__mro__",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "more",
+          "kind": "decision",
+          "label": "є наступний\ncls у mro?",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "has",
+          "kind": "decision",
+          "label": "'power' in\nvars(cls)?",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "call",
+          "kind": "call",
+          "label": "cls.power(obj)",
+          "col": 0,
+          "row": 4
+        },
+        {
+          "id": "e",
+          "kind": "end",
+          "label": "результат",
+          "col": 0,
+          "row": 5
+        },
+        {
+          "id": "err",
+          "kind": "end",
+          "label": "AttributeError",
+          "col": 1,
+          "row": 5
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "mro"
+        },
+        {
+          "from": "mro",
+          "to": "more"
+        },
+        {
+          "from": "more",
+          "to": "has",
+          "label": "Так"
+        },
+        {
+          "from": "more",
+          "to": "err",
+          "label": "Ні",
+          "side": "right"
+        },
+        {
+          "from": "has",
+          "to": "call",
+          "label": "Так"
+        },
+        {
+          "from": "has",
+          "to": "more",
+          "label": "Ні",
+          "side": "left"
+        },
+        {
+          "from": "call",
+          "to": "e"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "ham.power()",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`ham = SpiderHam()`, викликаємо `ham.power()`"
+            },
+            {
+              "node": "mro",
+              "note": "`mro` → `SpiderHam, Toon, Spider, object`"
+            },
+            {
+              "node": "more",
+              "note": "`cls = SpiderHam`"
+            },
+            {
+              "node": "has",
+              "note": "у `SpiderHam` лише `pass` — `power` немає"
+            },
+            {
+              "node": "more",
+              "note": "`cls = Toon`"
+            },
+            {
+              "node": "has",
+              "note": "`'power' in vars(Toon)` → `True` — знайшли!"
+            },
+            {
+              "node": "call",
+              "note": "`Toon.power(ham)` — до `Spider` черга не дійшла"
+            },
+            {
+              "node": "e",
+              "note": "`'мультяшна фізика'`"
+            }
+          ]
+        },
+        {
+          "name": "PeterB().power()",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`PeterB().power()`"
+            },
+            {
+              "node": "mro",
+              "note": "`mro` → `PeterB, Spider, Toon, object`"
+            },
+            {
+              "node": "more",
+              "note": "`cls = PeterB`"
+            },
+            {
+              "node": "has",
+              "note": "у `PeterB` методу немає"
+            },
+            {
+              "node": "more",
+              "note": "`cls = Spider` — він стоїть першим у `class PeterB(Spider, Toon)`"
+            },
+            {
+              "node": "has",
+              "note": "`'power' in vars(Spider)` → `True`"
+            },
+            {
+              "node": "call",
+              "note": "`Spider.power(obj)`"
+            },
+            {
+              "node": "e",
+              "note": "`'павуче чуття'`"
+            }
+          ]
+        },
+        {
+          "name": "ham.fly()",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`ham.fly()` — такого методу ніде немає"
+            },
+            {
+              "node": "mro",
+              "note": "`mro` → `SpiderHam, Toon, Spider, object`"
+            },
+            {
+              "node": "more",
+              "note": "`cls = SpiderHam`"
+            },
+            {
+              "node": "has",
+              "note": "немає"
+            },
+            {
+              "node": "more",
+              "note": "`cls = Toon`"
+            },
+            {
+              "node": "has",
+              "note": "немає"
+            },
+            {
+              "node": "more",
+              "note": "`cls = Spider`"
+            },
+            {
+              "node": "has",
+              "note": "немає"
+            },
+            {
+              "node": "more",
+              "note": "`cls = object`"
+            },
+            {
+              "node": "has",
+              "note": "навіть в `object` немає"
+            },
+            {
+              "node": "more",
+              "note": "класи в `mro` закінчились"
+            },
+            {
+              "node": "err",
+              "note": "`AttributeError: 'SpiderHam' object has no attribute 'fly'`"
+            }
+          ]
+        }
+      ],
+      "caption": "Пошук іде строго за `__mro__` і зупиняється на **першому** збігу. Тому порядок батьків у `class SpiderHam(Toon, Spider)` змінює результат."
+    },
+    {
       "type": "code",
       "code": "class Spider:\n    def __init__(self):\n        print(\"  Spider.__init__\")\n        super().__init__()\n\n\nclass Miles(Spider):\n    def __init__(self):\n        print(\"  Miles.__init__ → super()\")\n        super().__init__()\n\n\nclass Gwen(Spider):\n    def __init__(self):\n        print(\"  Gwen.__init__ → super()\")\n        super().__init__()\n\n\nclass Hybrid(Miles, Gwen):                 # класичний «ромб»\n    def __init__(self):\n        print(\"Hybrid.__init__ → super()\")\n        super().__init__()\n\n\nprint(\" → \".join(c.__name__ for c in Hybrid.__mro__))\nHybrid()                                   # Spider — лише ОДИН раз",
       "title": "diamond_super.py",
@@ -199,6 +420,217 @@ const section: Section = {
       ]
     },
     {
+      "type": "flow",
+      "title": "print(obj): __str__ чи __repr__?",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "print(obj)",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "str",
+          "kind": "call",
+          "label": "str(obj)",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "hasStr",
+          "kind": "decision",
+          "label": "клас має\n__str__?",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "hasRepr",
+          "kind": "decision",
+          "label": "клас має\n__repr__?",
+          "col": 1,
+          "row": 2
+        },
+        {
+          "id": "useStr",
+          "kind": "call",
+          "label": "obj.__str__()",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "useRepr",
+          "kind": "call",
+          "label": "obj.__repr__()",
+          "col": 1,
+          "row": 4
+        },
+        {
+          "id": "out",
+          "kind": "io",
+          "label": "вивести рядок",
+          "col": 0,
+          "row": 5
+        },
+        {
+          "id": "def",
+          "kind": "process",
+          "label": "object.__repr__:\n<X object at 0x…>",
+          "col": 2,
+          "row": 5
+        },
+        {
+          "id": "e",
+          "kind": "end",
+          "label": "Кінець",
+          "col": 0,
+          "row": 6
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "str"
+        },
+        {
+          "from": "str",
+          "to": "hasStr"
+        },
+        {
+          "from": "hasStr",
+          "to": "useStr",
+          "label": "Так"
+        },
+        {
+          "from": "hasStr",
+          "to": "hasRepr",
+          "label": "Ні"
+        },
+        {
+          "from": "hasRepr",
+          "to": "useRepr",
+          "label": "Так"
+        },
+        {
+          "from": "hasRepr",
+          "to": "def",
+          "label": "Ні",
+          "side": "right"
+        },
+        {
+          "from": "useStr",
+          "to": "out"
+        },
+        {
+          "from": "useRepr",
+          "to": "out"
+        },
+        {
+          "from": "def",
+          "to": "out"
+        },
+        {
+          "from": "out",
+          "to": "e"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "є __str__",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`print(miles)`, де `Spider` має і `__str__`, і `__repr__`"
+            },
+            {
+              "node": "str",
+              "note": "`print` перетворює об'єкт на рядок через `str()`"
+            },
+            {
+              "node": "hasStr",
+              "note": "так, `Spider.__str__` визначено"
+            },
+            {
+              "node": "useStr",
+              "note": "повертає `'🕷️ Майлз із Землі-1610'`"
+            },
+            {
+              "node": "out",
+              "note": "вивід: `🕷️ Майлз із Землі-1610`"
+            },
+            {
+              "node": "e"
+            }
+          ]
+        },
+        {
+          "name": "лише __repr__",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`print(gwen)`, у класі `Spider` визначено тільки `__repr__`"
+            },
+            {
+              "node": "str",
+              "note": "`str(gwen)`"
+            },
+            {
+              "node": "hasStr",
+              "note": "власного `__str__` немає — `object.__str__` передає справу `repr()`"
+            },
+            {
+              "node": "hasRepr",
+              "note": "`Spider.__repr__` є"
+            },
+            {
+              "node": "useRepr",
+              "note": "повертає `\"Spider(name='Гвен', earth=65)\"`"
+            },
+            {
+              "node": "out",
+              "note": "вивід: `Spider(name='Гвен', earth=65)`"
+            },
+            {
+              "node": "e"
+            }
+          ]
+        },
+        {
+          "name": "нічого немає",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`print(ham)`, клас без жодного dunder-методу"
+            },
+            {
+              "node": "str",
+              "note": "`str(ham)`"
+            },
+            {
+              "node": "hasStr",
+              "note": "немає `__str__`"
+            },
+            {
+              "node": "hasRepr",
+              "note": "і `__repr__` немає"
+            },
+            {
+              "node": "def",
+              "note": "працює стандартний `object.__repr__`"
+            },
+            {
+              "node": "out",
+              "note": "вивід: `<__main__.Spider object at 0x10…>` — адреса щоразу інша"
+            },
+            {
+              "node": "e"
+            }
+          ]
+        }
+      ],
+      "caption": "Визнач хоча б `__repr__` — тоді й `print`, і списки, і дебагер покажуть щось зрозуміле. `__str__` — приємний бонус для людей."
+    },
+    {
       "type": "tip",
       "md": "Якщо реалізуєш лише **один** з двох — роби `__repr__`. Він працює скрізь (і в `print`, і в списках, і в дебагері), а `__str__` лише в `print`/`str`. Трюк `{self.name!r}` у f-рядку сам поставить лапки навколо рядків — `repr` вийде валідним Python-кодом.",
       "title": "Спершу __repr__"
@@ -221,6 +653,158 @@ const section: Section = {
         14,
         17
       ]
+    },
+    {
+      "type": "flow",
+      "title": "Як Python обчислює a == b",
+      "nodes": [
+        {
+          "id": "s",
+          "kind": "start",
+          "label": "a == b",
+          "col": 0,
+          "row": 0
+        },
+        {
+          "id": "left",
+          "kind": "call",
+          "label": "a.__eq__(b)",
+          "col": 0,
+          "row": 1
+        },
+        {
+          "id": "ni1",
+          "kind": "decision",
+          "label": "NotImplemented?",
+          "col": 0,
+          "row": 2
+        },
+        {
+          "id": "right",
+          "kind": "call",
+          "label": "b.__eq__(a)",
+          "col": 0,
+          "row": 3
+        },
+        {
+          "id": "ni2",
+          "kind": "decision",
+          "label": "NotImplemented?",
+          "col": 0,
+          "row": 4
+        },
+        {
+          "id": "is",
+          "kind": "process",
+          "label": "a is b",
+          "col": 0,
+          "row": 5
+        },
+        {
+          "id": "e",
+          "kind": "end",
+          "label": "True / False",
+          "col": 0,
+          "row": 6
+        }
+      ],
+      "edges": [
+        {
+          "from": "s",
+          "to": "left"
+        },
+        {
+          "from": "left",
+          "to": "ni1"
+        },
+        {
+          "from": "ni1",
+          "to": "right",
+          "label": "Так"
+        },
+        {
+          "from": "ni1",
+          "to": "e",
+          "label": "Ні",
+          "side": "right"
+        },
+        {
+          "from": "right",
+          "to": "ni2"
+        },
+        {
+          "from": "ni2",
+          "to": "is",
+          "label": "Так"
+        },
+        {
+          "from": "ni2",
+          "to": "e",
+          "label": "Ні",
+          "side": "right"
+        },
+        {
+          "from": "is",
+          "to": "e"
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "Spider == Spider",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`a = Spider(\"Майлз\", 90)`, `b = Spider(\"Майлз\", 90)`"
+            },
+            {
+              "node": "left",
+              "note": "`isinstance(b, Spider)` → порівнюємо кортежі `('Майлз', 90) == ('Майлз', 90)`"
+            },
+            {
+              "node": "ni1",
+              "note": "отримали `True` — справжню відповідь"
+            },
+            {
+              "node": "e",
+              "note": "`a == b` → `True` (хоча `a is b` → `False`)"
+            }
+          ]
+        },
+        {
+          "name": "Spider == \"Майлз\"",
+          "steps": [
+            {
+              "node": "s",
+              "note": "`a == \"Майлз\"`"
+            },
+            {
+              "node": "left",
+              "note": "`\"Майлз\"` не `Spider` → `return NotImplemented`"
+            },
+            {
+              "node": "ni1",
+              "note": "`a` не вміє — даємо шанс правому операнду"
+            },
+            {
+              "node": "right",
+              "note": "`str.__eq__(\"Майлз\", a)` → теж `NotImplemented`"
+            },
+            {
+              "node": "ni2",
+              "note": "ніхто не вміє порівнювати"
+            },
+            {
+              "node": "is",
+              "note": "запасний план — перевірка тотожності: `a is \"Майлз\"` → `False`"
+            },
+            {
+              "node": "e",
+              "note": "`a == \"Майлз\"` → `False`, без жодної помилки"
+            }
+          ]
+        }
+      ],
+      "caption": "`NotImplemented` — не помилка, а сигнал «спитай іншого». Якщо `b` — екземпляр *підкласу* `type(a)`, Python спершу питає саме `b`. Так само працюють `+` (`__add__` → `__radd__`), `<` (`__lt__` → `__gt__`) тощо."
     },
     {
       "type": "code",

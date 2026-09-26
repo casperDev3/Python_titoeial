@@ -127,22 +127,23 @@ function Blueprint({ accent, accent2, clsColor, hex }: { accent: string; accent2
   return (
     <group ref={g} position={BLUEPRINT}>
       <RoundedBox args={[2.7, 1.9, 0.06]} radius={0.05}>
-        <meshPhysicalMaterial color={accent2} transmission={0.6} thickness={0.4} roughness={0.2} transparent opacity={0.5} emissive={accent2} emissiveIntensity={0.15} />
+        <meshPhysicalMaterial color="#ffffff" transmission={0.5} thickness={0.4} roughness={0.25} transparent opacity={0.7} />
       </RoundedBox>
+      <Line points={[[-1.35, -0.95, 0.04], [1.35, -0.95, 0.04], [1.35, 0.95, 0.04], [-1.35, 0.95, 0.04], [-1.35, -0.95, 0.04]]} color={accent2} lineWidth={1.4} />
       {grid.map((p, i) => (
-        <Line key={i} points={p} color={accent} lineWidth={0.6} transparent opacity={0.35} />
+        <Line key={i} points={p} color={accent} lineWidth={0.6} transparent opacity={0.22} />
       ))}
       <Html position={[0, 0, 0.06]} center transform distanceFactor={4.2} zIndexRange={[10, 0]} style={{ pointerEvents: "none" }}>
-        <div className="w-[260px] rounded-2xl bg-black/55 px-4 py-3 font-mono text-[15px] leading-relaxed text-white backdrop-blur-md">
-          <div className="font-bold" style={{ color: "#ffd27a" }}>class Suit:</div>
+        <div className="w-[260px] rounded-2xl border border-black/10 bg-white/90 px-4 py-3 font-mono text-[15px] leading-relaxed text-[#1c1c1e] shadow-sm">
+          <div className="font-bold" style={{ color: accent }}>class Suit:</div>
           <div className="pl-4">
-            maker = <span style={{ color: "#a7f3d0" }}>&quot;Stark&quot;</span>
+            maker = <span style={{ color: "#15803d" }}>&quot;Stark&quot;</span>
           </div>
           <div className="flex items-center gap-2 pl-4">
-            color = <span style={{ color: "#a7f3d0" }}>&quot;{clsColor}&quot;</span>
+            color = <span style={{ color: "#15803d" }}>&quot;{clsColor}&quot;</span>
             <span className="inline-block size-3 rounded-full" style={{ background: hex }} />
           </div>
-          <div className="pl-4 text-white/70">def __init__(self, name): …</div>
+          <div className="pl-4 text-[#6e6e73]">def __init__(self, name): …</div>
         </div>
       </Html>
     </group>
@@ -215,11 +216,11 @@ export function BlueprintForge() {
               />
               <Html position={[slot[0], slot[1] - 0.85, slot[2]]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
                 <div
-                  className="rounded-full px-2 py-0.5 font-mono text-[11px] font-bold whitespace-nowrap text-white shadow-lg"
-                  style={{ background: sel === s.id ? "rgba(0,0,0,.7)" : "rgba(0,0,0,.4)", backdropFilter: "blur(8px)" }}
+                  className="rounded-full border bg-white/90 px-2 py-0.5 font-mono text-[11px] font-bold whitespace-nowrap text-[#1c1c1e] shadow-sm"
+                  style={{ borderColor: sel === s.id ? c.accent : "rgba(0,0,0,.12)", color: sel === s.id ? c.accent : undefined }}
                 >
                   {varName(s)}
-                  {s.own && <span className="ml-1 font-normal opacity-80">· тінь</span>}
+                  {s.own && <span className="ml-1 font-normal text-[#6e6e73]">· тінь</span>}
                 </div>
               </Html>
             </group>
@@ -229,7 +230,7 @@ export function BlueprintForge() {
 
       <ControlBar>
         <Btn variant="accent" onClick={forge} disabled={suits.length >= NAMES.length}>
-          <Hammer className="size-4" /> Зібрати костюм
+          <Hammer className="size-4" strokeWidth={1.75} /> Зібрати костюм
         </Btn>
         <div className="flex items-center gap-2">
           <span className="font-mono text-[12px] text-label-2">Suit.color =</span>
@@ -255,21 +256,21 @@ export function BlueprintForge() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={SPRING}
-              className="rounded-2xl bg-black/80 px-4 py-3 font-mono text-[12px] leading-relaxed text-[#e5e5ea]"
+              className="rounded-2xl border border-separator bg-[var(--code-bg)] px-4 py-3 font-mono text-[12px] leading-relaxed text-label"
             >
               <div>
-                <span className="text-[#8e8e93]">&gt;&gt;&gt; </span>vars({varName(selected)})
+                <span className="text-label-3">&gt;&gt;&gt; </span>vars({varName(selected)})
               </div>
-              <div className="break-all text-[#a7f3d0]">
+              <div className="break-all text-[#15803d]">
                 {`{'name': '${selected.name}', 'energy': ${selected.energy}${selected.own ? ", 'color': 'blue'" : ""}}`}
               </div>
               <div className="mt-1">
-                <span className="text-[#8e8e93]">&gt;&gt;&gt; </span>
+                <span className="text-label-3">&gt;&gt;&gt; </span>
                 {varName(selected)}.color
               </div>
               <div>
-                <span className="text-[#a7f3d0]">&apos;{selected.own ? "blue" : clsColor}&apos;</span>
-                <span className="ml-2 text-[#8e8e93]">
+                <span className="text-[#15803d]">&apos;{selected.own ? "blue" : clsColor}&apos;</span>
+                <span className="ml-2 text-label-3">
                   # {selected.own ? "знайдено у самому об'єкті — клас не питали" : "в об'єкті немає → узято з класу Suit"}
                 </span>
               </div>
@@ -282,7 +283,7 @@ export function BlueprintForge() {
         </AnimatePresence>
         <div className="flex flex-wrap gap-2">
           <Btn onClick={toggleOwn} disabled={!selected}>
-            {selected?.own ? <Undo2 className="size-4" /> : <Paintbrush className="size-4" />}
+            {selected?.own ? <Undo2 className="size-4" strokeWidth={1.75} /> : <Paintbrush className="size-4" strokeWidth={1.75} />}
             <span className="font-mono text-[12px]">
               {selected ? (selected.own ? `del ${varName(selected)}.color` : `${varName(selected)}.color = "blue"`) : "обери костюм"}
             </span>
@@ -294,7 +295,7 @@ export function BlueprintForge() {
               setClsColor("red");
             }}
           >
-            <RotateCcw className="size-4" />
+            <RotateCcw className="size-4" strokeWidth={1.75} />
           </Btn>
         </div>
       </div>

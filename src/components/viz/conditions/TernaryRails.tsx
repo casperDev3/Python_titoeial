@@ -5,6 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Btn, ControlBar, Scene3D, Slider, useThemeColors, type ThemeColors } from "../kit";
+import { GREEN, MUTED } from "./palette";
 
 const Y = -0.7;
 
@@ -31,7 +32,7 @@ function Track({ curve, active, colors }: { curve: THREE.CatmullRomCurve3; activ
     }
     return out;
   }, [curve]);
-  const color = active ? colors.accent : "#8e8e93";
+  const color = active ? colors.accent : MUTED;
   return (
     <group>
       <mesh>
@@ -41,14 +42,14 @@ function Track({ curve, active, colors }: { curve: THREE.CatmullRomCurve3; activ
           emissive={active ? colors.accent : "#000000"}
           emissiveIntensity={active ? 0.55 : 0}
           transparent
-          opacity={active ? 1 : 0.28}
+          opacity={active ? 1 : 0.45}
           roughness={0.35}
         />
       </mesh>
       {sleepers.map((s, i) => (
         <mesh key={i} position={[s.p.x, Y - 0.07, s.p.z]} rotation={[0, s.r, 0]}>
           <boxGeometry args={[0.42, 0.04, 0.07]} />
-          <meshStandardMaterial color={"#8e8e93"} transparent opacity={active ? 0.55 : 0.18} />
+          <meshStandardMaterial color={MUTED} transparent opacity={active ? 0.7 : 0.35} />
         </mesh>
       ))}
     </group>
@@ -78,23 +79,23 @@ function Station({
     <group ref={ref} position={pos}>
       <RoundedBox args={[1.05, 0.55, 0.8]} radius={0.14} smoothness={4}>
         <meshPhysicalMaterial
-          color={active ? colors.accent : "#8e8e93"}
+          color={active ? colors.accent : "#ffffff"}
           emissive={active ? colors.accent : "#000000"}
-          emissiveIntensity={active ? 0.35 : 0}
-          transmission={0.35}
+          emissiveIntensity={active ? 0.25 : 0}
+          transmission={active ? 0.2 : 0.5}
           roughness={0.18}
           thickness={0.6}
           transparent
-          opacity={active ? 0.95 : 0.35}
+          opacity={active ? 0.95 : 0.6}
         />
       </RoundedBox>
       <Html center position={[0, 0.72, 0]} zIndexRange={[10, 0]}>
         <div
           className="pointer-events-none rounded-xl px-2.5 py-1 font-mono text-[12px] font-semibold whitespace-nowrap shadow-lg backdrop-blur-md transition-all duration-500"
           style={{
-            background: active ? "var(--accent)" : "var(--glass-bg-strong)",
+            background: active ? "var(--accent)" : "white",
             color: active ? "white" : "var(--label-2)",
-            opacity: active ? 1 : 0.7,
+            border: active ? "1px solid transparent" : "1px solid var(--separator)",
           }}
         >
           {label}
@@ -152,7 +153,7 @@ function Scene({ cond, run }: { cond: boolean; run: number }) {
       <Html center position={[-0.2, Y + 0.75, 0]} zIndexRange={[10, 0]}>
         <div
           className="pointer-events-none rounded-full px-2.5 py-1 font-mono text-[11.5px] font-bold whitespace-nowrap text-white shadow-lg"
-          style={{ background: cond ? "#30d158" : "var(--accent-2)" }}
+          style={{ background: cond ? GREEN : "var(--accent-2)" }}
         >
           if hp &gt; 0 → {cond ? "True" : "False"}
         </div>

@@ -38,6 +38,11 @@ export function MutableDefault() {
   };
 
   const hue = (id: number) => HUES[id % HUES.length];
+  const tag = (id: number) => ({
+    background: `color-mix(in oklab, ${hue(id)} 14%, white)`,
+    border: `1px solid color-mix(in oklab, ${hue(id)} 50%, white)`,
+    color: `color-mix(in oklab, ${hue(id)} 62%, black)`,
+  });
   const addr = (id: number) => `0x${(0x7f3a10 + id * 0x48).toString(16)}`;
 
   return (
@@ -100,8 +105,8 @@ export function MutableDefault() {
                   <span className="truncate">add_member(&quot;{c.name}&quot;)</span>
                   <span className="ml-auto shrink-0 text-label-3">→</span>
                   <span
-                    className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold text-white"
-                    style={{ background: hue(c.listId) }}
+                    className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold"
+                    style={tag(c.listId)}
                   >
                     {addr(c.listId)}
                   </span>
@@ -131,7 +136,7 @@ export function MutableDefault() {
                   style={{ borderColor: hue(l.id) }}
                 >
                   <div className="mb-1.5 flex items-center gap-2 text-[11px]">
-                    <span className="rounded-full px-2 py-0.5 font-mono font-bold text-white" style={{ background: hue(l.id) }}>
+                    <span className="rounded-full px-2 py-0.5 font-mono font-bold" style={tag(l.id)}>
                       {addr(l.id)}
                     </span>
                     <span className="text-label-3">
@@ -149,7 +154,7 @@ export function MutableDefault() {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           transition={{ type: "spring", stiffness: 500, damping: 24 }}
                           className="rounded-lg px-1.5 py-0.5 font-mono text-[12px]"
-                          style={{ background: "color-mix(in oklab, var(--accent) 14%, transparent)" }}
+                          style={{ background: "color-mix(in oklab, var(--accent) 14%, white)" }}
                         >
                           &apos;{it}&apos;
                         </motion.span>
@@ -165,7 +170,7 @@ export function MutableDefault() {
       </div>
 
       <div className="mx-5 rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-snug"
-        style={{ background: mode === "bad" ? "color-mix(in oklab, #ff453a 10%, transparent)" : "color-mix(in oklab, #30d158 12%, transparent)" }}>
+        style={{ background: mode === "bad" ? "color-mix(in oklab, #ff453a 10%, white)" : "color-mix(in oklab, #30d158 12%, white)" }}>
         {mode === "bad"
           ? calls.length > 1
             ? `Бачиш? ${calls.length} ${calls.length < 5 ? "виклики" : "викликів"} — і всі повертають ОДИН і той самий список. Він створився один раз, коли виконувався def.`
@@ -175,10 +180,10 @@ export function MutableDefault() {
 
       <ControlBar>
         <Btn variant="accent" onClick={call} disabled={calls.length >= NAMES.length}>
-          <Plus className="size-4" /> Викликати
+          <Plus className="size-4" strokeWidth={1.75} /> Викликати
         </Btn>
         <Btn onClick={() => reset(mode)}>
-          <RotateCcw className="size-4" /> Скинути
+          <RotateCcw className="size-4" strokeWidth={1.75} /> Скинути
         </Btn>
       </ControlBar>
     </div>

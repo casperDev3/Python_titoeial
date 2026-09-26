@@ -5,6 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Html, RoundedBox } from "@react-three/drei";
 import { AnimatePresence, motion } from "motion/react";
 import * as THREE from "three";
+import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import { Btn, ControlBar, Scene3D, useThemeColors } from "../kit";
 
 type ObjId = "goku" | "vegeta" | "none";
@@ -82,27 +83,27 @@ function ObjSphere({ id, alive, rc, selected, onPick }: { id: ObjId; alive: bool
       >
         <sphereGeometry args={[o.r, 48, 48]} />
         <meshPhysicalMaterial
-          color={color}
-          transmission={0.5}
+          color={selected ? color : "#ffffff"}
+          transmission={0.55}
           thickness={1.4}
-          roughness={0.1}
+          roughness={0.15}
           clearcoat={1}
           emissive={color}
-          emissiveIntensity={selected ? 0.55 : 0.18}
+          emissiveIntensity={selected ? 0.15 : 0.04}
         />
       </mesh>
       {/* кільце-лічильник: товщає з кількістю посилань */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[o.r + 0.16, 0.02 + rc * 0.018, 12, 64]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.6} />
+        <meshStandardMaterial color={color} roughness={0.35} />
       </mesh>
       <Html center position={[0, -o.r - 0.35, 0]} distanceFactor={8} style={{ pointerEvents: "none" }}>
         <div
-          className="flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[12px] font-semibold whitespace-nowrap backdrop-blur-md transition-opacity duration-300"
+          className="flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[12px] font-semibold whitespace-nowrap shadow-sm transition-opacity duration-300"
           style={{
-            background: "var(--glass-bg-strong)",
+            background: "#ffffff",
             color: "var(--label)",
-            border: "1px solid var(--glass-border)",
+            border: "1px solid rgb(60 60 67 / 0.2)",
             opacity: alive ? 1 : 0,
           }}
         >
@@ -144,7 +145,7 @@ function Link({ from, to, visible }: { from: [number, number, number]; to: [numb
   return (
     <mesh ref={mesh}>
       <cylinderGeometry args={[0.035, 0.035, 1, 10]} />
-      <meshStandardMaterial color={c.accent} emissive={c.accent} emissiveIntensity={0.7} transparent opacity={0.85} />
+      <meshStandardMaterial color={c.accent} roughness={0.4} transparent opacity={0.9} />
     </mesh>
   );
 }
@@ -162,7 +163,7 @@ function Tag({ id, visible }: { id: NameId; visible: boolean }) {
   return (
     <group ref={ref} position={TAG_POS[id]} scale={0}>
       <RoundedBox args={[1.25, 0.46, 0.12]} radius={0.1} smoothness={3}>
-        <meshPhysicalMaterial color="#ffffff" transmission={0.6} roughness={0.15} thickness={0.5} transparent opacity={0.9} />
+        <meshPhysicalMaterial color="#ffffff" transmission={0.3} roughness={0.2} thickness={0.5} transparent opacity={0.95} />
       </RoundedBox>
       <Html center position={[0, 0, 0.08]} distanceFactor={8} style={{ pointerEvents: "none" }}>
         <div className="font-mono text-[14px] font-bold" style={{ color: "#1c1c1e", opacity: visible ? 1 : 0 }}>
@@ -209,10 +210,13 @@ export function Memory3D() {
 
       <ControlBar>
         <Btn onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
-          ‹
+          <ChevronLeft className="size-4" strokeWidth={1.75} aria-label="Назад" />
         </Btn>
         <Btn variant="accent" onClick={() => setStep((s) => Math.min(STEPS.length, s + 1))} disabled={step === STEPS.length}>
-          Крок ▸
+          <span className="inline-flex items-center gap-1">
+            Крок
+            <ChevronRight className="size-4" strokeWidth={1.75} />
+          </span>
         </Btn>
         <Btn
           onClick={() => {
@@ -220,7 +224,7 @@ export function Memory3D() {
             setSel(null);
           }}
         >
-          ↺
+          <RotateCcw className="size-4" strokeWidth={1.75} aria-label="Скинути" />
         </Btn>
         <span className="ml-auto truncate font-mono text-[12.5px]" style={{ color: "var(--accent)" }}>
           {step ? STEPS[step - 1].code : "# пам'ять порожня"}
@@ -235,7 +239,7 @@ export function Memory3D() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ type: "spring", stiffness: 380, damping: 30 }}
-            className="glass glass-tint !rounded-[16px] px-4 py-3 text-[13.5px] leading-snug"
+            className="glass !rounded-[16px] px-4 py-3 text-[13.5px] leading-snug"
           >
             {step === 0 ? "Натисни «Крок». Порада: клацай по сферах, щоб оглянути об'єкти." : STEPS[step - 1].note}
           </motion.div>

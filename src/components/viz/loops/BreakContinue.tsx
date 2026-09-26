@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Btn, ControlBar, Segmented, Slider } from "../kit";
 import { CodePane } from "./CodePane";
+import { A2_INK, CONSOLE_BG, GREEN, ORANGE, RED } from "./palette";
 
 type Stmt = "continue" | "break" | "pass";
 type Ev =
@@ -91,7 +92,7 @@ export function BreakContinue() {
           const isCur = visiting === n && !o;
           const unreached = broke && !o && n > k;
           const color =
-            o === "print" ? "var(--accent)" : o === "continue" ? "#ff9f0a" : o === "break" ? "#ff453a" : "var(--separator)";
+            o === "print" ? "var(--accent)" : o === "continue" ? ORANGE : o === "break" ? RED : "var(--separator)";
           return (
             <div key={n} className="flex flex-col items-center gap-1">
               <motion.div
@@ -104,8 +105,8 @@ export function BreakContinue() {
                 transition={{ type: "spring", stiffness: 480, damping: 24 }}
                 className="grid aspect-square w-full max-w-[56px] place-items-center rounded-[14px] border-2 font-mono text-[15px] font-bold sm:text-[18px]"
                 style={{
-                  borderColor: isCur ? "var(--accent-2)" : color,
-                  background: o === "print" ? "color-mix(in oklab, var(--accent) 18%, var(--glass-bg))" : "var(--glass-bg)",
+                  borderColor: isCur ? A2_INK : color,
+                  background: o === "print" ? "color-mix(in oklab, var(--accent) 14%, white)" : "var(--glass-bg)",
                   textDecoration: o === "continue" ? "line-through" : "none",
                 }}
               >
@@ -125,7 +126,7 @@ export function BreakContinue() {
           <div
             className="flex items-center gap-2 rounded-2xl border-2 px-3 py-2 text-[13px] transition-colors duration-300"
             style={{
-              borderColor: elseRan ? "#30d158" : broke ? "#ff453a" : "var(--separator)",
+              borderColor: elseRan ? GREEN : broke ? RED : "var(--separator)",
             }}
           >
             <span className="font-mono font-bold">else</span>
@@ -141,8 +142,8 @@ export function BreakContinue() {
               </motion.span>
             </AnimatePresence>
           </div>
-          <div className="min-h-[92px] flex-1 rounded-2xl bg-black/80 px-3.5 py-2.5 font-mono text-[12px] leading-relaxed text-[#e5e5ea]">
-            <div className="text-[10px] tracking-wider text-white/40 uppercase">stdout</div>
+          <div className="min-h-[92px] flex-1 rounded-2xl border border-separator px-3.5 py-2.5 font-mono text-[12px] leading-relaxed text-label" style={{ background: CONSOLE_BG }}>
+            <div className="text-[10px] tracking-wider text-label-3 uppercase">stdout</div>
             <div className="flex flex-wrap gap-x-2">
               {out.map((l, i) => (
                 <motion.span key={i} initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}>

@@ -1,21 +1,19 @@
 "use client";
 
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
-import { Html, RoundedBox } from "@react-three/drei";
+import { Edges, Html, RoundedBox } from "@react-three/drei";
+import { RotateCcw } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import type { Group, MeshPhysicalMaterial } from "three";
 import { Btn, Console, ControlBar, Scene3D, useThemeColors, type ThemeColors } from "../kit";
 import { FitCamera, damp, setCanvasCursor } from "./three-utils";
+import { CrewIcon } from "./icons";
 
 type Member = { id: number; name: string; leaving?: boolean; leaveX?: number; bump: number };
 
 const START = ["Luffy", "Zoro", "Nami", "Usopp"];
 const POOL = ["Sanji", "Chopper", "Robin", "Franky", "Brook", "Jinbe", "Vivi", "Yamato"];
-const EMOJI: Record<string, string> = {
-  Luffy: "👒", Zoro: "⚔️", Nami: "🍊", Usopp: "🎯", Sanji: "🍳", Chopper: "🦌",
-  Robin: "🌸", Franky: "🔧", Brook: "🎻", Jinbe: "🌊", Vivi: "👑", Yamato: "❄️",
-};
 const MAX = 7;
 const GAP = 1.2;
 
@@ -159,7 +157,10 @@ export function CrewShip3D() {
         <Btn onClick={() => popAt(true)} disabled={active.length === 0}>
           pop(0)
         </Btn>
-        <Btn onClick={reset}><span aria-hidden>↺</span><span className="sr-only">Скинути</span></Btn>
+        <Btn onClick={reset}>
+          <RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />
+          <span className="sr-only">Скинути</span>
+        </Btn>
         <span className="ml-auto text-[12px] text-label-2 tabular-nums">len(crew) = {active.length}</span>
       </ControlBar>
       <Console
@@ -193,12 +194,12 @@ function Ship({ colors }: { colors: ThemeColors }) {
         <meshPhysicalMaterial color={colors.accent2} roughness={0.35} metalness={0.05} clearcoat={0.8} />
       </RoundedBox>
       <RoundedBox args={[MAX * GAP + 0.5, 0.08, 1.4]} radius={0.04} position={[0, -0.52, 0]}>
-        <meshStandardMaterial color={colors.dark ? "#3a2a22" : "#c89a6a"} roughness={0.8} />
+        <meshStandardMaterial color="#d9b48a" roughness={0.8} />
       </RoundedBox>
       {/* щогла і прапор */}
       <mesh position={[-(MAX * GAP) / 2 - 0.1, 0.6, -0.55]}>
         <cylinderGeometry args={[0.05, 0.05, 2.4, 12]} />
-        <meshStandardMaterial color={colors.dark ? "#8e8e93" : "#6b5b4b"} />
+        <meshStandardMaterial color="#6b5b4b" />
       </mesh>
       <mesh position={[-(MAX * GAP) / 2 + 0.35, 1.45, -0.55]}>
         <boxGeometry args={[0.85, 0.5, 0.02]} />
@@ -207,7 +208,7 @@ function Ship({ colors }: { colors: ThemeColors }) {
       <group ref={water}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
           <circleGeometry args={[7, 48]} />
-          <meshStandardMaterial color={colors.glow} transparent opacity={colors.dark ? 0.18 : 0.12} />
+          <meshStandardMaterial color={colors.glow} transparent opacity={0.12} />
         </mesh>
       </group>
     </group>
@@ -271,16 +272,17 @@ function Crate({
       >
         <meshPhysicalMaterial
           ref={mat}
-          color={colors.accent}
-          emissive={colors.accent2}
+          color="#ffffff"
+          emissive={colors.accent}
           emissiveIntensity={0.06}
-          roughness={0.18}
-          transmission={0.35}
+          roughness={0.2}
+          transmission={0.3}
           thickness={0.6}
           clearcoat={1}
           transparent
-          opacity={0.95}
+          opacity={0.96}
         />
+        <Edges threshold={20} color={colors.accent} />
       </RoundedBox>
       {!member.leaving && (
         <>
@@ -293,14 +295,16 @@ function Crate({
             </span>
           </Html>
           <Html center zIndexRange={[20, 0]} position={[0, 0, 0.5]} style={{ pointerEvents: "none" }}>
-            <span className="text-[18px] select-none">{EMOJI[member.name] ?? "🏴‍☠️"}</span>
+            <span className="grid select-none place-items-center" style={{ color: "var(--accent)" }}>
+              <CrewIcon name={member.name} className="size-5" />
+            </span>
           </Html>
           <Html center zIndexRange={[20, 0]} position={[0, -0.95, 0.6]} style={{ pointerEvents: "none" }}>
             <div className="flex flex-col items-center gap-0.5 whitespace-nowrap">
               <span className="text-[10px] font-semibold text-label">{member.name}</span>
               <span
                 className="rounded-full px-1.5 font-mono text-[10px] font-bold"
-                style={{ background: "color-mix(in oklab, var(--accent-2) 30%, transparent)", color: "var(--label)" }}
+                style={{ background: "color-mix(in oklab, var(--accent-2) 18%, white)", color: "var(--label)" }}
               >
                 {neg}
               </span>

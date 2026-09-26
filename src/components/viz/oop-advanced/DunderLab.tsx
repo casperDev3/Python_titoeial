@@ -88,7 +88,7 @@ const OPS: Op[] = [
   },
 ];
 
-const TONE = { ok: "#30d158", fallback: "#ff9f0a", error: "#ff453a" } as const;
+const TONE = { ok: "#15803d", fallback: "#b45309", error: "#dc2626" } as const;
 
 function md(s: string) {
   return s.split(/(`[^`]+`)/g).map((p, i) =>
@@ -134,7 +134,7 @@ export function DunderLab() {
                 className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[12px] font-semibold transition-colors"
                 style={{
                   borderColor: active ? "var(--accent)" : "var(--separator)",
-                  background: active ? "color-mix(in oklab, var(--accent) 16%, transparent)" : "transparent",
+                  background: active ? "color-mix(in oklab, var(--accent) 12%, white)" : "transparent",
                 }}
               >
                 <span
@@ -176,7 +176,7 @@ export function DunderLab() {
                 >
                   <div
                     className="my-0.5 rounded-md"
-                    style={{ background: res.calls.includes(d) ? "color-mix(in oklab, var(--accent) 16%, transparent)" : undefined }}
+                    style={{ background: res.calls.includes(d) ? "color-mix(in oklab, var(--accent) 12%, white)" : undefined }}
                   >
                     {DEFS[d].map((l, i) => (
                       <div key={i} className="whitespace-pre">
@@ -210,7 +210,7 @@ export function DunderLab() {
                     <motion.span
                       layoutId="oopa-dunder-op"
                       className="absolute inset-0 rounded-xl"
-                      style={{ background: "color-mix(in oklab, var(--accent-2) 20%, transparent)", boxShadow: "inset 0 0 0 1.5px var(--accent-2)" }}
+                      style={{ background: "color-mix(in oklab, var(--accent-2) 16%, white)", boxShadow: "inset 0 0 0 1.5px var(--accent-2)" }}
                       transition={SPRING}
                     />
                   )}
@@ -228,17 +228,17 @@ export function DunderLab() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
               className="rounded-2xl border p-3"
-              style={{ borderColor: `color-mix(in oklab, ${TONE[res.kind]} 45%, transparent)`, background: `color-mix(in oklab, ${TONE[res.kind]} 8%, transparent)` }}
+              style={{ borderColor: `color-mix(in oklab, ${TONE[res.kind]} 45%, transparent)`, background: `color-mix(in oklab, ${TONE[res.kind]} 6%, white)` }}
             >
               <div className="flex flex-wrap items-center gap-1.5 font-mono text-[12px]">
                 <span className="rounded-md bg-separator/60 px-1.5 py-0.5 font-semibold">{OPS[opIdx].code}</span>
-                <ArrowRight className="size-3.5 text-label-3" />
+                <ArrowRight className="size-3.5 text-label-3" strokeWidth={1.75} />
                 <motion.span
                   initial={{ opacity: 0, x: -6 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ ...SPRING, delay: 0.12 }}
                   className="rounded-md px-1.5 py-0.5"
-                  style={{ background: "color-mix(in oklab, var(--accent) 14%, transparent)" }}
+                  style={{ background: "color-mix(in oklab, var(--accent) 12%, white)" }}
                 >
                   {res.calls}
                 </motion.span>
@@ -247,8 +247,8 @@ export function DunderLab() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="mt-2 rounded-xl bg-black/80 px-3 py-2 font-mono text-[12px] break-words"
-                style={{ color: res.kind === "error" ? "#ff6961" : "#a7f3d0" }}
+                className="mt-2 rounded-xl border border-separator bg-[var(--code-bg)] px-3 py-2 font-mono text-[12px] break-words"
+                style={{ color: res.kind === "error" ? "#c42b1c" : "#1c1c1e" }}
               >
                 {res.out}
               </motion.div>

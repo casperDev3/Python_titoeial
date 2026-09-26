@@ -5,6 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Html, RoundedBox } from "@react-three/drei";
 import { AnimatePresence, motion } from "motion/react";
 import * as THREE from "three";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Btn, ControlBar, Scene3D, useThemeColors } from "../kit";
 
 const ZEN: [string, string][] = [
@@ -69,22 +70,22 @@ function Scroll({ i, active, onPick }: { i: number; active: boolean; onPick: () 
       >
         <RoundedBox args={[0.62, 1.15, 0.07]} radius={0.05} smoothness={3}>
           <meshPhysicalMaterial
-            color={active ? c.accent : color}
-            transmission={0.5}
+            color={active ? c.accent : "#ffffff"}
+            transmission={active ? 0.2 : 0.5}
             thickness={0.6}
-            roughness={0.15}
+            roughness={0.2}
             clearcoat={1}
             transparent
-            opacity={active ? 0.95 : 0.7}
+            opacity={active ? 0.95 : 0.85}
             emissive={color}
-            emissiveIntensity={active ? 0.7 : 0.12}
+            emissiveIntensity={active ? 0.25 : 0}
           />
         </RoundedBox>
         {/* «Стрижні» сувою */}
         {[0.6, -0.6].map((y) => (
           <mesh key={y} position={[0, y, 0]} rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.045, 0.045, 0.76, 12]} />
-            <meshStandardMaterial color={c.dark ? "#e5e5ea" : "#3a3a3c"} roughness={0.4} metalness={0.3} />
+            <meshStandardMaterial color={active ? c.accent : color} roughness={0.4} metalness={0.3} />
           </mesh>
         ))}
         <Html center occlude position={[0, 0, 0.06]} distanceFactor={8} style={{ pointerEvents: "none" }}>
@@ -137,11 +138,11 @@ function Core() {
     <group>
       <mesh ref={ref} rotation={[Math.PI / 2, 0, 0]} position={[0, -0.2, 0]}>
         <torusGeometry args={[0.75, 0.06, 16, 80, Math.PI * 1.7]} />
-        <meshStandardMaterial color={c.accent} emissive={c.accent} emissiveIntensity={0.6} />
+        <meshStandardMaterial color={c.accent} roughness={0.35} />
       </mesh>
       <mesh position={[0, -0.2, 0]}>
         <sphereGeometry args={[0.32, 32, 32]} />
-        <meshPhysicalMaterial color={c.accent2} transmission={0.6} roughness={0.1} thickness={1} emissive={c.accent2} emissiveIntensity={0.3} />
+        <meshPhysicalMaterial color={c.accent2} transmission={0.6} roughness={0.1} thickness={1} />
       </mesh>
     </group>
   );
@@ -157,9 +158,17 @@ export function Zen3D() {
         <Ring active={active} setActive={setActive} />
       </Scene3D>
       <ControlBar>
-        <Btn onClick={() => setActive((a) => (a - 1 + N) % N)}>‹ Назад</Btn>
+        <Btn onClick={() => setActive((a) => (a - 1 + N) % N)}>
+          <span className="inline-flex items-center gap-1">
+            <ChevronLeft className="size-4" strokeWidth={1.75} />
+            Назад
+          </span>
+        </Btn>
         <Btn variant="accent" onClick={() => setActive((a) => (a + 1) % N)}>
-          Далі ›
+          <span className="inline-flex items-center gap-1">
+            Далі
+            <ChevronRight className="size-4" strokeWidth={1.75} />
+          </span>
         </Btn>
         <span className="ml-auto font-mono text-[13px] text-label-2 tabular-nums">
           {active + 1} / {N}
@@ -173,7 +182,7 @@ export function Zen3D() {
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(6px)" }}
             transition={{ type: "spring", stiffness: 360, damping: 30 }}
-            className="glass glass-tint !rounded-[18px] px-4 py-3"
+            className="glass !rounded-[18px] px-4 py-3"
           >
             <div className="font-mono text-[13.5px] font-semibold" style={{ color: "var(--accent)" }}>
               {en}

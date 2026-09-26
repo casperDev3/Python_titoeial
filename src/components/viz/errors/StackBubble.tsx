@@ -2,6 +2,7 @@
 
 import { Html, RoundedBox } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { ShieldCheck } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Btn, Console, ControlBar, Scene3D, Segmented, useThemeColors, type ThemeColors } from "../kit";
@@ -37,7 +38,7 @@ function Slab({
   const g = useRef<THREE.Group>(null);
   const mat = useRef<THREE.MeshPhysicalMaterial>(null);
   const target = shown && !unwound ? 1 : 0.001;
-  const tintHex = unwound ? colors.accent2 : guard ? colors.accent : colors.dark ? "#9aa0a6" : "#dfe3ea";
+  const tintHex = unwound ? colors.accent2 : guard ? colors.accent : "#eef1f5";
   const tint = useMemo(() => new THREE.Color(tintHex), [tintHex]);
 
   useFrame((_, dt) => {
@@ -58,7 +59,7 @@ function Slab({
       <RoundedBox args={[3.4, 0.46, 1.5]} radius={0.16} smoothness={4}>
         <meshPhysicalMaterial
           ref={mat}
-          color="#dfe3ea"
+          color="#eef1f5"
           emissive={colors.accent}
           emissiveIntensity={0.04}
           roughness={0.12}
@@ -80,7 +81,14 @@ function Slab({
             transition: "opacity 300ms",
           }}
         >
-          {guard && <span title="тут стоїть try/except">🛡️</span>}
+          {guard && (
+            <ShieldCheck
+              className="size-3.5"
+              strokeWidth={1.75}
+              style={{ color: "color-mix(in oklab, var(--accent) 75%, var(--label))" }}
+              aria-label="тут стоїть try/except"
+            />
+          )}
           {label}
         </div>
       </Html>
@@ -163,15 +171,15 @@ export function StackBubble() {
     if (st.phase === "build") return [`виклик → ${FRAMES[st.visible - 1] ?? ""}`, "стек росте донизу — як у traceback"];
     if (st.phase === "fly")
       return [
-        `💥 ValueError у кадрі ${FRAMES[st.orb ?? 4]}`,
+        `ValueError у кадрі ${FRAMES[st.orb ?? 4]}`,
         st.orb === 4 ? "int() не може перетворити 'два'" : `у ${FRAMES[st.orb ?? 4]} немає try — кадр перервано, летимо вище`,
       ];
     if (st.phase === "caught")
       return [
-        `🛡️ except ValueError у ${FRAMES[guardIdx]} зловив виняток`,
+        `except ValueError у ${FRAMES[guardIdx]} зловив виняток`,
         `кадри нижче знищено, ${FRAMES[guardIdx]} і все вище продовжують працювати`,
       ];
-    return ["Traceback (most recent call last): …", "ValueError: invalid literal for int() with base 10: 'два'", "Ніхто не зловив — програма завершилась 💀"];
+    return ["Traceback (most recent call last): …", "ValueError: invalid literal for int() with base 10: 'два'", "Ніхто не зловив — програма завершилась"];
   })();
 
   return (

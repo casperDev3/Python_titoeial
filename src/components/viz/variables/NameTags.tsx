@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import { Btn, ControlBar } from "../kit";
 
 type ObjId = "A" | "B" | "C" | "D";
@@ -100,12 +101,17 @@ export function NameTags() {
     <div>
       <ControlBar>
         <Btn onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
-          ‹
+          <ChevronLeft className="size-4" strokeWidth={1.75} aria-label="Назад" />
         </Btn>
         <Btn variant="accent" onClick={() => setStep((s) => Math.min(PROGRAM.length, s + 1))} disabled={step === PROGRAM.length}>
-          Крок ▸
+          <span className="inline-flex items-center gap-1">
+            Крок
+            <ChevronRight className="size-4" strokeWidth={1.75} />
+          </span>
         </Btn>
-        <Btn onClick={() => setStep(0)}>↺</Btn>
+        <Btn onClick={() => setStep(0)}>
+          <RotateCcw className="size-4" strokeWidth={1.75} aria-label="Скинути" />
+        </Btn>
         <span className="ml-auto font-mono text-[12px] text-label-2 tabular-nums">
           {step}/{PROGRAM.length}
         </span>
@@ -124,7 +130,7 @@ export function NameTags() {
                       layoutId="vars-nametags-pc"
                       className="absolute inset-x-1.5 inset-y-0 rounded-lg"
                       style={{
-                        background: "color-mix(in oklab, var(--accent) 20%, transparent)",
+                        background: "color-mix(in oklab, var(--accent) 14%, white)",
                         boxShadow: "inset 0 0 0 1px color-mix(in oklab, var(--accent) 50%, transparent)",
                       }}
                       transition={spring}
@@ -145,7 +151,7 @@ export function NameTags() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={spring}
-              className="glass glass-tint !rounded-[16px] px-3.5 py-2.5 text-[13.5px] leading-snug"
+              className="glass !rounded-[16px] px-3.5 py-2.5 text-[13.5px] leading-snug"
             >
               {step === 0 ? "Пам'ять порожня. Натисни «Крок», щоб виконати перший рядок." : PROGRAM[step - 1].note}
             </motion.div>
@@ -196,8 +202,8 @@ export function NameTags() {
                     height={34}
                     rx={17}
                     style={{
-                      fill: on ? "color-mix(in oklab, var(--accent) 22%, var(--bg-elevated))" : "var(--bg-elevated)",
-                      stroke: on ? "var(--accent)" : "var(--separator)",
+                      fill: on ? "color-mix(in oklab, var(--accent) 14%, white)" : "#ffffff",
+                      stroke: on ? "var(--accent)" : "rgb(60 60 67 / 0.25)",
                     }}
                     strokeWidth={1.2}
                   />
@@ -235,7 +241,7 @@ export function NameTags() {
                       transition={{ duration: 0.5 }}
                       style={{
                         fill: "var(--bg-elevated)",
-                        stroke: dead ? "var(--label-3)" : o.type === "list" ? "var(--accent-2)" : "var(--glass-border)",
+                        stroke: dead ? "var(--label-3)" : o.type === "list" ? "var(--accent-2)" : "rgb(60 60 67 / 0.28)",
                       }}
                     />
                     <text x={OBJ_X + 12} y={y + 18} fontSize={10.5} fontWeight={700} letterSpacing={0.6} style={{ fill: o.type === "list" ? "var(--accent-2)" : "var(--accent)" }}>
@@ -248,13 +254,13 @@ export function NameTags() {
                       id {o.addr}
                     </text>
                     {/* лічильник посилань */}
-                    <circle cx={OBJ_X + OBJ_W - 18} cy={y + 25} r={12} style={{ fill: dead ? "var(--separator)" : "var(--accent)" }} />
+                    <circle cx={OBJ_X + OBJ_W - 18} cy={y + 25} r={12} style={{ fill: dead ? "#aeaeb2" : "var(--accent)" }} />
                     <text x={OBJ_X + OBJ_W - 18} y={y + 29.5} textAnchor="middle" fontSize={12} fontWeight={700} fill="#fff">
                       {rc}
                     </text>
                     {dead && (
-                      <text x={OBJ_X + OBJ_W - 40} y={y + 40} textAnchor="end" fontSize={10} fontWeight={600} style={{ fill: "#ff453a" }}>
-                        GC 🗑
+                      <text x={OBJ_X + OBJ_W - 40} y={y + 40} textAnchor="end" fontSize={10} fontWeight={600} style={{ fill: "#d70015" }}>
+                        GC: звільнено
                       </text>
                     )}
                   </motion.g>

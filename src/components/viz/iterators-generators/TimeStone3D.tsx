@@ -5,7 +5,7 @@ import { Html } from "@react-three/drei";
 import { useRef, useState } from "react";
 import type { Group, Mesh, MeshStandardMaterial } from "three";
 import { Btn, ControlBar, Scene3D, Segmented, useThemeColors, type ThemeColors } from "../kit";
-import { FitCamera, damp } from "./shared";
+import { FitCamera, INK, damp } from "./shared";
 
 const FUTURES = [
   "Танос перемагає",
@@ -133,7 +133,7 @@ export function TimeStone3D() {
               key={f}
               className="h-2 flex-1 rounded-full transition-all duration-500"
               style={{
-                background: i < computed ? "linear-gradient(90deg, var(--accent), var(--accent-2))" : "var(--separator)",
+                background: i < computed ? "var(--accent)" : "var(--separator)",
               }}
             />
           ))}
@@ -177,7 +177,7 @@ function EyeOfAgamotto({ colors, busy }: { colors: ThemeColors; busy: boolean })
     if (ringA.current) ringA.current.rotation.z += dt * 0.5 * k;
     if (ringB.current) ringB.current.rotation.x += dt * 0.35 * k;
     if (mandala.current) mandala.current.rotation.z -= dt * 0.2 * k;
-    if (mat.current) mat.current.emissiveIntensity = damp(mat.current.emissiveIntensity, busy ? 1.6 : 0.55, 6, dt);
+    if (mat.current) mat.current.emissiveIntensity = damp(mat.current.emissiveIntensity, busy ? 0.9 : 0.35, 6, dt);
   });
 
   return (
@@ -188,19 +188,19 @@ function EyeOfAgamotto({ colors, busy }: { colors: ThemeColors; busy: boolean })
           ref={mat}
           color={colors.accent}
           emissive={colors.accent}
-          emissiveIntensity={0.55}
-          roughness={0.15}
-          metalness={0.2}
+          emissiveIntensity={0.35}
+          roughness={0.25}
+          metalness={0}
           flatShading
         />
       </mesh>
       <mesh ref={ringA}>
         <torusGeometry args={[0.95, 0.045, 16, 96]} />
-        <meshStandardMaterial color={colors.accent2} metalness={0.85} roughness={0.25} />
+        <meshStandardMaterial color={colors.accent2} metalness={0} roughness={0.4} />
       </mesh>
       <mesh ref={ringB} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.12, 0.03, 16, 96]} />
-        <meshStandardMaterial color={colors.accent2} metalness={0.85} roughness={0.3} />
+        <meshStandardMaterial color={colors.accent2} metalness={0} roughness={0.45} />
       </mesh>
       {/* мандала-підлога */}
       <group ref={mandala} position={[0, -1.35, 0]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -254,7 +254,7 @@ function Future({
     m.position.y = pos[1] + Math.sin(state.clock.elapsedTime * 1.3 + index) * 0.05;
     if (mat.current) {
       mat.current.opacity = damp(mat.current.opacity, computed ? 1 : 0.28, 6, dt);
-      mat.current.emissiveIntensity = damp(mat.current.emissiveIntensity, computed ? (latest ? 1.1 : 0.45) : 0, 6, dt);
+      mat.current.emissiveIntensity = damp(mat.current.emissiveIntensity, computed ? (latest ? 0.6 : 0.2) : 0, 6, dt);
     }
   });
 
@@ -291,10 +291,11 @@ function Future({
       {(latest || hover) && (
         <Html center position={[0, 0.48, 0]} zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
           <div
-            className="rounded-full px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap shadow-lg backdrop-blur-md"
+            className="rounded-full border px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap shadow-md"
             style={{
-              background: computed ? "color-mix(in oklab, var(--accent) 85%, black)" : "rgb(0 0 0 / 0.55)",
-              color: "white",
+              background: computed ? INK : "rgb(255 255 255 / 0.95)",
+              borderColor: computed ? "transparent" : "var(--separator)",
+              color: computed ? "white" : "var(--label-2)",
             }}
           >
             #{index + 1} {computed ? label : "· ще не обчислено"}

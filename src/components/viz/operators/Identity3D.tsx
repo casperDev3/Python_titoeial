@@ -2,7 +2,7 @@
 
 import { Html, RoundedBox } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useRef, useState, type RefObject } from "react";
+import { useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import { Btn, Console, ControlBar, Scene3D, Segmented, useThemeColors } from "../kit";
 
@@ -25,6 +25,7 @@ const tmpEnd = new THREE.Vector3();
 const tmpDir = new THREE.Vector3();
 const tmpMid = new THREE.Vector3();
 const UP = new THREE.Vector3(0, 1, 0);
+const WHITE = new THREE.Color("#ffffff");
 
 const repr = (xs: number[]) => `[${xs.join(", ")}]`;
 
@@ -136,17 +137,17 @@ function ListObject({
             transparent
             opacity={0.95}
             emissive={color}
-            emissiveIntensity={selected ? 0.35 : 0.08}
+            emissiveIntensity={selected ? 0.18 : 0.03}
           />
         </RoundedBox>
       </group>
       {visible && (
         <Html center position={[0, 0, 0.45]} style={{ pointerEvents: "none" }}>
           <div className="flex flex-col items-center whitespace-nowrap">
-            <div className="rounded-lg bg-black/55 px-2 py-0.5 font-mono text-[13px] font-bold text-white backdrop-blur-md">
+            <div className="rounded-lg bg-white/92 px-2 py-0.5 font-mono text-[13px] font-bold text-[#1d1d1f] shadow-sm ring-1 ring-black/10">
               {repr(items)}
             </div>
-            <div className="mt-1 font-mono text-[10px] text-white/85 drop-shadow">list · id {idText}</div>
+            <div className="mt-1 rounded-md bg-white/85 px-1.5 font-mono text-[10px] text-[#3a3a3c]">list · id {idText}</div>
           </div>
         </Html>
       )}
@@ -175,7 +176,9 @@ function Scene({
   const objA = useRef<THREE.Group>(null);
   const objB = useRef<THREE.Group>(null);
   const alias = scenario === "alias";
-  const tagColor = c.dark ? "#3a3a3c" : "#48484a";
+  const tagColor = "#3a3a3c";
+  const paleA = useMemo(() => "#" + new THREE.Color(c.accent).lerp(WHITE, 0.4).getHexString(), [c.accent]);
+  const paleB = useMemo(() => "#" + new THREE.Color(c.accent2).lerp(WHITE, 0.4).getHexString(), [c.accent2]);
   return (
     <group position={[0.2, 0.1, 0]}>
       <NameTag pos={TAG_A} name="a" color={tagColor} />
@@ -183,7 +186,7 @@ function Scene({
       <ListObject
         groupRef={objA}
         items={listA}
-        color={c.accent}
+        color={paleA}
         selected={selected === "A"}
         onSelect={() => setSelected("A")}
         bumpRef={bumpARef}
@@ -194,7 +197,7 @@ function Scene({
       <ListObject
         groupRef={objB}
         items={listB}
-        color={c.accent2}
+        color={paleB}
         selected={selected === "B"}
         onSelect={() => setSelected("B")}
         bumpRef={bumpBRef}
@@ -299,7 +302,7 @@ export function Identity3D() {
 }
 
 function Verdict({ label, value, hint }: { label: string; value: boolean; hint: string }) {
-  const color = value ? "#30d158" : "#ff453a";
+  const color = value ? "#248a3d" : "#d70015";
   return (
     <div
       className="flex items-center justify-between rounded-[14px] px-3 py-2"

@@ -76,7 +76,7 @@ function Card({
   title: string; sub: string; dict: Dict; glow: "hit" | "miss" | "write" | null; probeAttr?: string; badge?: ReactNode; accent: string;
 }) {
   const ring =
-    glow === "hit" ? "0 0 0 2px #30d158, 0 10px 30px -10px #30d158"
+    glow === "hit" ? "0 0 0 2px #15803d, 0 10px 30px -10px #15803d"
     : glow === "miss" ? "0 0 0 2px color-mix(in oklab, var(--label-2) 60%, transparent)"
     : glow === "write" ? `0 0 0 2px ${accent}, 0 10px 30px -10px ${accent}`
     : "0 0 0 0px transparent";
@@ -94,8 +94,8 @@ function Card({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ ...SPRING, delay: glow === "hit" && sub === "клас" ? 0.35 : 0 }}
-            className="absolute -top-2.5 right-2 rounded-full px-2 py-0.5 font-sans text-[10.5px] font-bold text-white shadow"
-            style={{ background: glow === "hit" ? "#30d158" : glow === "write" ? accent : "var(--label-2)" }}
+            className="absolute -top-2.5 right-2 rounded-full border-[1.5px] bg-white px-2 py-0.5 font-sans text-[10.5px] font-bold shadow-sm"
+            style={{ borderColor: glow === "hit" ? "#15803d" : glow === "write" ? accent : "var(--label-2)", color: glow === "hit" ? "#15803d" : glow === "write" ? `color-mix(in oklab, ${accent} 75%, black)` : "var(--label-2)" }}
           >
             {badge}
           </motion.div>
@@ -118,7 +118,7 @@ function Card({
               exit={{ opacity: 0, x: -12, height: 0 }}
               transition={SPRING}
               className="flex justify-between gap-2 rounded-md px-1"
-              style={probeAttr === k && glow && glow !== "miss" ? { background: "color-mix(in oklab, #30d158 22%, transparent)" } : undefined}
+              style={probeAttr === k && glow && glow !== "miss" ? { background: "color-mix(in oklab, #15803d 16%, white)" } : undefined}
             >
               <span>{k}</span>
               <motion.span key={v} initial={{ scale: 1.25 }} animate={{ scale: 1 }} className="truncate text-label-2">
@@ -185,7 +185,7 @@ export function AttrLookup() {
           ]}
         />
         <Btn onClick={() => reset(mode)}>
-          <RotateCcw className="size-4" /> Скинути
+          <RotateCcw className="size-4" strokeWidth={1.75} /> Скинути
         </Btn>
       </ControlBar>
 
@@ -213,15 +213,15 @@ export function AttrLookup() {
                         animate={{ y: -44 }}
                         transition={{ duration: 0.6, ease: "easeInOut", repeat: 1 }}
                         className="absolute h-full w-full"
-                        style={{ background: "linear-gradient(to top, transparent, #30d158, transparent)" }}
+                        style={{ background: "#15803d", borderRadius: 2, height: "45%" }}
                       />
                     )}
                   </div>
                   <span
                     className="flex items-center gap-0.5 font-mono text-[10px] font-semibold transition-colors"
-                    style={{ color: active ? "#30d158" : "var(--label-3)" }}
+                    style={{ color: active ? "#15803d" : "var(--label-3)" }}
                   >
-                    <ArrowUp className="size-3" /> __class__
+                    <ArrowUp className="size-3" strokeWidth={1.75} /> __class__
                   </span>
                 </div>
               );
@@ -246,14 +246,14 @@ export function AttrLookup() {
         ))}
       </div>
 
-      <div className="mx-5 mt-3 mb-4 min-h-[84px] rounded-2xl bg-black/80 px-4 py-3 font-mono text-[12px] leading-relaxed text-[#e5e5ea]">
-        {log.length === 0 && <div className="text-[#8e8e93]"># клацни операцію вище</div>}
+      <div className="mx-5 mt-3 mb-4 min-h-[84px] rounded-2xl border border-separator bg-[var(--code-bg)] px-4 py-3 font-mono text-[12px] leading-relaxed text-label">
+        {log.length === 0 && <div className="text-label-3"># клацни операцію вище</div>}
         <AnimatePresence initial={false}>
           {log.map((l) => (
             <motion.div key={l.n} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={SPRING}>
-              <span className="text-[#8e8e93]">&gt;&gt;&gt; </span>
+              <span className="text-label-3">&gt;&gt;&gt; </span>
               {l.code}
-              <div className={l.out.startsWith("#") ? "text-[#8e8e93]" : l.out.startsWith("Attr") ? "text-[#ff6961]" : "text-[#a7f3d0]"}>{l.out}</div>
+              <div className={l.out.startsWith("#") ? "text-label-3" : l.out.startsWith("Attr") ? "text-[#c42b1c]" : "text-[#15803d]"}>{l.out}</div>
             </motion.div>
           ))}
         </AnimatePresence>

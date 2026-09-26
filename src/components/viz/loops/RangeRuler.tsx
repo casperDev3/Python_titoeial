@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import { ControlBar, Slider } from "../kit";
+import { A2_INK, RED } from "./palette";
 
 const LO = -6;
 const HI = 16;
@@ -62,7 +63,7 @@ export function RangeRuler() {
                 {(isStart || isStop) && (
                   <span
                     className="absolute -top-7 rounded-md px-1 text-[9.5px] font-bold whitespace-nowrap text-white"
-                    style={{ background: isStart ? "var(--accent)" : "var(--accent-2)" }}
+                    style={{ background: isStart ? "var(--accent)" : A2_INK }}
                   >
                     {isStart && isStop ? "start=stop" : isStart ? "start" : "stop"}
                   </span>
@@ -76,12 +77,12 @@ export function RangeRuler() {
                       animate={{ scale: 1, y: 0 }}
                       transition={{ type: "spring", stiffness: 520, damping: 22, delay: order * 0.06 }}
                       className="relative grid size-[24px] place-items-center rounded-full text-[10px] font-bold text-white shadow-md"
-                      style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-2))" }}
+                      style={{ background: "var(--accent)" }}
                     >
                       {order + 1}
                     </motion.span>
                   ) : isStop ? (
-                    <span className="relative size-[20px] rounded-full border-2 border-dashed bg-bg" style={{ borderColor: "var(--accent-2)" }} />
+                    <span className="relative size-[20px] rounded-full border-2 border-dashed bg-white" style={{ borderColor: A2_INK }} />
                   ) : (
                     <span className="relative size-1.5 rounded-full bg-separator" />
                   )}
@@ -100,7 +101,7 @@ export function RangeRuler() {
 
       <div className="mx-5 mt-3 rounded-2xl px-4 py-2.5 font-mono text-[13px]" style={{ background: "color-mix(in oklab, var(--accent) 9%, transparent)" }}>
         {step === 0 ? (
-          <span style={{ color: "#ff453a" }}>ValueError: range() arg 3 must not be zero</span>
+          <span style={{ color: RED }}>ValueError: range() arg 3 must not be zero</span>
         ) : (
           <>
             <span className="text-label-2">list({call}) → </span>

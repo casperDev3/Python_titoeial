@@ -82,7 +82,7 @@ function Toggle({ on, label, onClick }: { on: boolean; label: string; onClick: (
       className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[12px] font-semibold"
       style={{
         borderColor: on ? "var(--accent)" : "var(--separator)",
-        background: on ? "color-mix(in oklab, var(--accent) 16%, transparent)" : "transparent",
+        background: on ? "color-mix(in oklab, var(--accent) 10%, white)" : "transparent",
       }}
     >
       <span
@@ -132,7 +132,7 @@ export function DataclassGen() {
         <Toggle on={opts.eq} label="eq" onClick={() => flip("eq")} />
         <Toggle on={opts.order} label="order" onClick={() => flip("order")} />
         <Toggle on={opts.frozen} label="frozen" onClick={() => flip("frozen")} />
-        <Toggle on={opts.trap} label="gadgets = [] 🪤" onClick={() => flip("trap")} />
+        <Toggle on={opts.trap} label="gadgets = [] (пастка)" onClick={() => flip("trap")} />
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-1.5 px-5">
         <span className="text-[12px] text-label-2">Поля:</span>
@@ -143,7 +143,7 @@ export function DataclassGen() {
             className="rounded-lg border px-2 py-0.5 font-mono text-[12px] transition-colors"
             style={{
               borderColor: enabled.has(f.name) ? "var(--accent-2)" : "var(--separator)",
-              background: enabled.has(f.name) ? "color-mix(in oklab, var(--accent-2) 16%, transparent)" : "transparent",
+              background: enabled.has(f.name) ? "color-mix(in oklab, var(--accent-2) 14%, white)" : "transparent",
               textDecoration: enabled.has(f.name) ? undefined : "line-through",
               opacity: enabled.has(f.name) ? 1 : 0.6,
             }}
@@ -167,7 +167,7 @@ export function DataclassGen() {
                   exit={{ opacity: 0, height: 0 }}
                   transition={SPRING}
                   className="whitespace-pre"
-                  style={l.includes("= []") ? { color: "#ff453a" } : l.startsWith("@") ? { color: "var(--accent)" } : undefined}
+                  style={l.includes("= []") ? { color: "#c42b1c" } : l.startsWith("@") ? { color: "var(--accent)" } : undefined}
                 >
                   {l}
                 </motion.div>
@@ -175,7 +175,7 @@ export function DataclassGen() {
             </AnimatePresence>
           </div>
           <div className="mt-3 flex items-center gap-2 rounded-2xl border border-separator p-3 text-[13px]">
-            <Sparkles className="size-4 shrink-0" style={{ color: "var(--accent)" }} />
+            <Sparkles className="size-4 shrink-0" style={{ color: "var(--accent)" }} strokeWidth={1.75} />
             <span>
               {gen.error ? (
                 "Декоратор відмовився генерувати клас."
@@ -198,9 +198,9 @@ export function DataclassGen() {
                 animate={{ opacity: 1, scale: 1, x: [0, -8, 6, -3, 0] }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
-                className="rounded-2xl border border-[#ff453a]/50 bg-[#ff453a]/10 p-3 font-mono text-[12px] text-[#ff453a]"
+                className="rounded-2xl border border-[#dc2626]/40 bg-[#fef2f2] p-3 font-mono text-[12px] text-[#b42318]"
               >
-                <TriangleAlert className="mb-1 size-4" />
+                <TriangleAlert className="mb-1 size-4" strokeWidth={1.75} />
                 {gen.error}
               </motion.div>
             ) : (
@@ -217,7 +217,7 @@ export function DataclassGen() {
                       className="overflow-hidden rounded-2xl border"
                       style={{
                         borderColor: "color-mix(in oklab, var(--accent-2) 35%, transparent)",
-                        background: "linear-gradient(135deg, color-mix(in oklab, var(--accent) 7%, transparent), color-mix(in oklab, var(--accent-2) 9%, transparent))",
+                        background: "color-mix(in oklab, var(--accent-2) 7%, white)",
                       }}
                     >
                       <div className="thin-scroll overflow-x-auto px-3 py-2 font-mono text-[11.5px] leading-[1.6]">
@@ -243,9 +243,9 @@ export function DataclassGen() {
                     layout
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex gap-2 rounded-2xl border border-[#ff9f0a]/50 bg-[#ff9f0a]/10 p-2.5 text-[12px]"
+                    className="flex gap-2 rounded-2xl border border-[#d97706]/40 bg-[#fffbeb] p-2.5 text-[12px]"
                   >
-                    <TriangleAlert className="size-4 shrink-0 text-[#ff9f0a]" />
+                    <TriangleAlert className="size-4 shrink-0 text-[#b45309]" strokeWidth={1.75} />
                     {gen.warn}
                   </motion.div>
                 )}

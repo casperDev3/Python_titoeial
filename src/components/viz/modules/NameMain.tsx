@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
 import { Btn, ControlBar, Segmented } from "../kit";
+import { A2_INK, CONSOLE_BG, INK, ORANGE, tint } from "./palette";
 
 type FileId = "tools" | "main";
 type Mode = "direct" | "import";
@@ -12,7 +13,7 @@ const TOOLS = [
   'print("tools: __name__ =", __name__)',
   "",
   "def cola():",
-  '    return "🥤 кола"',
+  '    return "кола"',
   "",
   'if __name__ == "__main__":',
   '    print("Тест:", cola())',
@@ -33,7 +34,7 @@ const STEPS: Record<Mode, Step[]> = {
     { file: "tools", line: 1, names: { tools: "'__main__'" }, out: ["tools: __name__ = __main__"], note: "Запускаємо `python3 tools.py`. Цей файл — головний, тому Python дає йому ім'я `__main__`." },
     { file: "tools", line: 3, names: { tools: "'__main__'" }, out: ["tools: __name__ = __main__"], note: "`def` створює функцію `cola`. Тіло поки не виконується." },
     { file: "tools", line: 6, names: { tools: "'__main__'" }, out: ["tools: __name__ = __main__"], note: "Перевірка: `'__main__' == '__main__'` → `True`. Заходимо всередину блоку." },
-    { file: "tools", line: 7, names: { tools: "'__main__'" }, out: ["tools: __name__ = __main__", "Тест: 🥤 кола"], note: "Демо-код виконався. `main.py` взагалі не брав участі — його ніхто не запускав." },
+    { file: "tools", line: 7, names: { tools: "'__main__'" }, out: ["tools: __name__ = __main__", "Тест: кола"], note: "Демо-код виконався. `main.py` взагалі не брав участі — його ніхто не запускав." },
   ],
   import: [
     { file: "main", line: 1, names: { main: "'__main__'" }, out: [], note: "Запускаємо `python3 main.py`. Головний тепер він: `__name__ == '__main__'`. Перший рядок — `import tools`." },
@@ -41,7 +42,7 @@ const STEPS: Record<Mode, Step[]> = {
     { file: "tools", line: 3, names: { main: "'__main__'", tools: "'tools'" }, out: ["tools: __name__ = tools"], note: "Створюється функція `cola` — вона стане атрибутом модуля: `tools.cola`." },
     { file: "tools", line: 6, names: { main: "'__main__'", tools: "'tools'" }, out: ["tools: __name__ = tools"], skipped: [7], note: "`'tools' == '__main__'` → `False`. Демо-блок **пропущено** — імпорт не запускає тести модуля." },
     { file: "main", line: 3, names: { main: "'__main__'", tools: "'tools'" }, out: ["tools: __name__ = tools", "main: __name__ = __main__"], skipped: [7], note: "Модуль завантажено й покладено в `sys.modules`. Повертаємось у `main.py`." },
-    { file: "main", line: 4, names: { main: "'__main__'", tools: "'tools'" }, out: ["tools: __name__ = tools", "main: __name__ = __main__", "🥤 кола"], skipped: [7], note: "Викликаємо `tools.cola()` — функція з модуля працює, а зайвого виводу немає. Десять мільярдів відсотків чистоти!" },
+    { file: "main", line: 4, names: { main: "'__main__'", tools: "'tools'" }, out: ["tools: __name__ = tools", "main: __name__ = __main__", "кола"], skipped: [7], note: "Викликаємо `tools.cola()` — функція з модуля працює, а зайвого виводу немає. Десять мільярдів відсотків чистоти!" },
   ],
 };
 
@@ -89,8 +90,12 @@ function Pane({
               initial={{ opacity: 0, scale: 0.7 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              className="rounded-full px-2 py-0.5 font-mono text-[11px] font-bold text-white"
-              style={{ background: name === "'__main__'" ? "var(--accent)" : "var(--accent-2)" }}
+              className="rounded-full border px-2 py-0.5 font-mono text-[11px] font-bold"
+              style={
+                name === "'__main__'"
+                  ? { background: tint(16), color: INK, borderColor: "color-mix(in oklab, var(--accent) 45%, transparent)" }
+                  : { background: tint(14, "--accent-2"), color: A2_INK, borderColor: "color-mix(in oklab, var(--accent-2) 45%, transparent)" }
+              }
             >
               __name__ = {name}
             </motion.span>
@@ -110,13 +115,13 @@ function Pane({
                 <motion.div
                   layoutId={`nm-line-${id}`}
                   className="absolute inset-0"
-                  style={{ background: "color-mix(in oklab, var(--accent) 22%, transparent)", borderLeft: "3px solid var(--accent)" }}
+                  style={{ background: tint(18), borderLeft: "3px solid var(--accent)" }}
                   transition={{ type: "spring", stiffness: 420, damping: 34 }}
                 />
               )}
               <span className="relative mr-3 w-3 text-right text-label-3 select-none">{n}</span>
               <span className={`relative ${skipped ? "line-through opacity-40" : ""}`}>{l || " "}</span>
-              {skipped && <span className="relative ml-2 text-[10px] font-sans font-bold text-[#ff9f0a]">пропущено</span>}
+              {skipped && <span className="relative ml-2 text-[10px] font-sans font-bold" style={{ color: ORANGE }}>пропущено</span>}
             </div>
           );
         })}
@@ -168,7 +173,7 @@ export function NameMain() {
       </div>
 
       <div className="grid gap-2 px-5 pt-3 sm:grid-cols-[1.3fr_1fr]">
-        <div className="min-h-[76px] rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-snug" style={{ background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}>
+        <div className="min-h-[76px] rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-snug" style={{ background: tint(9) }}>
           <div className="mb-1 text-[11px] font-bold tracking-wider text-label-3 uppercase">
             Крок {s}/{total}
           </div>
@@ -178,8 +183,8 @@ export function NameMain() {
             </motion.div>
           </AnimatePresence>
         </div>
-        <div className="min-h-[76px] rounded-2xl bg-black/80 px-3.5 py-2.5 font-mono text-[12px] leading-relaxed text-[#e5e5ea]">
-          <div className="text-[#636366]">$ python3 {mode === "direct" ? "tools.py" : "main.py"}</div>
+        <div className="min-h-[76px] rounded-2xl border border-separator px-3.5 py-2.5 font-mono text-[12px] leading-relaxed text-label" style={{ background: CONSOLE_BG }}>
+          <div className="text-label-3">$ python3 {mode === "direct" ? "tools.py" : "main.py"}</div>
           <AnimatePresence initial={false}>
             {(step?.out ?? []).map((l) => (
               <motion.div key={`${mode}-${l}`} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}>
@@ -192,10 +197,10 @@ export function NameMain() {
 
       <ControlBar>
         <Btn onClick={() => setS((v) => Math.max(0, v - 1))} disabled={s === 0}>
-          <ChevronLeft className="size-4" />
+          <ChevronLeft className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn variant="accent" onClick={() => setS((v) => Math.min(total, v + 1))} disabled={s === total}>
-          Крок <ChevronRight className="size-4" />
+          Крок <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn
           onClick={() => {
@@ -203,10 +208,10 @@ export function NameMain() {
             setPlaying((p) => !p);
           }}
         >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
+          {playing ? <Pause className="size-4" strokeWidth={1.75} /> : <Play className="size-4" strokeWidth={1.75} />}
         </Btn>
         <Btn onClick={() => reset()}>
-          <RotateCcw className="size-4" />
+          <RotateCcw className="size-4" strokeWidth={1.75} />
         </Btn>
       </ControlBar>
     </div>

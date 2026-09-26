@@ -62,7 +62,7 @@ export function FileCursor() {
       </ControlBar>
 
       <div className="grid gap-4 px-5 pb-5 md:grid-cols-[1fr_1.1fr]">
-        <div className="rounded-[18px] border border-separator bg-black/[0.03] p-3 dark:bg-white/[0.04]">
+        <div className="rounded-[18px] border border-separator bg-elevated p-3">
           <div className="mb-2 flex items-center justify-between text-[11px] font-bold tracking-wider text-label-3 uppercase">
             <span>squad.txt</span>
             <span className="font-mono normal-case">
@@ -152,7 +152,7 @@ function CursorBar() {
       layoutId="file-cursor-bar"
       transition={{ type: "spring", stiffness: 500, damping: 34 }}
       className="absolute -top-1 -bottom-1 -left-[3px] z-10 w-[3px] rounded-full"
-      style={{ background: "var(--accent)", boxShadow: "0 0 10px var(--accent)" }}
+      style={{ background: "color-mix(in oklab, var(--accent) 80%, var(--label))" }}
     />
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Btn, ControlBar } from "../kit";
 import { CodePane, INK } from "./shared";
@@ -125,7 +126,7 @@ export function ClosureCells() {
             <AnimatePresence>
               {st.hitFn && (
                 <motion.div key="hitfn" {...pop} className="rounded-xl px-2 py-1.5 font-mono text-[11.5px]"
-                  style={{ background: "color-mix(in oklab, var(--accent) 20%, transparent)" }}>
+                  style={{ background: "color-mix(in oklab, var(--accent) 20%, white)" }}>
                   <div className="font-bold">fn hit</div>
                   <div className="text-label-2">__closure__ → (cell,)</div>
                 </motion.div>
@@ -135,7 +136,7 @@ export function ClosureCells() {
                   key="cell"
                   {...pop}
                   className="relative rounded-xl border-2 px-2 py-2 text-center"
-                  style={{ borderColor: INK, background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}
+                  style={{ borderColor: INK, background: "color-mix(in oklab, var(--accent) 10%, white)" }}
                 >
                   <div className="font-mono text-[10.5px] font-bold tracking-wider uppercase" style={{ color: INK }}>
                     cell
@@ -167,7 +168,7 @@ export function ClosureCells() {
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         className="mx-5 mt-3 flex gap-2 rounded-2xl px-4 py-3 text-[13.5px]"
-        style={{ background: "color-mix(in oklab, var(--accent) 12%, transparent)" }}
+        style={{ background: "color-mix(in oklab, var(--accent) 12%, white)" }}
       >
         <span className="font-mono text-[11px] font-bold text-label-3 tabular-nums">
           {i}/{last}
@@ -177,12 +178,17 @@ export function ClosureCells() {
 
       <ControlBar>
         <Btn onClick={() => setI((v) => Math.max(0, v - 1))} disabled={i === 0}>
-          ← Назад
+          <ChevronLeft className="size-4" strokeWidth={1.75} />
+          Назад
         </Btn>
         <Btn variant="accent" onClick={() => setI((v) => Math.min(last, v + 1))} disabled={i === last}>
-          Крок →
+          Крок
+          <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
-        <Btn onClick={() => setI(0)}>Скинути</Btn>
+        <Btn onClick={() => setI(0)}>
+          <RotateCcw className="size-4" strokeWidth={1.75} />
+          Скинути
+        </Btn>
       </ControlBar>
     </div>
   );
@@ -229,7 +235,7 @@ function Ref({ children, hot, cell }: { children: ReactNode; hot?: boolean; cell
         background: cell
           ? "transparent"
           : hot
-            ? "color-mix(in oklab, var(--accent) 22%, transparent)"
+            ? "color-mix(in oklab, var(--accent) 22%, white)"
             : "var(--separator)",
         border: cell ? `1.5px solid ${INK}` : "1.5px solid transparent",
         color: hot || cell ? INK : "var(--label-2)",

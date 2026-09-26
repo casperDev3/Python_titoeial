@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import { Color, type Group, type Mesh, type MeshStandardMaterial } from "three";
-import { Zap } from "lucide-react";
+import { Check, TriangleAlert, X, Zap } from "lucide-react";
 import { Btn, ControlBar, Scene3D, Segmented, Slider, useThemeColors } from "../kit";
 import { damp, FitCamera, SPRING } from "./shared";
 
@@ -14,8 +14,8 @@ type Shot = { n: number; value: number; ok: boolean; at: number };
 
 const SEGMENTS = 10;
 const SHIELD_Z = 1.05;
-const CYAN = "#7fe7ff";
-const RED = "#ff3b30";
+const CYAN = "#22b8d6";
+const RED = "#e5372b";
 
 function Reactor({ energy, shot, mode, accent, accent2 }: { energy: number; shot: Shot | null; mode: Mode; accent: string; accent2: string }) {
   const root = useRef<Group>(null);
@@ -29,7 +29,7 @@ function Reactor({ energy, shot, mode, accent, accent2 }: { energy: number; shot
   const red = useMemo(() => new Color(RED), []);
   const dim = useMemo(() => new Color("#2a3440"), []);
   const acc = useMemo(() => new Color(accent2), [accent2]);
-  const ok = useMemo(() => new Color("#30d158"), []);
+  const ok = useMemo(() => new Color("#16a34a"), []);
   const angles = useMemo(() => Array.from({ length: SEGMENTS }, (_, i) => (i / SEGMENTS) * Math.PI * 2), []);
 
   const invalid = energy > 100 || energy < 0;
@@ -101,7 +101,7 @@ function Reactor({ energy, shot, mode, accent, accent2 }: { energy: number; shot
       </mesh>
       <mesh position={[0, 0, -0.12]}>
         <cylinderGeometry args={[1.3, 1.3, 0.12, 64]} />
-        <meshStandardMaterial color="#3a414a" metalness={0.8} roughness={0.4} />
+        <meshStandardMaterial color="#eef0f3" metalness={0.2} roughness={0.5} />
       </mesh>
       {/* сегменти енергії */}
       {angles.map((a, i) => (
@@ -144,7 +144,7 @@ function Reactor({ energy, shot, mode, accent, accent2 }: { energy: number; shot
       </mesh>
       {mode === "property" && (
         <Html position={[1.35, 1.25, SHIELD_Z]} center zIndexRange={[10, 0]} style={{ pointerEvents: "none" }}>
-          <div className="rounded-full bg-black/55 px-2 py-0.5 font-mono text-[11px] font-bold whitespace-nowrap text-white backdrop-blur-md">
+          <div className="rounded-full border border-black/10 bg-white/90 px-2 py-0.5 font-mono text-[11px] font-bold whitespace-nowrap shadow-sm" style={{ color: accent }}>
             @energy.setter
           </div>
         </Html>
@@ -156,11 +156,15 @@ function Reactor({ energy, shot, mode, accent, accent2 }: { energy: number; shot
       </mesh>
       <Html position={[0, -1.75, 0]} center zIndexRange={[10, 0]} style={{ pointerEvents: "none" }}>
         <div
-          className="rounded-full px-3 py-1 font-mono text-[13px] font-bold whitespace-nowrap text-white shadow-lg backdrop-blur-md"
-          style={{ background: invalid ? "rgba(255,59,48,.75)" : "rgba(0,0,0,.55)" }}
+          className="flex items-center gap-1.5 rounded-full border bg-white/90 px-3 py-1 font-mono text-[13px] font-bold whitespace-nowrap shadow-sm"
+          style={{ borderColor: invalid ? RED : "rgba(0,0,0,.12)", color: invalid ? "#b42318" : "#1c1c1e" }}
         >
           {mode === "property" ? "_energy" : "energy"} = {energy}
-          {invalid && " ⚠ неможливий стан"}
+          {invalid && (
+            <>
+              <TriangleAlert className="size-3.5" strokeWidth={1.75} /> неможливий стан
+            </>
+          )}
         </div>
       </Html>
     </group>
@@ -182,7 +186,7 @@ export function ReactorProperty() {
     if (ok) setEnergy(attempt);
     const out = ok
       ? mode === "raw" && (attempt > 100 || attempt < 0)
-        ? "# прийнято без питань… реактор у неможливому стані 😬"
+        ? "# прийнято без питань… реактор у неможливому стані"
         : "# ok"
       : `ValueError: енергія ${attempt}% поза межами 0–100`;
     setLog((l) => [...l.slice(-2), { n, code: `arc.energy = ${attempt}`, out, err: !ok }]);
@@ -219,7 +223,7 @@ export function ReactorProperty() {
       <ControlBar>
         <Slider label={<span className="font-mono">arc.energy =</span>} value={attempt} min={-50} max={150} step={5} onChange={setAttempt} />
         <Btn variant="accent" onClick={assign}>
-          <Zap className="size-4" /> Присвоїти
+          <Zap className="size-4" strokeWidth={1.75} /> Присвоїти
         </Btn>
       </ControlBar>
 
@@ -230,7 +234,8 @@ export function ReactorProperty() {
         {mode === "property" ? (
           <>
             <Chip tone={valid ? "ok" : "bad"} on>
-              setter: 0 ≤ {attempt} ≤ 100 ? {valid ? "✓" : "✗"}
+              setter: 0 ≤ {attempt} ≤ 100 ?{" "}
+              {valid ? <Check className="inline size-3.5 align-[-2px]" strokeWidth={1.75} /> : <X className="inline size-3.5 align-[-2px]" strokeWidth={1.75} />}
             </Chip>
             <span className="text-label-3">→</span>
             <Chip tone={valid ? "ok" : "bad"} on>
@@ -244,14 +249,14 @@ export function ReactorProperty() {
         )}
       </div>
 
-      <div className="mx-5 mt-3 mb-4 min-h-[64px] rounded-2xl bg-black/80 px-4 py-3 font-mono text-[12px] leading-relaxed text-[#e5e5ea]">
-        {log.length === 0 && <div className="text-[#8e8e93]"># обери значення і тисни «Присвоїти»</div>}
+      <div className="mx-5 mt-3 mb-4 min-h-[64px] rounded-2xl border border-separator bg-[var(--code-bg)] px-4 py-3 font-mono text-[12px] leading-relaxed text-label">
+        {log.length === 0 && <div className="text-label-3"># обери значення і тисни «Присвоїти»</div>}
         <AnimatePresence initial={false}>
           {log.map((l) => (
             <motion.div key={l.n} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={SPRING}>
-              <span className="text-[#8e8e93]">&gt;&gt;&gt; </span>
+              <span className="text-label-3">&gt;&gt;&gt; </span>
               {l.code}
-              <div className={l.err ? "text-[#ff6961]" : "text-[#8e8e93]"}>{l.out}</div>
+              <div className={l.err ? "text-[#c42b1c]" : "text-label-3"}>{l.out}</div>
             </motion.div>
           ))}
         </AnimatePresence>
@@ -261,14 +266,14 @@ export function ReactorProperty() {
 }
 
 function Chip({ children, tone, on }: { children: ReactNode; tone?: "ok" | "bad"; on?: boolean }) {
-  const col = tone === "ok" ? "#30d158" : tone === "bad" ? "#ff453a" : "var(--accent)";
+  const col = tone === "ok" ? "#15803d" : tone === "bad" ? "#dc2626" : "var(--accent)";
   return (
     <motion.span
       layout
       transition={SPRING}
       className="rounded-lg px-2 py-1"
       style={{
-        background: on ? `color-mix(in oklab, ${col} 16%, transparent)` : "transparent",
+        background: on ? `color-mix(in oklab, ${col} 10%, white)` : "transparent",
         border: `1px solid color-mix(in oklab, ${col} 40%, transparent)`,
       }}
     >

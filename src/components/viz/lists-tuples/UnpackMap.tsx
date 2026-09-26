@@ -3,9 +3,9 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Console } from "../kit";
+import { CREW_ICON } from "./icons";
 
 const CREW = ["Luffy", "Zoro", "Nami", "Usopp", "Sanji"];
-const EMOJI = ["👒", "⚔️", "🍊", "🎯", "🍳"];
 
 type Target = { name: string; star?: boolean };
 type Pattern = { id: string; targets: Target[] };
@@ -43,6 +43,11 @@ function unpack(targets: Target[], n: number): Result {
     return { target: t, idx: [n - back] };
   });
   return { ok: true, groups };
+}
+
+function ChipIcon({ name }: { name: string }) {
+  const I = CREW_ICON[name];
+  return I ? <I x={CHIP / 2 - 8} y={7} width={16} height={16} strokeWidth={1.75} style={{ color: "var(--accent)" }} /> : null;
 }
 
 const lhs = (p: Pattern) => p.targets.map((t) => (t.star ? "*" : "") + t.name).join(", ");
@@ -97,14 +102,12 @@ export function UnpackMap() {
                   strokeWidth={1.4}
                   style={{
                     fill: isStar
-                      ? "color-mix(in oklab, var(--accent-2) 26%, var(--bg-elevated))"
-                      : "color-mix(in oklab, var(--accent) 16%, var(--bg-elevated))",
+                      ? "color-mix(in oklab, var(--accent-2) 18%, white)"
+                      : "color-mix(in oklab, var(--accent) 10%, white)",
                     stroke: isStar ? "var(--accent-2)" : "color-mix(in oklab, var(--accent) 55%, transparent)",
                   }}
                 />
-                <text x={CHIP / 2} y={21} textAnchor="middle" fontSize={16}>
-                  {EMOJI[i]}
-                </text>
+                <ChipIcon name={name} />
                 <text x={CHIP / 2} y={38} textAnchor="middle" fontSize={11} fontWeight={600} style={{ fill: "var(--label)" }}>
                   {name}
                 </text>

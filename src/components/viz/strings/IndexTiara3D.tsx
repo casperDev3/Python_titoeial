@@ -56,7 +56,7 @@ function Bead({
     g.current.rotation.y = t * 0.6 + phase;
     mat.current.color.lerp(selected ? cols.sel : cols.base, k);
     mat.current.emissive.lerp(selected ? cols.sel : cols.base, k);
-    mat.current.emissiveIntensity += ((selected ? 0.55 : 0.12) - mat.current.emissiveIntensity) * k;
+    mat.current.emissiveIntensity += ((selected ? 0.3 : 0.04) - mat.current.emissiveIntensity) * k;
   });
   return (
     <group ref={g} position={start}>
@@ -81,7 +81,7 @@ function Bead({
         />
       </mesh>
       <Html center position={[0, 0, 0.42]} style={{ pointerEvents: "none" }}>
-        <div className="font-mono text-[17px] font-extrabold text-white" style={{ textShadow: "0 1px 6px rgb(0 0 0 / 0.6)" }}>
+        <div className="grid min-w-[24px] place-items-center rounded-md bg-white/90 px-1 font-mono text-[16px] font-extrabold text-[#1d1d1f] shadow-sm ring-1 ring-black/10">
           {ch === " " ? "␣" : ch}
         </div>
       </Html>
@@ -99,17 +99,18 @@ function Tiara({ cs, sel, setSel }: { cs: string[]; sel: number; setSel: (i: num
   const c = useThemeColors();
   const { spread, points } = layout(cs.length);
   const n = cs.length;
+  const pale = useMemo(() => "#" + new THREE.Color(c.accent2).lerp(new THREE.Color("#ffffff"), 0.55).getHexString(), [c.accent2]);
   return (
     <group position={[0, 0.2, 0]}>
       {/* золотий дріт тіари — дуга того ж радіуса */}
       <mesh position={[0, -R + 0.35, -0.05]} rotation={[0, 0, Math.PI / 2 - spread / 2]}>
         <torusGeometry args={[R, 0.028, 8, 96, spread]} />
-        <meshStandardMaterial color={c.glow} emissive={c.glow} emissiveIntensity={0.4} metalness={0.6} roughness={0.3} />
+        <meshStandardMaterial color={c.accent} emissive={c.accent} emissiveIntensity={0.15} metalness={0.2} roughness={0.35} />
       </mesh>
       {/* місячний кристал над центром */}
       <mesh position={[0, 1.25, -0.4]} rotation={[0, 0, Math.PI / 4]}>
         <octahedronGeometry args={[0.28, 0]} />
-        <meshPhysicalMaterial color={c.accent2} emissive={c.accent2} emissiveIntensity={0.5} roughness={0.1} clearcoat={1} />
+        <meshPhysicalMaterial color={c.accent2} emissive={c.accent2} emissiveIntensity={0.15} roughness={0.1} clearcoat={1} />
       </mesh>
       {points.map((p, i) => (
         <Bead
@@ -119,7 +120,7 @@ function Tiara({ cs, sel, setSel }: { cs: string[]; sel: number; setSel: (i: num
           index={i}
           neg={i - n}
           selected={i === sel}
-          color={c.accent2}
+          color={pale}
           selColor={c.accent}
           onSelect={() => setSel(i)}
           phase={i * 0.7}
@@ -153,12 +154,12 @@ export function IndexTiara3D() {
       </Scene3D>
 
       <div className="grid gap-2 px-5 sm:grid-cols-2">
-        <div className="rounded-[16px] px-4 py-3" style={{ background: "color-mix(in oklab, var(--accent) 12%, transparent)" }}>
+        <div className="rounded-[16px] px-4 py-3" style={{ background: "color-mix(in oklab, var(--accent) 9%, white)" }}>
           {n > 0 ? (
             <div className="space-y-1 font-mono text-[13px]">
               <div>
                 <span className="text-label-2">s[{i}]</span> == <span className="text-label-2">s[{i - n}]</span> =={" "}
-                <b style={{ color: "var(--accent)" }}>{pyRepr(ch)}</b>
+                <b style={{ color: "color-mix(in oklab, var(--accent) 60%, var(--label))" }}>{pyRepr(ch)}</b>
               </div>
               <div>
                 <span className="text-label-2">ord →</span> {ch.codePointAt(0)} <span className="text-label-2">({uplus(ch)})</span>

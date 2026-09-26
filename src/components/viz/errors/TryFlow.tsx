@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { ShieldCheck, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Btn, ControlBar, Segmented } from "../kit";
 
@@ -50,7 +51,7 @@ const STEPS: Record<Scenario, Step[]> = {
     { line: 1, note: "Входимо в try — захист увімкнено" },
     {
       line: 2,
-      note: "int('abc') не може стати числом — 💥 виняток!",
+      note: "int('abc') не може стати числом — виняток!",
       exc: "ValueError: invalid literal for int() with base 10: 'abc'",
     },
     { line: 4, note: "ValueError підходить під except ValueError? Так! Ловимо", caught: true, exc: "ValueError" },
@@ -63,7 +64,7 @@ const STEPS: Record<Scenario, Step[]> = {
     { line: 0, note: "Готуємо вхідні дані", vars: { raw: "'0'" } },
     { line: 1, note: "Входимо в try — захист увімкнено" },
     { line: 2, note: "int('0') → 0. Поки що все добре", vars: { hp: "0" } },
-    { line: 3, note: "100 // 0 — ділення на нуль! 💥", exc: "ZeroDivisionError: division by zero" },
+    { line: 3, note: "100 // 0 — ділення на нуль!", exc: "ZeroDivisionError: division by zero" },
     { line: 4, note: "ZeroDivisionError — це ValueError? Ні. Цей except не підходить" },
     { line: 8, note: "Ніхто не зловив, але finally все одно виконується" },
     { line: 9, note: "Прибирання відбувається навіть під час аварії", out: "прибрали арену" },
@@ -144,7 +145,7 @@ export function TryFlow() {
 
       <div className="grid gap-3 px-5 pb-5 md:grid-cols-[1.25fr_1fr]">
         {/* Код */}
-        <div className="relative overflow-hidden rounded-[18px] border border-separator bg-black/[0.03] py-2 font-mono text-[12.5px] dark:bg-white/[0.04] sm:text-[13px]">
+        <div className="relative overflow-hidden rounded-[18px] border border-separator bg-elevated py-2 font-mono text-[12.5px] sm:text-[13px]">
           <motion.div
             className="absolute top-2 right-2 left-2 rounded-[10px] transition-[background-color] duration-300"
             style={{
@@ -215,16 +216,25 @@ export function TryFlow() {
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ type: "spring", stiffness: 320, damping: 22 }}
-                className="rounded-[14px] px-3 py-2 font-mono text-[12px] leading-snug"
+                className="flex items-start gap-1.5 rounded-[14px] px-3 py-2 font-mono text-[12px] leading-snug"
                 style={{
                   background: caught
-                    ? "color-mix(in oklab, var(--accent) 16%, transparent)"
-                    : "color-mix(in oklab, var(--accent-2) 16%, transparent)",
-                  color: caught ? "var(--accent)" : "var(--accent-2)",
+                    ? "color-mix(in oklab, var(--accent) 12%, white)"
+                    : "color-mix(in oklab, var(--accent-2) 12%, white)",
+                  color: caught
+                    ? "color-mix(in oklab, var(--accent) 70%, var(--label))"
+                    : "color-mix(in oklab, var(--accent-2) 75%, var(--label))",
                 }}
               >
-                {caught ? "🛡️ зловлено: " : "💥 летить: "}
-                {exc}
+                {caught ? (
+                  <ShieldCheck className="mt-px size-4 shrink-0" strokeWidth={1.75} />
+                ) : (
+                  <Zap className="mt-px size-4 shrink-0" strokeWidth={1.75} />
+                )}
+                <span>
+                  {caught ? "зловлено: " : "летить: "}
+                  {exc}
+                </span>
               </motion.div>
             )}
           </AnimatePresence>

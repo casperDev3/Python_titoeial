@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Btn, ControlBar, Segmented, Slider } from "../kit";
 import { INK } from "./shared";
@@ -96,7 +97,7 @@ export function FibCacheTree() {
       </ControlBar>
 
       <div className="px-5">
-        <div className="thin-scroll overflow-x-auto rounded-2xl border border-separator bg-black/[0.02] dark:bg-white/[0.03]">
+        <div className="thin-scroll overflow-x-auto rounded-2xl border border-separator bg-black/[0.02]">
           <svg
             key={`${n}-${mode}-${replay}`}
             viewBox={`0 0 ${W} ${H}`}
@@ -112,7 +113,7 @@ export function FibCacheTree() {
                   y1={py(nodes[d.parent])}
                   x2={px(d)}
                   y2={py(d)}
-                  stroke="var(--separator)"
+                  stroke="rgb(60 60 67 / 0.3)"
                   strokeWidth={1.5}
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={{ pathLength: 1, opacity: 1 }}
@@ -125,8 +126,8 @@ export function FibCacheTree() {
               const fill = d.hit
                 ? "var(--accent)"
                 : d.n === 2 && !cached
-                  ? "color-mix(in oklab, #ff453a 22%, var(--bg-elevated))"
-                  : "var(--bg-elevated)";
+                  ? "color-mix(in oklab, #ff453a 22%, white)"
+                  : "white";
               return (
                 <motion.g
                   key={`n-${d.id}`}
@@ -172,7 +173,10 @@ export function FibCacheTree() {
       </div>
 
       <ControlBar>
-        <Btn onClick={() => setReplay((r) => r + 1)}>↻ Анімувати ще раз</Btn>
+        <Btn onClick={() => setReplay((r) => r + 1)}>
+          <RotateCcw className="size-4" strokeWidth={1.75} />
+          Анімувати ще раз
+        </Btn>
         <span className="ml-auto font-mono text-[12px] text-label-2">
           fib({n}) = <b className="text-label">{fib(n)}</b>
         </span>

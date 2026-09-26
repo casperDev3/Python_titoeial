@@ -4,6 +4,7 @@ import { Html, RoundedBox } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
+import { Dices } from "lucide-react";
 import { Btn, ControlBar, Scene3D, Segmented, Slider, useThemeColors } from "../kit";
 
 type Op = "&" | "|" | "^" | "<<" | ">>";
@@ -85,7 +86,7 @@ function BitCube({
     g.rotation.x = pop.current * 0.9;
     m.color.lerp(on ? colors.on : colors.off, k);
     m.emissive.lerp(on ? colors.on : colors.off, k);
-    const targetE = on ? 0.45 : 0.02;
+    const targetE = on ? 0.3 : 0;
     m.emissiveIntensity += (targetE - m.emissiveIntensity) * k;
     const targetO = dim ? 0.25 : 1;
     m.opacity += (targetO - m.opacity) * k;
@@ -174,7 +175,7 @@ function Scene({
   toggleB: (bit: number) => void;
 }) {
   const c = useThemeColors();
-  const off = c.dark ? "#3a3a3c" : "#d1d1d6";
+  const off = "#e5e5ea";
   const mixed = useMemo(() => "#" + new THREE.Color(c.accent).lerp(new THREE.Color(c.accent2), 0.5).getHexString(), [c.accent, c.accent2]);
   const rowLabel = "font-mono text-[13px] font-bold whitespace-nowrap";
   const labelX = colX(0) - 0.75;
@@ -187,10 +188,10 @@ function Scene({
         </Html>
       ))}
       <Html center position={[labelX, ROW_Y.a, 0]} style={{ pointerEvents: "none" }}>
-        <div className={rowLabel} style={{ color: c.accent }}>a</div>
+        <div className={rowLabel} style={{ color: c.label }}>a</div>
       </Html>
       <Html center position={[labelX, ROW_Y.b, 0]} style={{ pointerEvents: "none" }}>
-        <div className={rowLabel} style={{ color: c.accent2, opacity: shiftOp ? 0.35 : 1 }}>b</div>
+        <div className={rowLabel} style={{ color: c.label, opacity: shiftOp ? 0.35 : 1 }}>b</div>
       </Html>
       <Html center position={[labelX, ROW_Y.r, 0]} style={{ pointerEvents: "none" }}>
         <div className={rowLabel} style={{ color: c.label }}>=</div>
@@ -208,7 +209,7 @@ function Scene({
       <Row value={result} y={ROW_Y.r} onColor={mixed} offColor={off} />
       {result > 0xff && (
         <Html center position={[labelX, ROW_Y.r - 0.62, 0]} style={{ pointerEvents: "none" }}>
-          <div className="whitespace-nowrap rounded-full bg-black/50 px-2 py-0.5 text-[10px] font-semibold text-white">
+          <div className="whitespace-nowrap rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-[#3a3a3c] ring-1 ring-black/10">
             ← ще біти старше 8-го
           </div>
         </Html>
@@ -277,7 +278,9 @@ export function Bitwise3D() {
 
       <ControlBar>
         <Segmented id="bit-op" value={op} onChange={setOp} options={OPS} />
-        <Btn onClick={randomize}>🎲 Випадкові</Btn>
+        <Btn onClick={randomize}>
+          <Dices className="size-4" strokeWidth={1.75} /> Випадкові
+        </Btn>
         <Btn
           onClick={() => {
             setA(0b1100);

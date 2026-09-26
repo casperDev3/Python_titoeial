@@ -3,6 +3,7 @@
 import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import { motion } from "motion/react";
+import { Check, Database, Megaphone, NotebookPen, Timer, Zap, type LucideIcon } from "lucide-react";
 import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import { Vector3, type Mesh, type MeshPhysicalMaterial, type MeshStandardMaterial } from "three";
 import { Btn, ControlBar, Scene3D, useThemeColors, type ThemeColors } from "../kit";
@@ -10,11 +11,11 @@ import { FitCamera, INK, damp, tokenize } from "./shared";
 
 type LayerId = "timer" | "log" | "cache" | "shout";
 
-const LAYERS: { id: LayerId; icon: string; hint: string }[] = [
-  { id: "timer", icon: "⏱", hint: "міряє час" },
-  { id: "log", icon: "📝", hint: "пише в журнал" },
-  { id: "cache", icon: "💾", hint: "пам'ятає результат" },
-  { id: "shout", icon: "📣", hint: "змінює результат" },
+const LAYERS: { id: LayerId; icon: LucideIcon; hint: string }[] = [
+  { id: "timer", icon: Timer, hint: "міряє час" },
+  { id: "log", icon: NotebookPen, hint: "пише в журнал" },
+  { id: "cache", icon: Database, hint: "пам'ятає результат" },
+  { id: "shout", icon: Megaphone, hint: "змінює результат" },
 ];
 
 const SEG = 0.42; // секунд на один перехід між шарами
@@ -46,14 +47,14 @@ function makePlan(active: LayerId[], cached: boolean): Plan {
   lines.push('>>> strike("Джокер")');
   inner.forEach((id, k) => {
     stops.push(rOf(k));
-    if (id === "timer") lines.push("⏱ timer: старт секундоміра");
-    if (id === "log") lines.push("📝 log: → strike('Джокер')");
-    if (id === "cache") lines.push(hit ? "💾 cache: ВЛУЧАННЯ! ядро не викликаємо" : "💾 cache: промах — треба рахувати");
-    if (id === "shout") lines.push("📣 shout: чекаю результат…");
+    if (id === "timer") lines.push("timer: старт секундоміра");
+    if (id === "log") lines.push("log: → strike('Джокер')");
+    if (id === "cache") lines.push(hit ? "cache: ВЛУЧАННЯ! ядро не викликаємо" : "cache: промах — треба рахувати");
+    if (id === "shout") lines.push("shout: чекаю результат…");
   });
   if (!hit) {
     stops.push(0);
-    lines.push(`⚡ strike() → '${coreResult}'`);
+    lines.push(`strike() → '${coreResult}'`);
   }
   // шлях назад
   let cur = hit ? finalResult : coreResult;
@@ -66,11 +67,11 @@ function makePlan(active: LayerId[], cached: boolean): Plan {
     stops.push(rOf(k));
     if (id === "shout") {
       cur = cur.toUpperCase();
-      lines.push(`📣 shout → '${cur}'`);
+      lines.push(`shout → '${cur}'`);
     }
-    if (id === "cache") lines.push("💾 cache: запам'ятав результат");
-    if (id === "log") lines.push(`📝 log: ← '${cur}'`);
-    if (id === "timer") lines.push(`⏱ timer: ${hit ? "0.01" : "0.35"} мс`);
+    if (id === "cache") lines.push("cache: запам'ятав результат");
+    if (id === "log") lines.push(`log: ← '${cur}'`);
+    if (id === "timer") lines.push(`timer: ${hit ? "0.01" : "0.35"} мс`);
   }
   stops.push(outer);
   lines.push(`'${finalResult}'`);
@@ -138,11 +139,11 @@ export function BeltLayers3D() {
             className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12.5px] font-semibold transition-colors"
             style={{
               borderColor: on[l.id] ? INK : "var(--separator)",
-              background: on[l.id] ? "color-mix(in oklab, var(--accent) 18%, transparent)" : "transparent",
+              background: on[l.id] ? "color-mix(in oklab, var(--accent) 18%, white)" : "white",
               opacity: run ? 0.6 : 1,
             }}
           >
-            <span>{l.icon}</span>
+            <l.icon className="size-4" strokeWidth={1.75} />
             <span className="font-mono">@{l.id}</span>
             <span className="hidden text-[11px] font-normal text-label-2 sm:inline">· {l.hint}</span>
           </motion.button>
@@ -167,7 +168,7 @@ export function BeltLayers3D() {
       </Scene3D>
 
       <div className="grid gap-3 px-5 pt-3 md:grid-cols-2">
-        <div className="min-w-0 overflow-x-auto rounded-2xl border border-separator bg-black/[0.035] px-3 py-2 font-mono text-[12px] leading-[1.7] dark:bg-white/[0.04]">
+        <div className="min-w-0 overflow-x-auto rounded-2xl border border-separator bg-black/[0.035] px-3 py-2 font-mono text-[12px] leading-[1.7]">
           {active.map((id) => (
             <div key={id} className="whitespace-pre">
               {tokenize(`@${id}`, `d-${id}`)}
@@ -195,7 +196,8 @@ export function BeltLayers3D() {
 
       <ControlBar>
         <Btn variant="accent" onClick={call} disabled={!!run}>
-          ⚡ Виклик strike()
+          <Zap className="size-4" strokeWidth={1.75} />
+          Виклик strike()
         </Btn>
         <Btn
           onClick={() => {
@@ -215,7 +217,7 @@ export function BeltLayers3D() {
 }
 
 const LAYER_COLOR = (id: LayerId, c: ThemeColors) =>
-  id === "timer" ? c.accent : id === "log" ? c.accent2 : id === "cache" ? "#f59e0b" : c.dark ? "#e2e8f0" : "#475569";
+  id === "timer" ? c.accent : id === "log" ? c.accent2 : id === "cache" ? "#f59e0b" : "#475569";
 
 function Shell({
   id,
@@ -269,7 +271,7 @@ function Shell({
       </mesh>
       <mesh ref={ring}>
         <torusGeometry args={[radius, 0.022, 12, 128]} />
-        <meshStandardMaterial ref={ringMat} color={color} emissive={color} emissiveIntensity={0.15} metalness={0.6} roughness={0.3} />
+        <meshStandardMaterial ref={ringMat} color={color} emissive={color} emissiveIntensity={0.15} metalness={0.1} roughness={0.35} />
       </mesh>
       <Html
         position={[Math.cos(a) * radius * -1, Math.sin(a) * radius, 0.1]}
@@ -278,11 +280,11 @@ function Shell({
         style={{ pointerEvents: "none" }}
       >
         <div
-          className="rounded-full px-2 py-0.5 font-mono text-[11px] font-bold whitespace-nowrap shadow-md backdrop-blur-md"
-          style={{ background: "rgb(0 0 0 / 0.55)", color: hitLayer ? "#facc15" : "white" }}
+          className="flex items-center gap-1 rounded-full border bg-white/95 px-2 py-0.5 font-mono text-[11px] font-bold whitespace-nowrap shadow-md"
+          style={{ borderColor: color, color: hitLayer ? "#b45309" : "var(--label)" }}
         >
           @{id}
-          {hitLayer ? " ✓" : ""}
+          {hitLayer && <Check className="size-3" strokeWidth={2.25} />}
         </div>
       </Html>
     </group>
@@ -306,17 +308,16 @@ function Core({ colors, pulseRef }: { colors: ThemeColors; pulseRef: MutableRefO
         <octahedronGeometry args={[CORE_R, 0]} />
         <meshStandardMaterial
           ref={mat}
-          color={colors.dark ? "#1f2937" : "#334155"}
+          color="#f8fafc"
           emissive={colors.accent}
           emissiveIntensity={0.25}
-          metalness={0.7}
-          roughness={0.25}
+          metalness={0.05}
+          roughness={0.3}
           flatShading
         />
       </mesh>
       <Html position={[0, -CORE_R - 0.28, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
-        <div className="rounded-full px-2 py-0.5 font-mono text-[11px] font-bold whitespace-nowrap text-white shadow-md"
-          style={{ background: "rgb(0 0 0 / 0.6)" }}>
+        <div className="rounded-full border border-separator bg-white/95 px-2 py-0.5 font-mono text-[11px] font-bold whitespace-nowrap text-label shadow-md">
           strike()
         </div>
       </Html>

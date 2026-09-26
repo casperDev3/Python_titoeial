@@ -15,6 +15,12 @@ const CONDS = {
 type C = keyof typeof CONDS;
 type Fn = "any" | "all";
 
+/** Світла «пігулка» True/False: тонована заливка + темний текст того ж тону. */
+const boolPill = (v: boolean) =>
+  v
+    ? { background: "color-mix(in oklab, #30d158 16%, white)", border: "1px solid color-mix(in oklab, #30d158 55%, white)", color: "#1a7f37" }
+    : { background: "color-mix(in oklab, #ff453a 12%, white)", border: "1px solid color-mix(in oklab, #ff453a 50%, white)", color: "#c4001a" };
+
 /** Індекс, на якому any/all зупиняються (або null — дійшли до кінця). */
 function stopAt(fn: Fn, c: C): number | null {
   const f = CONDS[c].f;
@@ -99,8 +105,8 @@ export function AnyAllShortCircuit() {
               className="relative flex flex-col items-center gap-1 rounded-2xl border p-2"
               style={{
                 borderColor: isStop ? "var(--accent)" : "var(--separator)",
-                background: isStop ? "color-mix(in oklab, var(--accent) 14%, var(--glass-bg))" : "var(--glass-bg)",
-                boxShadow: isStop ? "0 8px 24px -10px var(--accent)" : undefined,
+                background: isStop ? "color-mix(in oklab, var(--accent) 12%, white)" : "var(--glass-bg)",
+                boxShadow: isStop ? "0 6px 18px -10px color-mix(in oklab, var(--accent) 60%, transparent)" : undefined,
               }}
             >
               <span className="text-[10px] font-semibold text-label-3">hp[{i}]</span>
@@ -113,8 +119,8 @@ export function AnyAllShortCircuit() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ type: "spring", stiffness: 500, damping: 22 }}
-                      className="inline-block rounded-full px-2 py-0.5 font-mono text-[11px] font-bold text-white"
-                      style={{ background: val ? "#30d158" : "#ff453a" }}
+                      className="inline-block rounded-full px-2 py-0.5 font-mono text-[11px] font-bold"
+                      style={boolPill(val)}
                     >
                       {val ? "True" : "False"}
                     </motion.span>
@@ -151,8 +157,8 @@ export function AnyAllShortCircuit() {
             ) : (
               <>
                 <span
-                  className="mr-2 rounded-full px-2 py-0.5 font-mono text-[12px] font-bold text-white"
-                  style={{ background: result ? "#30d158" : "#ff453a" }}
+                  className="mr-2 rounded-full px-2 py-0.5 font-mono text-[12px] font-bold"
+                  style={boolPill(result)}
                 >
                   {fn}(…) → {result ? "True" : "False"}
                 </span>
@@ -167,7 +173,7 @@ export function AnyAllShortCircuit() {
 
       <ControlBar>
         <Btn variant="accent" onClick={() => setK((v) => Math.min(limit, v + 1))} disabled={finished}>
-          Крок <ChevronRight className="size-4" />
+          Крок <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn
           onClick={() => {
@@ -175,10 +181,10 @@ export function AnyAllShortCircuit() {
             setPlaying((p) => !p);
           }}
         >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />} {playing ? "Пауза" : "Авто"}
+          {playing ? <Pause className="size-4" strokeWidth={1.75} /> : <Play className="size-4" strokeWidth={1.75} />} {playing ? "Пауза" : "Авто"}
         </Btn>
         <Btn onClick={reset}>
-          <RotateCcw className="size-4" /> Скинути
+          <RotateCcw className="size-4" strokeWidth={1.75} /> Скинути
         </Btn>
       </ControlBar>
     </div>

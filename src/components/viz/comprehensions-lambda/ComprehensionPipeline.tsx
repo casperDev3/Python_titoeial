@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState, type ReactNode } from "react";
-import { ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
+import { Check, ChevronRight, Pause, Play, RotateCcw, X } from "lucide-react";
 import { Btn, ControlBar, Segmented } from "../kit";
 
 const DATA = [4, 15, 7, 13, 60, 3, 8];
@@ -118,9 +118,9 @@ export function ComprehensionPipeline() {
                 transition={{ type: "spring", stiffness: 420, damping: 24 }}
                 className="grid size-10 place-items-center rounded-[12px] font-mono text-[14px] font-bold"
                 style={{
-                  background: active ? "var(--accent)" : "var(--glass-bg)",
-                  color: active ? "#fff" : "var(--label)",
-                  border: `1px solid ${active ? "var(--accent)" : "var(--separator)"}`,
+                  background: active ? "color-mix(in oklab, var(--accent) 16%, white)" : "var(--glass-bg)",
+                  color: active ? "color-mix(in oklab, var(--accent) 62%, black)" : "var(--label)",
+                  border: `${active ? 2 : 1}px solid ${active ? "var(--accent)" : "var(--separator)"}`,
                   textDecoration: done && !ok ? "line-through" : undefined,
                 }}
               >
@@ -145,7 +145,10 @@ export function ComprehensionPipeline() {
                 className="font-mono text-[13px]"
               >
                 h = {cur} →{" "}
-                <b style={{ color: passes ? "#30d158" : "#ff453a" }}>{passes ? "True ✓" : "False ✗"}</b>
+                <b className="inline-flex items-center gap-0.5 align-middle" style={{ color: passes ? "#1a7f37" : "#c4001a" }}>
+                  {passes ? "True" : "False"}
+                  {passes ? <Check className="size-3.5" strokeWidth={1.75} /> : <X className="size-3.5" strokeWidth={1.75} />}
+                </b>
               </motion.div>
             </AnimatePresence>
           )}
@@ -187,8 +190,12 @@ export function ComprehensionPipeline() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.4 }}
                 transition={{ type: "spring", stiffness: 380, damping: 20 }}
-                className="rounded-[10px] px-2 py-1 text-[13px] font-bold text-white"
-                style={{ background: "linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 55%, var(--accent-2)))" }}
+                className="rounded-[10px] border px-2 py-1 text-[13px] font-bold"
+                style={{
+                  background: "color-mix(in oklab, var(--accent) 13%, white)",
+                  borderColor: "color-mix(in oklab, var(--accent) 45%, white)",
+                  color: "color-mix(in oklab, var(--accent) 62%, black)",
+                }}
               >
                 {r.v}
               </motion.span>
@@ -200,7 +207,7 @@ export function ComprehensionPipeline() {
 
       <ControlBar>
         <Btn variant="accent" onClick={() => setStep((s) => Math.min(total, s + 1))} disabled={ended}>
-          Крок <ChevronRight className="size-4" />
+          Крок <ChevronRight className="size-4" strokeWidth={1.75} />
         </Btn>
         <Btn
           onClick={() => {
@@ -208,10 +215,10 @@ export function ComprehensionPipeline() {
             setPlaying((p) => !p);
           }}
         >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />} {playing ? "Пауза" : "Запуск"}
+          {playing ? <Pause className="size-4" strokeWidth={1.75} /> : <Play className="size-4" strokeWidth={1.75} />} {playing ? "Пауза" : "Запуск"}
         </Btn>
         <Btn onClick={reset}>
-          <RotateCcw className="size-4" /> Скинути
+          <RotateCcw className="size-4" strokeWidth={1.75} /> Скинути
         </Btn>
       </ControlBar>
     </div>
@@ -222,7 +229,7 @@ function Part({ on, children }: { on: boolean; children: ReactNode }) {
   return (
     <motion.span
       animate={{
-        backgroundColor: on ? "color-mix(in oklab, var(--accent) 24%, transparent)" : "rgba(0,0,0,0)",
+        backgroundColor: on ? "color-mix(in oklab, var(--accent) 22%, white)" : "rgba(255,255,255,0)",
       }}
       className="rounded-md px-0.5"
     >
@@ -239,7 +246,7 @@ function Station({ title, code, active, children }: { title: string; code: strin
       className="min-h-[92px] min-w-0 rounded-2xl border p-2.5"
       style={{
         borderColor: active ? "var(--accent)" : "var(--separator)",
-        background: active ? "color-mix(in oklab, var(--accent) 9%, var(--glass-bg))" : "var(--glass-bg)",
+        background: active ? "color-mix(in oklab, var(--accent) 9%, white)" : "var(--glass-bg)",
       }}
     >
       <div className="text-[11px] font-bold tracking-wider text-label-3 uppercase">{title}</div>

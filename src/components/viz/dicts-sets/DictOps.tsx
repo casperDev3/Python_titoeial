@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
 import { Btn, Console, ControlBar } from "../kit";
 
 type Entry = [string, number];
@@ -140,7 +141,7 @@ export function DictOps() {
                 <motion.span
                   layoutId="dictops-cursor"
                   className="absolute inset-0 rounded-[8px]"
-                  style={{ background: "color-mix(in oklab, var(--accent) 18%, transparent)", boxShadow: "inset 3px 0 0 var(--accent)" }}
+                  style={{ background: "color-mix(in oklab, var(--accent) 12%, white)", boxShadow: "inset 3px 0 0 var(--accent)" }}
                   transition={{ type: "spring", stiffness: 420, damping: 34 }}
                 />
               )}
@@ -170,11 +171,11 @@ export function DictOps() {
                   style={{
                     background:
                       r.kind === "add"
-                        ? "color-mix(in oklab, #30d158 20%, transparent)"
+                        ? "color-mix(in oklab, #30d158 16%, white)"
                         : r.kind === "set"
-                          ? "color-mix(in oklab, var(--accent-2) 25%, transparent)"
+                          ? "color-mix(in oklab, var(--accent-2) 16%, white)"
                           : r.kind === "del"
-                            ? "color-mix(in oklab, #ff453a 16%, transparent)"
+                            ? "color-mix(in oklab, #ff453a 12%, white)"
                             : "var(--glass-bg)",
                     textDecoration: r.kind === "del" ? "line-through" : "none",
                   }}
@@ -198,10 +199,16 @@ export function DictOps() {
 
       <ControlBar>
         <Btn onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
-          ← Назад
+          <span className="inline-flex items-center gap-1">
+            <ChevronLeft className="size-4" strokeWidth={1.75} aria-hidden />
+            Назад
+          </span>
         </Btn>
         <Btn variant="accent" onClick={() => setStep((s) => Math.min(last, s + 1))} disabled={step === last}>
-          Крок →
+          <span className="inline-flex items-center gap-1">
+            Крок
+            <ChevronRight className="size-4" strokeWidth={1.75} aria-hidden />
+          </span>
         </Btn>
         <Btn
           onClick={() => {
@@ -210,7 +217,10 @@ export function DictOps() {
             setAuto(true);
           }}
         >
-          {playing ? "❚❚ Пауза" : "▶ Авто"}
+          <span className="inline-flex items-center gap-1">
+            {playing ? <Pause className="size-4" strokeWidth={1.75} aria-hidden /> : <Play className="size-4" strokeWidth={1.75} aria-hidden />}
+            {playing ? "Пауза" : "Авто"}
+          </span>
         </Btn>
         <Btn
           onClick={() => {
@@ -218,7 +228,8 @@ export function DictOps() {
             setStep(0);
           }}
         >
-          ↺
+          <RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />
+          <span className="sr-only">Скинути</span>
         </Btn>
         <span className="ml-auto text-[12px] text-label-2 tabular-nums">
           {step + 1}/{PROGRAM.length}

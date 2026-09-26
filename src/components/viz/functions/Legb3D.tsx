@@ -1,10 +1,11 @@
 "use client";
 
-import { Html } from "@react-three/drei";
+import { Edges, Html } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { Mesh, MeshPhysicalMaterial } from "three";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Color, type Mesh, type MeshPhysicalMaterial } from "three";
+import { CircleCheck, CircleX } from "lucide-react";
 import { ControlBar, Scene3D, Segmented, useThemeColors } from "../kit";
 
 type Tier = { key: string; letter: string; title: string; y: number; r: number; names: [string, string][] };
@@ -42,7 +43,7 @@ function TierMesh({ t, i, stage, found, selected, onPick }: {
   useFrame((_, dt) => {
     const m = mat.current;
     if (!m) return;
-    const goal = hit ? 1.1 : active ? 0.55 : selected === i || hover ? 0.3 : 0.04;
+    const goal = hit ? 0.35 : active ? 0.18 : selected === i || hover ? 0.1 : 0;
     m.emissiveIntensity += (goal - m.emissiveIntensity) * Math.min(1, dt * 8);
     const mm = mesh.current;
     if (mm) {
@@ -52,7 +53,8 @@ function TierMesh({ t, i, stage, found, selected, onPick }: {
     }
   });
 
-  const color = i % 2 === 0 ? c.accent : c.accent2;
+  // світле «скло» з легким відтінком акценту (без чергування кольорів)
+  const color = useMemo(() => "#" + new Color("#ffffff").lerp(new Color(c.accent), 0.12 + i * 0.04).getHexString(), [c.accent, i]);
   return (
     <group position={[0, t.y, 0]}>
       <mesh
@@ -71,21 +73,25 @@ function TierMesh({ t, i, stage, found, selected, onPick }: {
         <meshPhysicalMaterial
           ref={mat}
           color={color}
-          emissive={color}
-          emissiveIntensity={0.04}
-          transmission={0.55}
+          emissive={c.accent}
+          emissiveIntensity={0}
+          transmission={0.4}
           thickness={0.8}
           roughness={0.18}
           metalness={0}
           clearcoat={1}
           transparent
-          opacity={0.82}
+          opacity={0.9}
         />
+        <Edges threshold={30} color={c.accent} />
       </mesh>
       <Html position={[-t.r * 0.72, 0, t.r * 0.72]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
         <div
-          className="rounded-full px-2 py-0.5 text-[11px] font-bold whitespace-nowrap text-white shadow"
-          style={{ background: active ? "var(--accent)" : "rgba(0,0,0,.45)", backdropFilter: "blur(8px)" }}
+          className="rounded-full border bg-white/95 px-2 py-0.5 text-[11px] font-bold whitespace-nowrap shadow-sm"
+          style={{
+            borderColor: active ? "var(--accent)" : "var(--separator)",
+            color: active ? "color-mix(in oklab, var(--accent) 62%, black)" : "var(--label)",
+          }}
         >
           {t.letter} · {t.title}
         </div>
@@ -155,9 +161,9 @@ export function Legb3D() {
     stage < 0
       ? `Шукаю ім'я «${q}»…`
       : found >= 0 && stage === found
-        ? `✓ «${q}» знайдено в ${TIERS[found].title}. Пошук зупинено — зовнішні рівні вже не перевіряються.`
+        ? `«${q}» знайдено в ${TIERS[found].title}. Пошук зупинено — зовнішні рівні вже не перевіряються.`
         : stage >= TIERS.length
-          ? `✗ NameError: name '${q}' is not defined — жодне кільце не знає цього імені.`
+          ? `NameError: name '${q}' is not defined — жодне кільце не знає цього імені.`
           : `Немає в ${TIERS[stage].title} → йду назовні…`;
 
   const sel = TIERS[selected];
@@ -188,12 +194,17 @@ export function Legb3D() {
           style={{
             background:
               done && found < 0
-                ? "color-mix(in oklab, #ff453a 12%, transparent)"
-                : "color-mix(in oklab, var(--accent) 10%, transparent)",
+                ? "color-mix(in oklab, #ff453a 10%, white)"
+                : "color-mix(in oklab, var(--accent) 8%, white)",
           }}
         >
           <AnimatePresence mode="wait">
             <motion.div key={status} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.18 }}>
+              {found >= 0 && stage === found ? (
+                <CircleCheck className="mr-1.5 inline size-4 align-[-3px]" strokeWidth={1.75} style={{ color: "var(--accent)" }} />
+              ) : stage >= TIERS.length ? (
+                <CircleX className="mr-1.5 inline size-4 align-[-3px] text-[#d70015]" strokeWidth={1.75} />
+              ) : null}
               {status}
             </motion.div>
           </AnimatePresence>
@@ -203,9 +214,9 @@ export function Legb3D() {
                 key={t.key}
                 className="flex-1 rounded-full py-0.5 text-center font-mono text-[11px] font-bold transition-colors"
                 style={{
-                  background: i <= stage ? (i === found ? "var(--accent)" : "var(--separator)") : "transparent",
-                  color: i === found && i <= stage ? "#fff" : "var(--label-2)",
-                  border: "1px solid var(--separator)",
+                  background: i <= stage ? (i === found ? "color-mix(in oklab, var(--accent) 16%, white)" : "var(--separator)") : "white",
+                  color: i === found && i <= stage ? "color-mix(in oklab, var(--accent) 62%, black)" : "var(--label-2)",
+                  border: `1px solid ${i === found && i <= stage ? "var(--accent)" : "var(--separator)"}`,
                 }}
               >
                 {t.letter}

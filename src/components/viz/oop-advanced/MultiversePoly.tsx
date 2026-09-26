@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type Group, type Mesh, type MeshStandardMaterial } from "three";
-import { Play, RotateCcw } from "lucide-react";
+import { Bird, Check, Play, RotateCcw, X } from "lucide-react";
 import { Btn, ControlBar, Scene3D, useThemeColors } from "../kit";
 import { damp, FitCamera, setCursor, SPRING } from "./shared";
 
@@ -185,12 +185,12 @@ function Portal({ a, b }: { a: string; b: string }) {
       </group>
       <mesh ref={inner}>
         <circleGeometry args={[1.28, 64]} />
-        <meshStandardMaterial color={b} emissive={a} emissiveIntensity={0.35} transparent opacity={0.28} depthWrite={false} />
+        <meshStandardMaterial color="#ffffff" transparent opacity={0.55} depthWrite={false} />
       </mesh>
       <Html position={[0, 0, 0.05]} center zIndexRange={[5, 0]} style={{ pointerEvents: "none" }}>
-        <div className="rounded-xl bg-black/45 px-2.5 py-1 text-center font-mono text-[11px] leading-tight text-white backdrop-blur-md">
+        <div className="rounded-xl border border-black/10 bg-white/90 px-2.5 py-1 text-center font-mono text-[11px] leading-tight text-[#1c1c1e] shadow-sm">
           <div className="font-bold">class Spider</div>
-          <div className="opacity-75">def attack(self): …</div>
+          <div className="text-[#6e6e73]">def attack(self): …</div>
         </div>
       </Html>
     </group>
@@ -253,8 +253,8 @@ export function MultiversePoly() {
               />
               <Html position={[p[0], p[1] - 0.42, p[2]]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
                 <div
-                  className="rounded-full px-2 py-0.5 font-mono text-[10.5px] font-bold whitespace-nowrap text-white shadow"
-                  style={{ background: h.spider ? "rgba(0,0,0,.5)" : "rgba(202,138,4,.85)", backdropFilter: "blur(6px)" }}
+                  className="rounded-full border bg-white/90 px-2 py-0.5 font-mono text-[10.5px] font-bold whitespace-nowrap shadow-sm"
+                  style={{ borderColor: h.spider ? "rgba(0,0,0,.12)" : "#ca8a04", color: h.spider ? "#1c1c1e" : "#a16207" }}
                 >
                   {h.cls}
                   {h.spider ? "(Spider)" : ""}
@@ -269,8 +269,8 @@ export function MultiversePoly() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
                       transition={SPRING}
-                      className="max-w-[170px] rounded-2xl px-2.5 py-1 text-center text-[11px] font-semibold text-white shadow-lg"
-                      style={{ background: `linear-gradient(135deg, ${c.accent}, ${c.accent2})` }}
+                      className="max-w-[170px] rounded-2xl border-[1.5px] bg-white px-2.5 py-1 text-center text-[11px] font-semibold text-[#1c1c1e] shadow-md"
+                      style={{ borderColor: c.accent }}
                     >
                       {h.out.split(": ")[1]}
                     </motion.div>
@@ -284,7 +284,7 @@ export function MultiversePoly() {
 
       <ControlBar>
         <Btn variant="accent" onClick={run} disabled={running}>
-          <Play className="size-4" /> <span className="font-mono text-[12px]">for hero in team: hero.attack()</span>
+          <Play className="size-4" strokeWidth={1.75} /> <span className="font-mono text-[12px]">for hero in team: hero.attack()</span>
         </Btn>
         <Btn
           onClick={() => {
@@ -294,7 +294,7 @@ export function MultiversePoly() {
             if (sel === "Duck") setSel(null);
           }}
         >
-          {duck ? "Прибрати качку" : "🦆 Додати Качку"}
+          <Bird className="size-4" strokeWidth={1.75} /> {duck ? "Прибрати качку" : "Додати качку"}
         </Btn>
         <Btn
           onClick={() => {
@@ -304,13 +304,13 @@ export function MultiversePoly() {
             setSel(null);
           }}
         >
-          <RotateCcw className="size-4" />
+          <RotateCcw className="size-4" strokeWidth={1.75} />
         </Btn>
       </ControlBar>
 
       <div className="mx-5 mb-4 grid gap-3 md:grid-cols-2">
-        <div className="min-h-[132px] rounded-2xl bg-black/80 px-4 py-3 font-mono text-[12px] leading-relaxed text-[#e5e5ea]">
-          {doneLines.length === 0 && <div className="text-[#8e8e93]"># запусти цикл по команді</div>}
+        <div className="min-h-[132px] rounded-2xl border border-separator bg-[var(--code-bg)] px-4 py-3 font-mono text-[12px] leading-relaxed text-label">
+          {doneLines.length === 0 && <div className="text-label-3"># запусти цикл по команді</div>}
           <AnimatePresence initial={false}>
             {doneLines.map((l) => (
               <motion.div key={l} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={SPRING}>
@@ -352,7 +352,7 @@ function LookupCard({ h }: { h: HeroDef }) {
     >
       <div className="font-mono text-[12px] text-label-2">
         type(hero) → <span className="font-semibold text-label">{h.cls}</span> · isinstance(hero, Spider) →{" "}
-        <span className="font-semibold" style={{ color: h.spider ? "#30d158" : "#ff9f0a" }}>
+        <span className="font-semibold" style={{ color: h.spider ? "#15803d" : "#b45309" }}>
           {String(h.spider ? "True" : "False")}
         </span>
       </div>
@@ -366,12 +366,14 @@ function LookupCard({ h }: { h: HeroDef }) {
             transition={{ ...SPRING, delay: i * 0.25 }}
             className="rounded-lg px-2 py-0.5"
             style={{
-              background: s.ok ? "#30d158" : "color-mix(in oklab, var(--label-2) 14%, transparent)",
-              color: s.ok ? "white" : undefined,
+              background: s.ok ? "color-mix(in oklab, #15803d 14%, white)" : "color-mix(in oklab, var(--label-2) 10%, white)",
+              color: s.ok ? "#15803d" : undefined,
+              fontWeight: s.ok ? 700 : undefined,
               textDecoration: s.ok ? undefined : "line-through",
             }}
           >
-            {s.k}.attack {s.ok ? "✓" : "✗"}
+            {s.k}.attack{" "}
+            {s.ok ? <Check className="inline size-3.5 align-[-2px]" strokeWidth={1.75} /> : <X className="inline size-3.5 align-[-2px]" strokeWidth={1.75} />}
           </motion.span>
         ))}
       </div>

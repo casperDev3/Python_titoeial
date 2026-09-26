@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import type { Group, Mesh, MeshPhysicalMaterial, MeshStandardMaterial } from "three";
 import { ControlBar, Scene3D, Segmented, Slider, useThemeColors } from "../kit";
+import { CONSOLE_BG, ORANGE, tint } from "./palette";
 
 type Mode = "zip" | "longest" | "enumerate";
 
@@ -67,8 +68,8 @@ function Cube({
       {visible && (
         <Html position={[0, 0, 0.42]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
           <div
-            className="rounded-md px-1 py-px font-mono text-[10px] font-bold whitespace-nowrap text-white"
-            style={{ background: "rgba(0,0,0,.45)", opacity: dim ? 0.5 : 1 }}
+            className="rounded-md border border-separator bg-white/95 px-1 py-px font-mono text-[10px] font-bold whitespace-nowrap text-label shadow-sm"
+            style={{ opacity: dim ? 0.5 : 1 }}
           >
             {compact ? label.slice(0, 4) : label}
           </div>
@@ -111,7 +112,7 @@ function Scene({
   const cols = Math.max(lenA, bLen);
   const pairs = mode === "zip" ? Math.min(lenA, bLen) : cols;
   const xOf = (i: number) => (i - (cols - 1) / 2) * GAP;
-  const neutral = c.dark ? "#d1d1d6" : "#8e8e93";
+  const neutral = "#8e8e93";
 
   return (
     <group scale={k} rotation={[0, -0.12, 0]}>
@@ -183,7 +184,7 @@ function Scene({
           lift={0.18}
           visible={mode === "enumerate" && i < lenA}
           dim={false}
-          color={c.dark ? "#f5f5f7" : "#e5e5ea"}
+          color="#d1d1d6"
           label={String(i + 1)}
           onPick={() => onPick(i)}
           compact={compact}
@@ -239,8 +240,8 @@ export function Zip3D() {
       </Scene3D>
 
       <div className="grid gap-2 px-5 sm:grid-cols-[1.5fr_1fr]">
-        <div className="thin-scroll max-h-[200px] overflow-auto rounded-2xl bg-black/80 px-3.5 py-2.5 font-mono text-[11.5px] leading-relaxed text-[#e5e5ea]">
-          <div className="text-[#8e8e93]">&gt;&gt;&gt; {call}</div>
+        <div className="thin-scroll max-h-[200px] overflow-auto rounded-2xl border border-separator px-3.5 py-2.5 font-mono text-[11.5px] leading-relaxed text-label" style={{ background: CONSOLE_BG }}>
+          <div className="text-label-3">&gt;&gt;&gt; {call}</div>
           <div>[</div>
           <AnimatePresence initial={false}>
             {tuples.map((t, i) => (
@@ -252,7 +253,7 @@ export function Zip3D() {
                 exit={{ opacity: 0 }}
                 onClick={() => setSel(i)}
                 className="cursor-pointer rounded-md pl-3 whitespace-nowrap"
-                style={{ background: selI === i ? "color-mix(in oklab, var(--accent) 35%, transparent)" : undefined }}
+                style={{ background: selI === i ? tint(18) : undefined }}
               >
                 {t}
                 {i < tuples.length - 1 ? "," : ""}
@@ -261,12 +262,12 @@ export function Zip3D() {
           </AnimatePresence>
           <div>]</div>
         </div>
-        <div className="rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug" style={{ background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}>
+        <div className="rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug" style={{ background: tint(8) }}>
           {mode === "zip" && (
             <>
               <b>zip</b> зупиняється на найкоротшому списку.{" "}
               {lost > 0 ? (
-                <span className="font-semibold" style={{ color: "color-mix(in oklab, #ff9f0a 70%, var(--label))" }}>Мовчки втрачено елементів: {lost}.</span>
+                <span className="font-semibold" style={{ color: ORANGE }}>Мовчки втрачено елементів: {lost}.</span>
               ) : (
                 "Довжини рівні — нічого не втрачено."
               )}

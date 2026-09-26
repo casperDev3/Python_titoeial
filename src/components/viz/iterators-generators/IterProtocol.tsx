@@ -1,9 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { Bookmark, Check, Play, RotateCcw } from "lucide-react";
 import { useEffect, useReducer, useState } from "react";
 import { Btn, ControlBar } from "../kit";
-import { CodePane } from "./shared";
+import { CodePane, INK, WARN } from "./shared";
 
 const VISIONS = ["бій", "угода", "петля", "перемога"];
 
@@ -129,10 +130,10 @@ export function IterProtocol() {
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="absolute -top-1.5 -right-1.5 grid size-4 place-items-center rounded-full text-[9px] text-white"
-                        style={{ background: "var(--accent)" }}
+                        className="absolute -top-1.5 -right-1.5 grid size-4 place-items-center rounded-full text-white"
+                        style={{ background: INK }}
                       >
-                        ✓
+                        <Check className="size-3" strokeWidth={2.5} />
                       </motion.span>
                     )}
                   </motion.div>
@@ -142,7 +143,7 @@ export function IterProtocol() {
                         layoutId="iter-bookmark"
                         transition={{ type: "spring", stiffness: 420, damping: 30 }}
                         className="mt-1 flex flex-col items-center text-[11px] font-bold"
-                        style={{ color: "var(--accent)" }}
+                        style={{ color: INK }}
                       >
                         <span className="leading-none">▲</span>
                         <span className="leading-none">it</span>
@@ -175,9 +176,11 @@ export function IterProtocol() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 320, damping: 26 }}
                 className="mt-2 flex flex-wrap items-center gap-3 rounded-2xl px-4 py-3"
-                style={{ background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}
+                style={{ background: "color-mix(in oklab, var(--accent) 9%, white)" }}
               >
-                <span className="text-[22px]">🔖</span>
+                <span className="icon-tile size-9">
+                  <Bookmark className="size-5" strokeWidth={1.75} />
+                </span>
                 <div className="min-w-0 font-mono text-[12.5px]">
                   <div>
                     it → <b>list_iterator</b>
@@ -196,7 +199,7 @@ export function IterProtocol() {
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.5 }}
                       className="ml-auto rounded-full px-3 py-1 font-mono text-[12px] font-bold text-white"
-                      style={{ background: "#ff9f0a" }}
+                      style={{ background: WARN }}
                     >
                       StopIteration
                     </motion.span>
@@ -239,7 +242,8 @@ export function IterProtocol() {
           next(it)
         </Btn>
         <Btn onClick={startFor} disabled={auto}>
-          ▶ for автоматом
+          <Play className="size-4" strokeWidth={1.75} />
+          for автоматом
         </Btn>
         <Btn
           onClick={() => {
@@ -247,6 +251,7 @@ export function IterProtocol() {
             dispatch({ type: "reset" });
           }}
         >
+          <RotateCcw className="size-4" strokeWidth={1.75} />
           Скинути
         </Btn>
       </ControlBar>

@@ -2,6 +2,7 @@
 
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Html, RoundedBox } from "@react-three/drei";
+import { RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { Group, Mesh, MeshPhysicalMaterial, MeshStandardMaterial } from "three";
 import { Btn, Console, ControlBar, Scene3D, useThemeColors, type ThemeColors } from "../kit";
@@ -170,7 +171,12 @@ export function HashDomain3D() {
         <Btn variant="accent" onClick={add} disabled={!nextKey || !!flight}>
           Додати ключ{nextKey ? ` "${nextKey}"` : ""}
         </Btn>
-        <Btn onClick={reset}>↺ Скинути</Btn>
+        <Btn onClick={reset}>
+          <span className="inline-flex items-center gap-1">
+            <RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />
+            Скинути
+          </span>
+        </Btn>
         <span className="ml-auto font-mono text-[12px] text-label-2 tabular-nums">
           {used}/{size} · поріг {usable}
         </span>
@@ -211,7 +217,7 @@ function SixEyes({ colors, busy }: { colors: ThemeColors; busy: boolean }) {
       {/* підлога «території» */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.78, 0]}>
         <circleGeometry args={[4, 64]} />
-        <meshStandardMaterial color={colors.glow} transparent opacity={colors.dark ? 0.16 : 0.1} />
+        <meshStandardMaterial color={colors.glow} transparent opacity={0.1} />
       </mesh>
     </group>
   );
@@ -278,7 +284,7 @@ function Slot({
       >
         <meshPhysicalMaterial
           ref={mat}
-          color={occupied ? colors.accent : colors.dark ? "#2c2c30" : "#e8eef5"}
+          color={occupied ? colors.accent : "#ffffff"}
           emissive={colors.accent}
           emissiveIntensity={0.04}
           roughness={0.2}
@@ -312,7 +318,7 @@ function KeyOrb({ name, target, colors }: { name: string; target: [number, numbe
         <meshPhysicalMaterial color={colors.accent2} emissive={colors.accent2} emissiveIntensity={0.35} roughness={0.15} clearcoat={1} />
       </mesh>
       <Html center zIndexRange={[20, 0]} position={[0, 0.42, 0]} style={{ pointerEvents: "none" }}>
-        <span className="rounded-full bg-black/40 px-1.5 py-px font-mono text-[10.5px] font-semibold whitespace-nowrap text-white backdrop-blur-md">
+        <span className="glass !rounded-full px-1.5 py-px font-mono text-[10.5px] font-semibold whitespace-nowrap text-label">
           {name}
         </span>
       </Html>

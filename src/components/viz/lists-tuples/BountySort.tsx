@@ -3,18 +3,19 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import { Console, ControlBar, Segmented } from "../kit";
+import { CrewIcon } from "./icons";
 
-type Pirate = { name: string; bounty: number; emoji: string };
+type Pirate = { name: string; bounty: number };
 
 const CREW: Pirate[] = [
-  { name: "Zoro", bounty: 1111, emoji: "⚔️" },
-  { name: "Nami", bounty: 366, emoji: "🍊" },
-  { name: "Luffy", bounty: 3000, emoji: "👒" },
-  { name: "Usopp", bounty: 500, emoji: "🎯" },
-  { name: "Sanji", bounty: 1032, emoji: "🍳" },
-  { name: "Robin", bounty: 930, emoji: "🌸" },
-  { name: "Chopper", bounty: 1000, emoji: "🦌" },
-  { name: "Jinbe", bounty: 1100, emoji: "🌊" },
+  { name: "Zoro", bounty: 1111 },
+  { name: "Nami", bounty: 366 },
+  { name: "Luffy", bounty: 3000 },
+  { name: "Usopp", bounty: 500 },
+  { name: "Sanji", bounty: 1032 },
+  { name: "Robin", bounty: 930 },
+  { name: "Chopper", bounty: 1000 },
+  { name: "Jinbe", bounty: 1100 },
 ];
 const MAXB = 3000;
 
@@ -84,15 +85,16 @@ export function BountySort() {
             className="flex items-center gap-2 text-[13px]"
           >
             <span className="w-4 text-right font-mono text-[11px] text-label-3">{pos}</span>
-            <span className="w-[74px] shrink-0 truncate font-semibold sm:w-[88px]">
-              {p.emoji} {p.name}
+            <span className="flex w-[74px] shrink-0 items-center gap-1 truncate font-semibold sm:w-[88px]">
+              <CrewIcon name={p.name} className="size-3.5 shrink-0 text-label-2" />
+              <span className="truncate">{p.name}</span>
             </span>
             <div className="relative h-6 flex-1 overflow-hidden rounded-full" style={{ background: "var(--separator)" }}>
               <motion.div
                 className="absolute inset-y-0 left-0 rounded-full"
                 initial={false}
                 animate={{ width: `${Math.max(8, (p.bounty / MAXB) * 100)}%` }}
-                style={{ background: "linear-gradient(90deg, var(--accent), var(--accent-2))" }}
+                style={{ background: "color-mix(in oklab, var(--accent) 30%, white)" }}
               />
               <span className="absolute inset-y-0 left-2 flex items-center font-mono text-[11px] font-semibold text-label">
                 {p.bounty}M ฿

@@ -3,9 +3,9 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import { Console, ControlBar } from "../kit";
+import { CrewIcon } from "./icons";
 
 const CREW = ["Luffy", "Zoro", "Nami", "Usopp", "Sanji", "Chopper"];
-const EMOJI = ["👒", "⚔️", "🍊", "🎯", "🍳", "🦌"];
 const N = CREW.length;
 
 type P = number | null;
@@ -74,15 +74,13 @@ export function SliceLab() {
                   transition={{ type: "spring", stiffness: 420, damping: 26 }}
                   className="relative flex h-[62px] w-full flex-col items-center justify-center rounded-[14px] border"
                   style={{
-                    background: on
-                      ? "linear-gradient(160deg, color-mix(in oklab, var(--accent) 85%, transparent), color-mix(in oklab, var(--accent-2) 80%, transparent))"
-                      : "var(--glass-bg)",
-                    borderColor: on ? "transparent" : "var(--separator)",
-                    color: on ? "white" : "var(--label)",
-                    boxShadow: on ? "0 8px 20px -8px color-mix(in oklab, var(--accent) 80%, transparent)" : "none",
+                    background: on ? "color-mix(in oklab, var(--accent) 14%, white)" : "white",
+                    borderColor: on ? "var(--accent)" : "var(--separator)",
+                    color: "var(--label)",
+                    boxShadow: on ? "0 8px 20px -10px color-mix(in oklab, var(--accent) 60%, transparent)" : "none",
                   }}
                 >
-                  <span className="text-[18px] leading-none">{EMOJI[i]}</span>
+                  <CrewIcon name={name} className={`size-5 ${on ? "text-accent" : "text-label-2"}`} />
                   <span className="mt-1 w-full truncate px-0.5 text-center text-[10.5px] font-semibold">{name}</span>
                   {on && (
                     <motion.span

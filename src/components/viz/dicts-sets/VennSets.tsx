@@ -54,7 +54,7 @@ export function VennSets() {
   const fmt = (xs: string[]) => (xs.length ? "{" + xs.map((x) => `'${x}'`).join(", ") + "}" : "set()");
 
   const on = (z: Zone) => active.includes(z);
-  const fill = "color-mix(in oklab, var(--accent) 55%, var(--accent-2))";
+  const fill = "color-mix(in oklab, var(--accent) 60%, var(--accent-2))";
 
   return (
     <div>
@@ -99,7 +99,7 @@ export function VennSets() {
             r={R}
             mask="url(#venn-a-only)"
             initial={false}
-            animate={{ opacity: on("a") ? 0.55 : 0.06 }}
+            animate={{ opacity: on("a") ? 0.28 : 0.04 }}
             transition={{ type: "spring", stiffness: 200, damping: 24 }}
             style={{ fill }}
           />
@@ -109,7 +109,7 @@ export function VennSets() {
             r={R}
             mask="url(#venn-b-only)"
             initial={false}
-            animate={{ opacity: on("b") ? 0.55 : 0.06 }}
+            animate={{ opacity: on("b") ? 0.28 : 0.04 }}
             transition={{ type: "spring", stiffness: 200, damping: 24 }}
             style={{ fill }}
           />
@@ -119,7 +119,7 @@ export function VennSets() {
               cy={CY}
               r={R}
               initial={false}
-              animate={{ opacity: on("both") ? 0.75 : 0.06 }}
+              animate={{ opacity: on("both") ? 0.4 : 0.04 }}
               transition={{ type: "spring", stiffness: 200, damping: 24 }}
               style={{ fill }}
             />
@@ -156,7 +156,7 @@ export function VennSets() {
                   height={22}
                   rx={11}
                   style={{
-                    fill: inRes ? "var(--bg-elevated)" : "color-mix(in oklab, var(--bg-elevated) 55%, transparent)",
+                    fill: inRes ? "white" : "rgb(255 255 255 / 0.7)",
                     stroke: inRes ? "var(--accent)" : "var(--separator)",
                   }}
                   strokeWidth={1.2}

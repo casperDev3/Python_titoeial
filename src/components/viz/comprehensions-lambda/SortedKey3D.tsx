@@ -1,6 +1,6 @@
 "use client";
 
-import { Html, RoundedBox } from "@react-three/drei";
+import { Edges, Html, RoundedBox } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useRef, useState, type ReactNode } from "react";
@@ -45,14 +45,17 @@ const fmt = (v: KeyVal): string =>
 const SP = 0.95;
 
 function Column({
-  s, idx, slot, keyText, a, b, selected, onPick,
+  s, idx, slot, keyText, a, selected, onPick,
 }: {
-  s: Soldier; idx: number; slot: number; keyText: string; a: string; b: string; selected: boolean; onPick: () => void;
+  s: Soldier; idx: number; slot: number; keyText: string; a: string; selected: boolean; onPick: () => void;
 }) {
   const g = useRef<Group>(null);
   const mat = useRef<MeshPhysicalMaterial>(null);
   const h = (s.height - 140) / 20; // 1.0 … 2.4
-  const tint = useMemo(() => new Color(a).lerp(new Color(b), idx / (SQUAD.length - 1)), [a, b, idx]);
+  // світле «скло»: білі колони з акцентними ребрами, вибрана — тонована
+  const pale = useMemo(() => new Color("#ffffff").lerp(new Color(a), 0.07), [a]);
+  const hot = useMemo(() => new Color("#ffffff").lerp(new Color(a), 0.38), [a]);
+  const accent = useMemo(() => new Color(a), [a]);
   const x = (slot - (SQUAD.length - 1) / 2) * SP;
 
   useFrame((state, dt) => {
@@ -66,9 +69,9 @@ function Column({
     grp.position.y += ((selected ? 0.12 : 0) + Math.min(0.35, Math.abs(dx) * 0.25) - grp.position.y) * k;
     const m = mat.current;
     if (m) {
-      m.color.copy(tint);
-      m.emissive.copy(tint);
-      const eg = selected ? 0.6 : 0.12 + Math.sin(state.clock.elapsedTime * 1.4 + idx) * 0.03;
+      m.color.copy(selected ? hot : pale);
+      m.emissive.copy(accent);
+      const eg = selected ? 0.18 : 0.02 + Math.sin(state.clock.elapsedTime * 1.4 + idx) * 0.02;
       m.emissiveIntensity += (eg - m.emissiveIntensity) * k;
     }
   });
@@ -85,7 +88,8 @@ function Column({
           onPick();
         }}
       >
-        <meshPhysicalMaterial ref={mat} transmission={0.4} thickness={0.7} roughness={0.2} clearcoat={1} transparent opacity={0.93} />
+        <meshPhysicalMaterial ref={mat} transmission={0.3} thickness={0.7} roughness={0.2} clearcoat={1} transparent opacity={0.95} emissiveIntensity={0} />
+        <Edges threshold={20} color={a} />
       </RoundedBox>
       <Html position={[0, -1.3 + h + 0.32 + (slot % 2) * 0.36, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
         <div className="flex flex-col items-center gap-0.5 whitespace-nowrap">
@@ -93,8 +97,7 @@ function Column({
             {s.name}
           </span>
           <span
-            className="rounded-full px-1.5 py-px font-mono text-[10px] font-bold text-white"
-            style={{ background: "rgba(0,0,0,.5)", backdropFilter: "blur(6px)" }}
+            className="rounded-full border border-separator bg-white/95 px-1.5 py-px font-mono text-[10px] font-bold text-label shadow-sm"
           >
             {keyText}
           </span>
@@ -139,7 +142,7 @@ export function SortedKey3D() {
           options={(Object.keys(KEYS) as K[]).map((k) => ({ value: k, label: <span className="font-mono text-[12px]">{KEYS[k].label}</span> }))}
         />
         <Btn variant={rev ? "accent" : "glass"} onClick={() => setRev((r) => !r)}>
-          <ArrowDownUp className="size-4" /> reverse={rev ? "True" : "False"}
+          <ArrowDownUp className="size-4" strokeWidth={1.75} /> reverse={rev ? "True" : "False"}
         </Btn>
       </ControlBar>
 
@@ -162,7 +165,6 @@ export function SortedKey3D() {
               slot={slotOf[i]}
               keyText={key === "none" ? `#${i}` : fmt(keyVals[i])}
               a={c.accent}
-              b={c.accent2}
               selected={sel === i}
               onPick={() => setSel(sel === i ? null : i)}
             />
@@ -172,8 +174,8 @@ export function SortedKey3D() {
       </Scene3D>
 
       <div className="grid gap-2 px-5 pb-4 sm:grid-cols-[1fr_auto]">
-        <div className="rounded-2xl bg-black/80 px-3.5 py-2 font-mono text-[12px] break-words text-[#e5e5ea]">
-          <span className="text-[#8e8e93]">›</span> {result}
+        <div className="rounded-2xl border border-separator bg-[var(--code-bg)] px-3.5 py-2 font-mono text-[12px] break-words text-label">
+          <span className="text-label-3">›</span> {result}
         </div>
         <AnimatePresence mode="wait">
           <motion.div

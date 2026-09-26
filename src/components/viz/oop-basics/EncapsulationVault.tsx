@@ -85,9 +85,9 @@ function resolve(where: Where, attr: Attr): { real: string; tone: Tone; result: 
 }
 
 const TONE: Record<Tone, { col: string; icon: typeof Lock; label: string }> = {
-  ok: { col: "#30d158", icon: LockOpen, label: "доступ є" },
-  warn: { col: "#ff9f0a", icon: ShieldAlert, label: "працює, але…" },
-  bad: { col: "#ff453a", icon: Lock, label: "помилка" },
+  ok: { col: "#15803d", icon: LockOpen, label: "доступ є" },
+  warn: { col: "#b45309", icon: ShieldAlert, label: "працює, але…" },
+  bad: { col: "#dc2626", icon: Lock, label: "помилка" },
 };
 
 function md(s: string) {
@@ -130,7 +130,7 @@ export function EncapsulationVault() {
               <motion.span
                 layoutId="oopb-vault-attr"
                 className="absolute inset-0 rounded-xl"
-                style={{ background: "color-mix(in oklab, var(--accent) 18%, transparent)", boxShadow: "inset 0 0 0 1.5px var(--accent)" }}
+                style={{ background: "color-mix(in oklab, var(--accent) 12%, white)", boxShadow: "inset 0 0 0 1.5px var(--accent)" }}
                 transition={SPRING}
               />
             )}
@@ -161,7 +161,7 @@ export function EncapsulationVault() {
                 transition={{ ...SPRING, delay: 0.1 }}
                 className="rounded-lg px-2 py-1 font-semibold"
                 style={{
-                  background: r.real !== attr ? "color-mix(in oklab, var(--accent-2) 22%, transparent)" : "transparent",
+                  background: r.real !== attr ? "color-mix(in oklab, var(--accent-2) 20%, white)" : "transparent",
                   border: "1px solid color-mix(in oklab, var(--accent-2) 45%, transparent)",
                 }}
               >
@@ -178,7 +178,7 @@ export function EncapsulationVault() {
             className="relative overflow-hidden rounded-[20px] border p-2.5"
             style={{
               borderColor: "color-mix(in oklab, var(--accent) 35%, transparent)",
-              background: "linear-gradient(160deg, color-mix(in oklab, var(--accent) 10%, transparent), color-mix(in oklab, var(--accent-2) 8%, transparent))",
+              background: "color-mix(in oklab, var(--accent) 6%, white)",
             }}
           >
             <div className="space-y-1.5">
@@ -193,7 +193,7 @@ export function EncapsulationVault() {
                     className="flex items-center gap-2 rounded-xl border border-separator bg-elevated/80 px-2.5 py-2 font-mono text-[12px]"
                     style={hit ? { boxShadow: `0 0 0 2px ${T.col}, 0 8px 24px -10px ${T.col}` } : undefined}
                   >
-                    <DIcon className="size-3.5 shrink-0 text-label-2" />
+                    <DIcon className="size-3.5 shrink-0 text-label-2" strokeWidth={1.75} />
                     <span className="min-w-0 flex-1 truncate font-semibold">{d.key}</span>
                     <span className="truncate text-label-2">{d.value}</span>
                   </motion.div>
@@ -207,9 +207,9 @@ export function EncapsulationVault() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.45 }}
                     className="flex items-center gap-2 rounded-xl border border-dashed px-2.5 py-2 font-mono text-[12px]"
-                    style={{ borderColor: "#ff453a", color: "#ff453a" }}
+                    style={{ borderColor: "#dc2626", color: "#b42318" }}
                   >
-                    <Lock className="size-3.5" /> {r.real} — такої шухляди немає
+                    <Lock className="size-3.5" strokeWidth={1.75} /> {r.real} — такої шухляди немає
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -226,10 +226,10 @@ export function EncapsulationVault() {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.2 }}
           className="mx-5 mt-3 mb-4 rounded-2xl border p-3"
-          style={{ borderColor: `color-mix(in oklab, ${T.col} 45%, transparent)`, background: `color-mix(in oklab, ${T.col} 9%, transparent)` }}
+          style={{ borderColor: `color-mix(in oklab, ${T.col} 45%, transparent)`, background: `color-mix(in oklab, ${T.col} 7%, white)` }}
         >
           <div className="flex items-center gap-2 font-mono text-[12.5px] font-semibold" style={{ color: T.col }}>
-            <Icon className="size-4" /> {T.label}: <span className="break-all">{r.result}</span>
+            <Icon className="size-4" strokeWidth={1.75} /> {T.label}: <span className="break-all">{r.result}</span>
           </div>
           <p className="mt-1.5 text-[13.5px] leading-snug">{md(r.note)}</p>
         </motion.div>

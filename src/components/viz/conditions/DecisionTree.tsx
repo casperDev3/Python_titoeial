@@ -1,10 +1,11 @@
 "use client";
 
-import { Float, Html, Line, RoundedBox } from "@react-three/drei";
+import { Edges, Float, Html, Line, RoundedBox } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Btn, ControlBar, Scene3D, useThemeColors, type ThemeColors } from "../kit";
+import { GREEN, MUTED } from "./palette";
 
 type Vars = { notebook: boolean; face: boolean; name: boolean };
 type NodeId = "n1" | "n2" | "n3" | "l1" | "l2" | "l3" | "l4";
@@ -17,7 +18,7 @@ const NODES: Record<NodeId, { pos: V3; label: string; v?: keyof Vars; depth: num
   l2: { pos: [1.5, -0.45, 0.6], label: "потрібне обличчя", depth: 2 },
   n3: { pos: [-1.4, -0.45, -0.4], label: "knows_name", v: "name", depth: 2 },
   l3: { pos: [0.1, -1.5, 0.5], label: "потрібне ім'я", depth: 3 },
-  l4: { pos: [-2.8, -1.5, -0.3], label: "✍️ записано", depth: 3 },
+  l4: { pos: [-2.8, -1.5, -0.3], label: "записано", depth: 3 },
 };
 
 const EDGES: { from: NodeId; to: NodeId; yes: boolean }[] = [
@@ -77,7 +78,7 @@ function Decision({
       >
         <octahedronGeometry args={[0.36, 0]} />
         <meshPhysicalMaterial
-          color={onPath ? colors.accent : "#8e8e93"}
+          color={onPath ? colors.accent : "#ffffff"}
           emissive={onPath ? colors.accent : "#000000"}
           emissiveIntensity={onPath ? 0.45 : 0}
           roughness={0.12}
@@ -85,20 +86,21 @@ function Decision({
           thickness={0.5}
           clearcoat={1}
           transparent
-          opacity={onPath ? 0.95 : 0.45}
+          opacity={onPath ? 0.95 : 0.7}
           flatShading
         />
+        <Edges color={onPath ? colors.accent : MUTED} />
       </mesh>
       <Html center position={[0, 0.62, 0]} zIndexRange={[10, 0]}>
         <button
           onClick={onToggle}
           className="flex items-center gap-1.5 rounded-full py-0.5 pr-1 pl-2.5 font-mono text-[11.5px] font-semibold whitespace-nowrap shadow-lg backdrop-blur-md"
-          style={{ background: "var(--glass-bg-strong)", color: "var(--label)", opacity: onPath ? 1 : 0.6 }}
+          style={{ background: "white", border: "1px solid var(--separator)", color: "var(--label)", opacity: onPath ? 1 : 0.75 }}
         >
           {n.label}?
           <span
             className="rounded-full px-1.5 text-[10.5px] text-white"
-            style={{ background: value ? "#30d158" : "var(--accent)" }}
+            style={{ background: value ? GREEN : "var(--accent)" }}
           >
             {value ? "True" : "False"}
           </span>
@@ -115,21 +117,21 @@ function Leaf({ id, active, colors }: { id: NodeId; active: boolean; colors: The
       <group position={n.pos}>
         <RoundedBox args={[0.62, 0.34, 0.34]} radius={0.1} smoothness={4}>
           <meshPhysicalMaterial
-            color={active ? colors.accent2 : "#8e8e93"}
+            color={active ? colors.accent2 : "#ffffff"}
             emissive={active ? colors.accent2 : "#000000"}
             emissiveIntensity={active ? 0.55 : 0}
             roughness={0.2}
             clearcoat={1}
             transparent
-            opacity={active ? 1 : 0.3}
+            opacity={active ? 1 : 0.7}
           />
         </RoundedBox>
         <Html center position={[0, -0.42, 0]} zIndexRange={[10, 0]}>
           <div
             className="pointer-events-none rounded-lg px-2 py-0.5 text-[11.5px] font-semibold whitespace-nowrap transition-all duration-500"
             style={{
-              background: active ? "var(--accent-2)" : "transparent",
-              color: active ? "white" : "var(--label-3)",
+              background: active ? "var(--accent-2)" : "rgb(255 255 255 / 0.85)",
+              color: active ? "white" : "var(--label-2)",
             }}
           >
             return &quot;{n.label}&quot;
@@ -182,17 +184,17 @@ function Tree({ vars, toggle }: { vars: Vars; toggle: (k: keyof Vars) => void })
           <group key={e.from + e.to}>
             <Line
               points={[a, b]}
-              color={act ? colors.accent : "#8e8e93"}
+              color={act ? colors.accent : MUTED}
               lineWidth={act ? 4 : 1.5}
               transparent
-              opacity={act ? 1 : 0.35}
+              opacity={act ? 1 : 0.6}
             />
             <Html center position={mid} zIndexRange={[5, 0]}>
               <span
                 className="pointer-events-none rounded-md px-1 text-[10px] font-bold"
                 style={{
-                  color: act ? (e.yes ? "#30d158" : "var(--accent)") : "var(--label-3)",
-                  background: "var(--glass-bg)",
+                  color: act ? (e.yes ? GREEN : "var(--accent)") : "var(--label-3)",
+                  background: "white",
                 }}
               >
                 {e.yes ? "True" : "False"}

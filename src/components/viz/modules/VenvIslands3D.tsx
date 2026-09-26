@@ -4,19 +4,20 @@ import { Html, RoundedBox } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
 import { Color, type Group, type Mesh } from "three";
-import { Download, LogOut, Trash2 } from "lucide-react";
+import { Download, Globe, LogOut, Radio, Rocket, Smartphone, Trash2, type LucideIcon } from "lucide-react";
 import { Btn, ControlBar, Segmented, Scene3D, useThemeColors } from "../kit";
+import { CONSOLE_BG, GREEN, INK, RED, tint } from "./palette";
 
 type EnvId = "global" | "radio" | "phone" | "rocket";
 type PkgName = "requests" | "rich" | "numpy";
 type Pkg = { name: PkgName; ver: string };
 type Choice = "requests==2.31.0" | "requests==2.32.3" | "rich" | "numpy";
 
-const ENVS: { id: EnvId; label: string; pos: [number, number, number] }[] = [
-  { id: "global", label: "🌍 системний Python", pos: [0, -1.05, -1.5] },
-  { id: "radio", label: "📻 radio/.venv", pos: [-2.35, -1.05, 0.25] },
-  { id: "phone", label: "📱 phone/.venv", pos: [0, -1.05, 1.45] },
-  { id: "rocket", label: "🚀 rocket/.venv", pos: [2.35, -1.05, 0.25] },
+const ENVS: { id: EnvId; label: string; icon: LucideIcon; pos: [number, number, number] }[] = [
+  { id: "global", label: "системний Python", icon: Globe, pos: [0, -1.05, -1.5] },
+  { id: "radio", label: "radio/.venv", icon: Radio, pos: [-2.35, -1.05, 0.25] },
+  { id: "phone", label: "phone/.venv", icon: Smartphone, pos: [0, -1.05, 1.45] },
+  { id: "rocket", label: "rocket/.venv", icon: Rocket, pos: [2.35, -1.05, 0.25] },
 ];
 
 const PARSE: Record<Choice, Pkg> = {
@@ -58,7 +59,7 @@ function PkgCube({
       </RoundedBox>
       {showLabel && (
         <Html position={[0.36, 0, 0]} zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
-          <div className="rounded-md bg-black/60 px-1.5 py-px font-mono text-[10px] whitespace-nowrap text-white backdrop-blur-md">{label}</div>
+          <div className="rounded-md border border-separator bg-white/95 px-1.5 py-px font-mono text-[10px] whitespace-nowrap text-label shadow-sm">{label}</div>
         </Html>
       )}
     </group>
@@ -66,10 +67,10 @@ function PkgCube({
 }
 
 function Island({
-  id, label, pos, active, pkgs, onPick, colors, dark, shake, compact,
+  id, label, icon: Icon, pos, active, pkgs, onPick, colors, shake, compact,
 }: {
-  id: EnvId; label: string; pos: [number, number, number]; active: boolean; pkgs: Pkg[];
-  onPick: (id: EnvId) => void; colors: Record<PkgName, string>; dark: boolean; shake: number; compact: boolean;
+  id: EnvId; label: string; icon: LucideIcon; pos: [number, number, number]; active: boolean; pkgs: Pkg[];
+  onPick: (id: EnvId) => void; colors: Record<PkgName, string>; shake: number; compact: boolean;
 }) {
   const root = useRef<Group>(null);
   const ring = useRef<Mesh>(null);
@@ -105,9 +106,9 @@ function Island({
       >
         <cylinderGeometry args={[0.82, 0.62, 0.26, 48]} />
         <meshPhysicalMaterial
-          color={isGlobal ? (dark ? "#48484a" : "#d1d1d6") : colors.requests}
+          color={isGlobal ? "#e5e5ea" : active ? colors.requests : "#ffffff"}
           emissive={isGlobal ? "#000000" : colors.requests}
-          emissiveIntensity={active ? 0.3 : 0.05}
+          emissiveIntensity={active ? 0.18 : 0.06}
           transmission={0.5}
           thickness={0.6}
           roughness={0.2}
@@ -131,10 +132,15 @@ function Island({
       ))}
       <Html position={[0, -0.3, 0.8]} center zIndexRange={[20, 0]} style={{ pointerEvents: "none" }}>
         <div
-          className="rounded-full px-2 py-0.5 text-[10.5px] font-semibold whitespace-nowrap text-white shadow-lg"
-          style={{ background: active ? "var(--accent)" : "rgba(0,0,0,.42)", backdropFilter: "blur(8px)" }}
+          className="flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10.5px] font-semibold whitespace-nowrap shadow-sm"
+          style={{
+            background: active ? INK : "rgba(255,255,255,.95)",
+            borderColor: active ? INK : "var(--separator)",
+            color: active ? "white" : "var(--label)",
+          }}
         >
-          {compact ? label.split(" ")[0] + " " + (isGlobal ? "system" : label.split(" ")[1].split("/")[0]) : label}
+          <Icon className="size-3" strokeWidth={1.75} />
+          {compact ? (isGlobal ? "system" : id) : label}
         </div>
       </Html>
     </group>
@@ -167,7 +173,6 @@ function World({
           pkgs={envs[e.id]}
           onPick={onPick}
           colors={colors}
-          dark={c.dark}
           shake={e.id === "global" ? shake : 0}
           compact={size.width < 520}
         />
@@ -250,29 +255,29 @@ export function VenvIslands3D() {
           ]}
         />
         <Btn variant="accent" onClick={install}>
-          <Download className="size-4" /> install
+          <Download className="size-4" strokeWidth={1.75} /> install
         </Btn>
         <Btn onClick={uninstall}>
-          <Trash2 className="size-4" /> uninstall
+          <Trash2 className="size-4" strokeWidth={1.75} /> uninstall
         </Btn>
         <Btn onClick={() => pick("global")} disabled={active === "global"}>
-          <LogOut className="size-4" /> deactivate
+          <LogOut className="size-4" strokeWidth={1.75} /> deactivate
         </Btn>
       </ControlBar>
 
       <div className="grid gap-2 px-5 pb-4 sm:grid-cols-[1.5fr_1fr]">
-        <div className="min-h-[118px] rounded-2xl bg-black/80 px-3.5 py-2.5 font-mono text-[11.5px] leading-relaxed text-[#e5e5ea]">
+        <div className="min-h-[118px] rounded-2xl border border-separator px-3.5 py-2.5 font-mono text-[11.5px] leading-relaxed text-label" style={{ background: CONSOLE_BG }}>
           {log.map((l, i) => (
             <div
               key={`${log.length}-${i}`}
               className="truncate"
-              style={{ color: l.tone === "err" ? "#ff6961" : l.tone === "ok" ? "#86efac" : l.tone === "cmd" ? "#e5e5ea" : "#a1a1aa" }}
+              style={{ color: l.tone === "err" ? RED : l.tone === "ok" ? GREEN : l.tone === "cmd" ? "var(--label)" : "var(--label-2)" }}
             >
               {l.t}
             </div>
           ))}
         </div>
-        <div className="rounded-2xl px-3.5 py-2.5" style={{ background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}>
+        <div className="rounded-2xl px-3.5 py-2.5" style={{ background: tint(9) }}>
           <div className="mb-1 text-[11px] font-bold tracking-wider text-label-3 uppercase">
             pip freeze · {active === "global" ? "system" : `${active}/.venv`}
           </div>
@@ -282,7 +287,7 @@ export function VenvIslands3D() {
             ) : (
               freeze.map((p) => (
                 <div key={p.name}>
-                  {p.name}==<span style={{ color: "var(--accent)" }}>{p.ver}</span>
+                  {p.name}==<span className="font-semibold" style={{ color: INK }}>{p.ver}</span>
                 </div>
               ))
             )}

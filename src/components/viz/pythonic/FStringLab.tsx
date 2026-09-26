@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { RotateCcw } from "lucide-react";
 import { Btn, Segmented, Slider } from "../kit";
 import { pyFormat, type FmtValue, type Spec } from "./formatSpec";
+import { A2_INK, CONSOLE_BG, GREEN, INK, ORANGE, RED, tint } from "./palette";
 
 type ValKey = "power" | "ratio" | "hp" | "delta" | "cry";
 
@@ -79,26 +80,26 @@ export function FStringLab() {
 
   // частини специфікації з кольорами
   const parts: { t: string; c: string; tip: string }[] = [];
-  if (spec.align) parts.push({ t: spec.fill + spec.align, c: "var(--accent)", tip: "заповнювач + вирівнювання" });
-  if (spec.width > 0) parts.push({ t: String(spec.width), c: "var(--accent-2)", tip: "ширина" });
-  if (spec.group) parts.push({ t: spec.group, c: "#30d158", tip: "роздільник" });
-  if (spec.precision >= 0) parts.push({ t: "." + spec.precision, c: "#ff9f0a", tip: "точність" });
-  if (spec.type) parts.push({ t: spec.type, c: "#64d2ff", tip: "тип" });
+  if (spec.align) parts.push({ t: spec.fill + spec.align, c: INK, tip: "заповнювач + вирівнювання" });
+  if (spec.width > 0) parts.push({ t: String(spec.width), c: A2_INK, tip: "ширина" });
+  if (spec.group) parts.push({ t: spec.group, c: GREEN, tip: "роздільник" });
+  if (spec.precision >= 0) parts.push({ t: "." + spec.precision, c: ORANGE, tip: "точність" });
+  if (spec.type) parts.push({ t: spec.type, c: "#0071a4", tip: "тип" });
 
   const chars = res.ok ? [...res.text] : [];
 
   return (
     <div>
       <div className="px-5 pt-1">
-        <div className="overflow-x-auto rounded-2xl bg-black/80 px-4 py-3 font-mono text-[14px] text-[#e5e5ea] thin-scroll">
-          <div className="text-[#8e8e93]">
-            {key} = <span className="text-[#e5e5ea]">{val.src}</span>
+        <div className="thin-scroll overflow-x-auto rounded-2xl border border-separator px-4 py-3 font-mono text-[14px] text-label" style={{ background: CONSOLE_BG }}>
+          <div className="text-label-2">
+            {key} = <span className="text-label">{val.src}</span>
           </div>
           <div className="whitespace-nowrap">
-            print(<span className="text-[#ff9f0a]">f&quot;</span>
-            <span className="text-[#8e8e93]">{"{"}</span>
+            print(<span style={{ color: ORANGE }}>f&quot;</span>
+            <span className="text-label-3">{"{"}</span>
             {key}
-            {parts.length > 0 && <span className="text-[#8e8e93]">:</span>}
+            {parts.length > 0 && <span className="text-label-3">:</span>}
             <AnimatePresence mode="popLayout">
               {parts.map((p) => (
                 <motion.span
@@ -116,8 +117,8 @@ export function FStringLab() {
                 </motion.span>
               ))}
             </AnimatePresence>
-            <span className="text-[#8e8e93]">{"}"}</span>
-            <span className="text-[#ff9f0a]">&quot;</span>)
+            <span className="text-label-3">{"}"}</span>
+            <span style={{ color: ORANGE }}>&quot;</span>)
           </div>
         </div>
 
@@ -149,8 +150,8 @@ export function FStringLab() {
                       style={{
                         borderColor: "var(--separator)",
                         background: pad
-                          ? "color-mix(in oklab, var(--accent-2) 12%, transparent)"
-                          : "color-mix(in oklab, var(--accent) 16%, transparent)",
+                          ? tint(9, "--accent-2")
+                          : tint(14),
                         color: pad ? "var(--label-3)" : "var(--label)",
                       }}
                     >
@@ -166,7 +167,7 @@ export function FStringLab() {
               initial={{ x: -6 }}
               animate={{ x: [6, -4, 2, 0] }}
               className="rounded-xl px-3 py-2 font-mono text-[12.5px]"
-              style={{ background: "color-mix(in oklab, #ff453a 14%, transparent)", color: "#ff453a" }}
+              style={{ background: `color-mix(in oklab, ${RED} 8%, white)`, color: RED }}
             >
               {res.error}
             </motion.div>
@@ -243,7 +244,7 @@ export function FStringLab() {
             onChange={(v) => set({ precision: v })}
           />
           <Btn onClick={() => { setKey("power"); setSpec(START); }}>
-            <RotateCcw className="size-4" />
+            <RotateCcw className="size-4" strokeWidth={1.75} />
           </Btn>
         </div>
       </div>

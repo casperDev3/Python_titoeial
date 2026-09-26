@@ -2,6 +2,7 @@
 
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
+import { RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { Group, Mesh, MeshPhysicalMaterial } from "three";
 import { Btn, Console, ControlBar, Scene3D, useThemeColors, type ThemeColors } from "../kit";
@@ -141,7 +142,10 @@ export function InfinitySet3D() {
       </ControlBar>
       <ControlBar>
         <Btn onClick={fromList}>update([…з дублікатами])</Btn>
-        <Btn onClick={reset}><span aria-hidden>↺</span><span className="sr-only">Скинути</span></Btn>
+        <Btn onClick={reset}>
+          <RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />
+          <span className="sr-only">Скинути</span>
+        </Btn>
       </ControlBar>
       <Console
         lines={[
@@ -230,7 +234,7 @@ function techColor(name: Tech, c: ThemeColors) {
     case "Purple":
       return c.accent2;
     case "Void":
-      return c.dark ? "#e5e7eb" : "#1f2937";
+      return "#1f2937";
     case "Six Eyes":
       return "#7dd3fc";
     default:
@@ -281,7 +285,7 @@ function Orbiter({
         <meshPhysicalMaterial color={c} emissive={c} emissiveIntensity={0.45} roughness={0.12} clearcoat={1} />
       </mesh>
       <Html center zIndexRange={[20, 0]} position={[0, 0.45, 0]} style={{ pointerEvents: "none" }}>
-        <span className="rounded-full bg-black/40 px-1.5 py-px text-[10.5px] font-semibold whitespace-nowrap text-white backdrop-blur-md">
+        <span className="glass !rounded-full px-1.5 py-px text-[10.5px] font-semibold whitespace-nowrap text-label">
           {name}
         </span>
       </Html>
@@ -327,7 +331,7 @@ function Projectile({ shot, colors }: { shot: Shot; colors: ThemeColors }) {
       <Html center zIndexRange={[20, 0]} position={[0, 0.42, 0]} style={{ pointerEvents: "none" }}>
         <span
           className="rounded-full px-1.5 py-px text-[10.5px] font-bold whitespace-nowrap text-white"
-          style={{ background: shot.dup ? "#ff9f0a" : "var(--accent)" }}
+          style={{ background: shot.dup ? "#c93400" : "var(--accent)" }}
         >
           {shot.dup ? `${shot.name} ×` : shot.name}
         </span>

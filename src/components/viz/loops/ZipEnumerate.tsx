@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Btn, ControlBar, Segmented } from "../kit";
+import { A2_INK, ORANGE, RED } from "./palette";
 
 type Mode = "enumerate" | "zip" | "strict";
 
@@ -70,7 +71,7 @@ export function ZipEnumerate() {
                 transition={spring}
                 className="h-[38px] truncate rounded-xl border px-2 text-center text-[13px] leading-[36px] font-semibold"
                 style={{
-                  borderColor: lit && !orphan ? "var(--accent)" : orphan && stopped ? "#ff9f0a" : "var(--separator)",
+                  borderColor: lit && !orphan ? "var(--accent)" : orphan && stopped ? ORANGE : "var(--separator)",
                   borderStyle: orphan && stopped ? "dashed" : "solid",
                   background: "var(--glass-bg)",
                   fontFamily: mode === "enumerate" ? "var(--font-mono, ui-monospace)" : undefined,
@@ -95,14 +96,18 @@ export function ZipEnumerate() {
                   animate={{ scaleX: on ? 1 : 0 }}
                   transition={spring}
                   className="absolute inset-x-0 top-1/2 h-[3px] origin-left -translate-y-1/2 rounded-full"
-                  style={{ background: "linear-gradient(90deg, var(--accent), var(--accent-2))" }}
+                  style={{ background: "var(--accent)" }}
                 />
                 <motion.span
                   initial={false}
                   animate={{ scale: on ? 1 : 0.6, opacity: on ? 1 : 0.4 }}
                   transition={spring}
-                  className="relative grid size-5 place-items-center rounded-full text-[10px] font-bold text-white"
-                  style={{ background: on ? "var(--accent-2)" : "var(--separator)" }}
+                  className="relative grid size-5 place-items-center rounded-full border text-[10px] font-bold"
+                  style={{
+                    background: on ? "var(--accent)" : "white",
+                    borderColor: on ? "transparent" : "var(--separator)",
+                    color: on ? "white" : "var(--label-2)",
+                  }}
                 >
                   {i + 1}
                 </motion.span>
@@ -122,7 +127,7 @@ export function ZipEnumerate() {
                 animate={{ x: lit ? -6 : 0 }}
                 transition={spring}
                 className="h-[38px] truncate rounded-xl border px-2 text-center text-[13px] leading-[36px] font-semibold"
-                style={{ borderColor: lit ? "var(--accent-2)" : "var(--separator)", background: "var(--glass-bg)" }}
+                style={{ borderColor: lit ? A2_INK : "var(--separator)", background: "var(--glass-bg)" }}
               >
                 {r}
               </motion.div>
@@ -161,7 +166,7 @@ export function ZipEnumerate() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
               className="text-[12px] font-semibold"
-              style={{ color: error ? "#ff453a" : "#ff9f0a" }}
+              style={{ color: error ? RED : ORANGE }}
             >
               {error
                 ? "ValueError: zip() argument 2 is shorter than argument 1"

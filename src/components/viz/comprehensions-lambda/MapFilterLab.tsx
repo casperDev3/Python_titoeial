@@ -83,7 +83,7 @@ export function MapFilterLab() {
             className="rounded-full border px-2.5 py-1 font-mono text-[12px] transition-colors"
             style={{
               borderColor: i === fi ? "var(--accent)" : "var(--separator)",
-              background: i === fi ? "color-mix(in oklab, var(--accent) 16%, transparent)" : "transparent",
+              background: i === fi ? "color-mix(in oklab, var(--accent) 14%, white)" : "white",
               color: i === fi ? "var(--label)" : "var(--label-2)",
             }}
           >
@@ -122,13 +122,13 @@ export function MapFilterLab() {
                     transition={{ type: "spring", stiffness: 420, damping: 22, delay: i * 0.09 }}
                     className="ml-auto rounded-[8px] px-2 py-0.5 font-bold"
                     style={{
-                      color: typeof k === "boolean" ? "#fff" : "var(--label)",
+                      color: typeof k === "boolean" ? (k ? "#1a7f37" : "#c4001a") : "var(--label)",
                       background:
                         typeof k === "boolean"
                           ? k
-                            ? "#30d158"
-                            : "#ff453a"
-                          : "color-mix(in oklab, var(--accent) 18%, transparent)",
+                            ? "color-mix(in oklab, #30d158 16%, white)"
+                            : "color-mix(in oklab, #ff453a 12%, white)"
+                          : "color-mix(in oklab, var(--accent) 16%, white)",
                     }}
                   >
                     {py(k)}
@@ -157,10 +157,9 @@ export function MapFilterLab() {
                 transition={{ type: "spring", stiffness: 300, damping: 24, delay: applied ? 0.1 + j * 0.05 : 0 }}
                 className="rounded-[9px] px-2 py-0.5 font-semibold"
                 style={{
-                  color: applied ? "#fff" : "var(--label-2)",
-                  background: applied
-                    ? "linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 50%, var(--accent-2)))"
-                    : "var(--glass-bg)",
+                  color: applied ? "color-mix(in oklab, var(--accent) 62%, black)" : "var(--label-2)",
+                  background: applied ? "color-mix(in oklab, var(--accent) 13%, white)" : "var(--glass-bg)",
+                  border: `1px solid ${applied ? "color-mix(in oklab, var(--accent) 45%, white)" : "var(--separator)"}`,
                 }}
               >
                 {o.label}
@@ -173,10 +172,10 @@ export function MapFilterLab() {
 
       <ControlBar>
         <Btn variant="accent" onClick={() => setRun((r) => r + 1)}>
-          <Play className="size-4" /> Застосувати
+          <Play className="size-4" strokeWidth={1.75} /> Застосувати
         </Btn>
         <Btn onClick={() => setRun(0)} disabled={!applied}>
-          <RotateCcw className="size-4" /> Скинути
+          <RotateCcw className="size-4" strokeWidth={1.75} /> Скинути
         </Btn>
         <span className="text-[12.5px] text-label-2">
           {op === "map" && "map: та сама кількість, нові значення"}

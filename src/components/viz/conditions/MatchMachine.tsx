@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Btn, ControlBar } from "../kit";
 import { tokenize } from "./CodePane";
+import { Check, X } from "lucide-react";
+import { GREEN } from "./palette";
 
 type Part = { lit: string } | { cap: string } | { star: string };
 type Pattern = { src: string; parts: Part[] | null; ret: (b: Record<string, string>) => string };
@@ -111,17 +113,19 @@ export function MatchMachine() {
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
               className="relative flex flex-wrap items-center gap-x-3 gap-y-1 overflow-hidden rounded-xl border px-3 py-2"
               style={{
-                borderColor: isHit ? "#30d158" : reached && !r.ok ? "color-mix(in oklab, var(--accent) 50%, transparent)" : "var(--separator)",
-                background: isHit ? "color-mix(in oklab, #30d158 12%, var(--glass-bg))" : "var(--glass-bg)",
+                borderColor: isHit ? GREEN : reached && !r.ok ? "color-mix(in oklab, var(--accent) 50%, transparent)" : "var(--separator)",
+                background: isHit ? `color-mix(in oklab, ${GREEN} 10%, white)` : "var(--glass-bg)",
               }}
             >
               <span
-                className="grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-bold text-white transition-colors duration-300"
+                className="grid size-5 shrink-0 place-items-center rounded-full border text-[11px] font-bold transition-colors duration-300"
                 style={{
-                  background: !reached ? "var(--separator)" : r.ok ? "#30d158" : "var(--accent)",
+                  background: !reached ? "white" : r.ok ? GREEN : "var(--accent)",
+                  borderColor: !reached ? "var(--separator)" : "transparent",
+                  color: !reached ? "var(--label-2)" : "white",
                 }}
               >
-                {!reached ? i + 1 : r.ok ? "✓" : "✗"}
+                {!reached ? i + 1 : r.ok ? <Check className="size-3" strokeWidth={2.5} /> : <X className="size-3" strokeWidth={2.5} />}
               </span>
               <code className="font-mono text-[13px] whitespace-pre">{tokenize(c.src, `mm-${i}`)}</code>
               <AnimatePresence>
@@ -158,7 +162,7 @@ export function MatchMachine() {
               exit={{ opacity: 0, scale: 0.6 }}
               transition={{ type: "spring", stiffness: 460, damping: 24, delay: i * 0.12 }}
               className="rounded-lg px-2 py-0.5 font-mono text-[12.5px] text-white"
-              style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-2))" }}
+              style={{ background: "var(--accent-2)" }}
             >
               {k} = {v}
             </motion.span>

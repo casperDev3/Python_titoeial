@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { ArrowLeftRight, Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { Btn, ControlBar, Segmented } from "../kit";
 
@@ -86,7 +87,8 @@ export function JsonBridge() {
           ]}
         />
         <Btn onClick={() => setRoundTrip((r) => !r)} variant={roundTrip ? "accent" : "glass"}>
-          ⇄ Туди й назад
+          <ArrowLeftRight className="size-3.5" strokeWidth={1.75} />
+          Туди й назад
         </Btn>
         <Btn
           onClick={() => {
@@ -94,13 +96,14 @@ export function JsonBridge() {
             setActive(withSet ? "skills" : "tags");
           }}
         >
-          {withSet ? "Прибрати set" : "+ set"}
+          {withSet ? <Minus className="size-3.5" strokeWidth={1.75} /> : <Plus className="size-3.5" strokeWidth={1.75} />}
+          {withSet ? "Прибрати set" : "set"}
         </Btn>
       </ControlBar>
 
       <div className="grid gap-3 px-5 md:grid-cols-2">
         {/* Python */}
-        <div className="rounded-[18px] border border-separator bg-black/[0.03] p-2.5 font-mono text-[12.5px] dark:bg-white/[0.04]">
+        <div className="rounded-[18px] border border-separator bg-elevated p-2.5 font-mono text-[12.5px]">
           <div className="px-1.5 pb-1 text-[11px] font-bold tracking-wider text-label-3 uppercase font-sans">Python dict</div>
           <div className="px-1.5 text-label-3">hero = {"{"}</div>
           {fields.map((f) => (

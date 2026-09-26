@@ -369,6 +369,54 @@ except ValueError as e:
 ValueError: zip() argument 2 is shorter than argument 1`,
     },
     {
+      type: "flow",
+      title: "Як zip збирає пари",
+      nodes: [
+        { id: "s", kind: "start", label: "zip(names, ages)", col: 0, row: 0 },
+        { id: "a", kind: "decision", label: "a = next(it1)\nвдалося?", col: 0, row: 1 },
+        { id: "b", kind: "decision", label: "b = next(it2)\nвдалося?", col: 0, row: 2 },
+        { id: "y", kind: "io", label: "видати (a, b)", col: 0, row: 3 },
+        { id: "e", kind: "end", label: "StopIteration", col: 1, row: 4 },
+      ],
+      edges: [
+        { from: "s", to: "a" },
+        { from: "a", to: "b", label: "Так" },
+        { from: "a", to: "e", label: "Ні", side: "right" },
+        { from: "b", to: "y", label: "Так" },
+        { from: "b", to: "e", label: "Ні", side: "right" },
+        { from: "y", to: "a", side: "left" },
+      ],
+      scenarios: [
+        {
+          name: "3 імені, 2 віки",
+          steps: [
+            { node: "s", note: "`names = ['Jotaro', 'Dio', 'Joseph']`, `ages = [17, 122]`" },
+            { node: "a", note: "`a = 'Jotaro'`" },
+            { node: "b", note: "`b = 17`" },
+            { node: "y", note: "пара `('Jotaro', 17)`" },
+            { node: "a", note: "`a = 'Dio'`" },
+            { node: "b", note: "`b = 122`" },
+            { node: "y", note: "пара `('Dio', 122)`" },
+            { node: "a", note: "`a = 'Joseph'` — вже *забрано* з першого списку" },
+            { node: "b", note: "`ages` вичерпано → **Ні**" },
+            { node: "e", note: "кінець: `'Joseph'` мовчки загубився. Результат `[('Jotaro', 17), ('Dio', 122)]`" },
+          ],
+        },
+        {
+          name: "1 ім'я, 2 віки",
+          steps: [
+            { node: "s", note: "`names = ['Jotaro']`, `ages = [17, 122]`" },
+            { node: "a", note: "`a = 'Jotaro'`" },
+            { node: "b", note: "`b = 17`" },
+            { node: "y", note: "пара `('Jotaro', 17)`" },
+            { node: "a", note: "`names` вичерпано → **Ні**" },
+            { node: "e", note: "`122` навіть не читався. Результат `[('Jotaro', 17)]`" },
+          ],
+        },
+      ],
+      caption: "`zip` зупиняється на *першому* вичерпаному ітераторі. Хочеш помилку замість тиші — `strict=True`; хочеш доповнення — `zip_longest`.",
+    },
+    {
       type: "code",
       title: "key=, sum, any, all",
       code: py`power = {"Star Platinum": 95, "The World": 95, "Hermit Purple": 40, "Magician's Red": 80}
@@ -437,6 +485,52 @@ print(hits.most_common())`,
 [('ora', 4)]
 2 0
 [('muda', 5), ('ora', 4)]`,
+    },
+    {
+      type: "flow",
+      title: "Що Counter робить за тебе",
+      nodes: [
+        { id: "s", kind: "start", label: "Counter(words)", col: 0, row: 0 },
+        { id: "init", kind: "process", label: "counts = {}", col: 0, row: 1 },
+        { id: "more", kind: "decision", label: "є ще слово w?", col: 0, row: 2 },
+        { id: "has", kind: "decision", label: "w in counts?", col: 0, row: 3 },
+        { id: "zero", kind: "process", label: "counts[w] = 0", col: 1, row: 4 },
+        { id: "inc", kind: "process", label: "counts[w] += 1", col: 0, row: 5 },
+        { id: "e", kind: "end", label: "return counts", col: 2, row: 3 },
+      ],
+      edges: [
+        { from: "s", to: "init" },
+        { from: "init", to: "more" },
+        { from: "more", to: "has", label: "Так" },
+        { from: "more", to: "e", label: "Ні", side: "right" },
+        { from: "has", to: "inc", label: "Так" },
+        { from: "has", to: "zero", label: "Ні", side: "right" },
+        { from: "zero", to: "inc" },
+        { from: "inc", to: "more", side: "left" },
+      ],
+      scenarios: [
+        {
+          name: "\"ora ora muda\"",
+          steps: [
+            { node: "s", note: "`words = ['ora', 'ora', 'muda']`" },
+            { node: "init", note: "`counts = {}`" },
+            { node: "more", note: "`w = 'ora'`" },
+            { node: "has", note: "`'ora'` ще нема → **Ні**" },
+            { node: "zero", note: "`counts = {'ora': 0}`" },
+            { node: "inc", note: "`counts = {'ora': 1}`" },
+            { node: "more", note: "`w = 'ora'`" },
+            { node: "has", note: "вже є → **Так**" },
+            { node: "inc", note: "`counts = {'ora': 2}`" },
+            { node: "more", note: "`w = 'muda'`" },
+            { node: "has", note: "нема → **Ні**" },
+            { node: "zero", note: "`counts = {'ora': 2, 'muda': 0}`" },
+            { node: "inc", note: "`counts = {'ora': 2, 'muda': 1}`" },
+            { node: "more", note: "слова скінчились → **Ні**" },
+            { node: "e", note: "`Counter({'ora': 2, 'muda': 1})`" },
+          ],
+        },
+      ],
+      caption: "Уся ця розвилка «є ключ чи ні» ховається всередині `Counter`: відсутній ключ дає `0`, тож `hits[w] += 1` працює одразу.",
     },
     {
       type: "viz",
@@ -618,6 +712,48 @@ print(fib(100))
 print(fib.cache_info())`,
       output: py`354224848179261915075
 CacheInfo(hits=98, misses=101, maxsize=None, currsize=101)`,
+    },
+    {
+      type: "flow",
+      title: "Як @cache перехоплює виклик",
+      nodes: [
+        { id: "s", kind: "start", label: "виклик fib(n)", col: 0, row: 0 },
+        { id: "hit", kind: "decision", label: "n є в кеші?", col: 0, row: 1 },
+        { id: "calc", kind: "call", label: "r = тіло fib(n)", col: 0, row: 2 },
+        { id: "store", kind: "process", label: "кеш[n] = r", col: 0, row: 3 },
+        { id: "get", kind: "process", label: "r = кеш[n]", col: 1, row: 4 },
+        { id: "e", kind: "end", label: "return r", col: 0, row: 5 },
+      ],
+      edges: [
+        { from: "s", to: "hit" },
+        { from: "hit", to: "calc", label: "Ні" },
+        { from: "hit", to: "get", label: "Так", side: "right" },
+        { from: "calc", to: "store" },
+        { from: "store", to: "e" },
+        { from: "get", to: "e" },
+      ],
+      scenarios: [
+        {
+          name: "fib(10) вперше",
+          steps: [
+            { node: "s", note: "свіжий кеш: `hits=0, misses=0`" },
+            { node: "hit", note: "`10` у кеші нема → **Ні** (`misses += 1`)" },
+            { node: "calc", note: "тіло рахує `fib(9) + fib(8)` — і ці виклики теж ідуть через кеш" },
+            { node: "store", note: "`кеш[10] = 55`; після всього `CacheInfo(hits=8, misses=11, …)`" },
+            { node: "e", note: "повертає `55`" },
+          ],
+        },
+        {
+          name: "fib(10) вдруге",
+          steps: [
+            { node: "s", note: "кеш уже містить `0…10`" },
+            { node: "hit", note: "`10` є → **Так**" },
+            { node: "get", note: "`r = 55` — тіло функції **не** виконується (`hits=9`)" },
+            { node: "e", note: "повертає `55` миттєво" },
+          ],
+        },
+      ],
+      caption: "`@cache` — це обгортка: вона дивиться в словник *до* виклику твоєї функції і кладе результат туди *після*. Працює лише для функцій з хешованими аргументами і без побічних ефектів.",
     },
 
     // ───────────────────────────── 10. Дебаг

@@ -1,12 +1,13 @@
 "use client";
 
-import { Html, RoundedBox } from "@react-three/drei";
+import { Edges, Html, RoundedBox } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { MathUtils } from "three";
 import { Btn, ControlBar, Scene3D, Segmented, Slider, useThemeColors, type ThemeColors } from "../kit";
 import { CodePane } from "./CodePane";
+import { A2_INK, MUTED, RED } from "./palette";
 
 type Mode = "full" | "break";
 type Ev = { r: number; c: number; kind: "run" | "break" };
@@ -51,7 +52,7 @@ function Cell({
     g.position.y = g.scale.y / 2 - 0.6 + (status === "current" ? 0.12 : 0);
   });
   const color =
-    status === "break" ? "#ff453a" : status === "current" ? colors.accent2 : status === "done" ? colors.accent : "#8e8e93";
+    status === "break" ? RED : status === "current" ? colors.accent2 : status === "done" ? colors.accent : "#ffffff";
   return (
     <group position={[pos[0], 0, pos[2]]}>
       <group ref={ref} scale={[1, 0.12, 1]}>
@@ -63,8 +64,9 @@ function Cell({
             roughness={0.2}
             clearcoat={1}
             transparent
-            opacity={status === "never" ? 0.12 : status === "pending" ? 0.3 : 0.92}
+            opacity={status === "never" ? 0.25 : status === "pending" ? 0.7 : 0.92}
           />
+          {(status === "pending" || status === "never") && <Edges color={MUTED} />}
         </RoundedBox>
       </group>
       {(status === "done" || status === "current" || status === "break") && (
@@ -72,8 +74,8 @@ function Cell({
           <span
             className="pointer-events-none rounded-md px-1 font-mono text-[10.5px] font-bold whitespace-nowrap"
             style={{
-              color: status === "current" ? "white" : status === "break" ? "#ff453a" : "var(--label)",
-              background: status === "current" ? "var(--accent-2)" : "transparent",
+              color: status === "current" ? "white" : status === "break" ? RED : "var(--label)",
+              background: status === "current" ? A2_INK : "rgb(255 255 255 / 0.85)",
             }}
           >
             {status === "break" ? "break" : value}
@@ -137,7 +139,7 @@ function Grid({ rows, cols, events, step }: { rows: number; cols: number; events
           position={[(i - (cols - 1) / 2) * GAP, -0.55, ((rows - 1) / 2) * GAP + 0.65]}
           zIndexRange={[10, 0]}
         >
-          <span className="pointer-events-none font-mono text-[10.5px] font-semibold whitespace-nowrap" style={{ color: "var(--accent-2)" }}>
+          <span className="pointer-events-none font-mono text-[10.5px] font-semibold whitespace-nowrap" style={{ color: A2_INK }}>
             col={i + 1}
           </span>
         </Html>
@@ -193,7 +195,7 @@ export function NestedGrid() {
             <div className="text-[11px] text-label-2">стан</div>
             {cur ? (
               <div>
-                row=<b style={{ color: "var(--accent)" }}>{cur.r}</b> col=<b style={{ color: "var(--accent-2)" }}>{cur.c}</b>
+                row=<b style={{ color: "var(--accent)" }}>{cur.r}</b> col=<b style={{ color: A2_INK }}>{cur.c}</b>
               </div>
             ) : (
               <div className="text-label-3">—</div>

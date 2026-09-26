@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
+import { A2_INK } from "./palette";
 
 const KW = new Set([
   "if", "elif", "else", "match", "case", "and", "or", "not", "in", "is", "return", "def", "for", "while",
@@ -18,8 +19,8 @@ export function tokenize(line: string, key: string): ReactNode[] {
       const k = `${key}-${i}`;
       if (p.startsWith("#")) return <span key={k} className="text-label-3 italic">{p}</span>;
       if (p.startsWith('"') || p.startsWith("'"))
-        return <span key={k} style={{ color: "var(--accent-2)" }}>{p}</span>;
-      if (/^\d/.test(p)) return <span key={k} className="text-[#ff9f0a]">{p}</span>;
+        return <span key={k} style={{ color: A2_INK }}>{p}</span>;
+      if (/^\d/.test(p)) return <span key={k} className="text-[#c45500]">{p}</span>;
       if (KW.has(p)) return <span key={k} className="font-semibold" style={{ color: "var(--accent)" }}>{p}</span>;
       return <span key={k}>{p}</span>;
     });
@@ -44,7 +45,7 @@ export function CodePane({
 }) {
   return (
     <div
-      className={`relative overflow-x-auto rounded-2xl border border-separator bg-black/[0.035] py-2.5 font-mono text-[12.5px] leading-[1.7] dark:bg-white/[0.04] ${className}`}
+      className={`relative overflow-x-auto rounded-2xl border border-separator bg-white py-2.5 font-mono text-[12.5px] leading-[1.7] ${className}`}
     >
       {lines.map((l, i) => (
         <div key={i} className="relative px-3 whitespace-pre">

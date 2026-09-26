@@ -18,7 +18,7 @@ const section: Section = {
     "why": "Сайтама перемагає одним ударом — як влучний вираз, що робить усе за один рядок."
   },
   "theme": {
-    "accent": "#ffd400",
+    "accent": "#c28a00",
     "accent2": "#ff3b30",
     "glow": "#ffcc00"
   },
@@ -254,6 +254,58 @@ True
 True`,
     },
     {
+      type: "flow",
+      title: "Як Python обчислює 1 <= level < 100",
+      nodes: [
+        { id: "s", kind: "start", label: "1 <= level < 100", col: 0, row: 0 },
+        { id: "lv", kind: "process", label: "обчислити level\n(лише один раз)", col: 0, row: 1 },
+        { id: "d1", kind: "decision", label: "1 <= level ?", col: 0, row: 2 },
+        { id: "d2", kind: "decision", label: "level < 100 ?", col: 0, row: 3 },
+        { id: "t", kind: "end", label: "результат True", col: 0, row: 4 },
+        { id: "f", kind: "end", label: "результат False", col: 1, row: 3 },
+      ],
+      edges: [
+        { from: "s", to: "lv" },
+        { from: "lv", to: "d1" },
+        { from: "d1", to: "d2", label: "True" },
+        { from: "d1", to: "f", label: "False", side: "right" },
+        { from: "d2", to: "t", label: "True" },
+        { from: "d2", to: "f", label: "False" },
+      ],
+      scenarios: [
+        {
+          name: "level = 42",
+          steps: [
+            { node: "s" },
+            { node: "lv", note: "`level` → `42`" },
+            { node: "d1", note: "`1 <= 42` → `True`, ідемо до другої ланки" },
+            { node: "d2", note: "`42 < 100` → `True`" },
+            { node: "t", note: "обидві ланки істинні — вивід: `True`" },
+          ],
+        },
+        {
+          name: "level = 150",
+          steps: [
+            { node: "s" },
+            { node: "lv", note: "`level` → `150`" },
+            { node: "d1", note: "`1 <= 150` → `True`" },
+            { node: "d2", note: "`150 < 100` → `False`" },
+            { node: "f", note: "вивід: `False`" },
+          ],
+        },
+        {
+          name: "level = 0",
+          steps: [
+            { node: "s" },
+            { node: "lv", note: "`level` → `0`" },
+            { node: "d1", note: "`1 <= 0` → `False`" },
+            { node: "f", note: "друга ланка `0 < 100` навіть не перевіряється — вивід: `False`" },
+          ],
+        },
+      ],
+      caption: "Ланцюжок `a < b < c` — це `a < b and b < c`, але середнє значення обчислюється **лише раз**, а на першій хибній ланці Python зупиняється.",
+    },
+    {
       type: "code",
       title: "float_compare.py",
       code: py`import math
@@ -315,6 +367,47 @@ print(name or "Анонімний герой")`,
 []
 10
 Анонімний герой`,
+    },
+    {
+      type: "flow",
+      title: "Лінивий or: x or y",
+      nodes: [
+        { id: "s", kind: "start", label: "x or y", col: 0, row: 0 },
+        { id: "ex", kind: "process", label: "обчислити x", col: 0, row: 1 },
+        { id: "d", kind: "decision", label: "bool(x) ?", col: 0, row: 2 },
+        { id: "ey", kind: "process", label: "обчислити y", col: 0, row: 3 },
+        { id: "ry", kind: "end", label: "результат: y", col: 0, row: 4 },
+        { id: "rx", kind: "end", label: "результат: x\n(y пропущено)", col: 1, row: 3 },
+      ],
+      edges: [
+        { from: "s", to: "ex" },
+        { from: "ex", to: "d" },
+        { from: "d", to: "rx", label: "True", side: "right" },
+        { from: "d", to: "ey", label: "False" },
+        { from: "ey", to: "ry" },
+      ],
+      scenarios: [
+        {
+          name: 'name or "Анонімний герой"',
+          steps: [
+            { node: "s", note: '`name = ""`' },
+            { node: "ex", note: '`x` → `""`' },
+            { node: "d", note: '`bool("")` → `False` — порожній рядок falsy' },
+            { node: "ey", note: '`y` → `"Анонімний герой"`' },
+            { node: "ry", note: "повертається **сам** `y`: вивід `Анонімний герой`" },
+          ],
+        },
+        {
+          name: '"Сайтама" or "Генос"',
+          steps: [
+            { node: "s" },
+            { node: "ex", note: '`x` → `"Сайтама"`' },
+            { node: "d", note: '`bool("Сайтама")` → `True`' },
+            { node: "rx", note: 'правий операнд не обчислюється; вивід `Сайтама`' },
+          ],
+        },
+      ],
+      caption: "`and` працює дзеркально: якщо `bool(x)` — `False`, результатом одразу стає `x`, інакше обчислюється і повертається `y`.",
     },
     {
       type: "viz",
@@ -540,6 +633,42 @@ print(strong)`,
       code: py`# читаємо команди, доки не введуть "стоп"
 while (command := input("Команда: ")) != "стоп":
     print("Виконую:", command)`,
+    },
+    {
+      type: "flow",
+      title: "Морж у while: прочитати й одразу перевірити",
+      nodes: [
+        { id: "s", kind: "start", label: "Старт", col: 0, row: 0 },
+        { id: "in", kind: "io", label: "command := input()", col: 0, row: 1 },
+        { id: "d", kind: "decision", label: 'command != "стоп" ?', col: 0, row: 2 },
+        { id: "out", kind: "io", label: 'print("Виконую:",\ncommand)', col: 0, row: 3 },
+        { id: "e", kind: "end", label: "Кінець", col: 1, row: 2 },
+      ],
+      edges: [
+        { from: "s", to: "in" },
+        { from: "in", to: "d" },
+        { from: "d", to: "out", label: "True" },
+        { from: "d", to: "e", label: "False", side: "right" },
+        { from: "out", to: "in", side: "left" },
+      ],
+      scenarios: [
+        {
+          name: "удар → біг → стоп",
+          steps: [
+            { node: "s" },
+            { node: "in", note: 'ввели `удар` → `command = "удар"`' },
+            { node: "d", note: '`"удар" != "стоп"` → `True`' },
+            { node: "out", note: "вивід: `Виконую: удар`" },
+            { node: "in", note: 'ввели `біг` → `command = "біг"`' },
+            { node: "d", note: '`"біг" != "стоп"` → `True`' },
+            { node: "out", note: "вивід: `Виконую: біг`" },
+            { node: "in", note: 'ввели `стоп` → `command = "стоп"`' },
+            { node: "d", note: '`"стоп" != "стоп"` → `False`' },
+            { node: "e", note: "цикл завершено, у `command` лишилось `\"стоп\"`" },
+          ],
+        },
+      ],
+      caption: "Без моржа довелося б викликати `input()` двічі: перед циклом і в кінці тіла. `:=` робить присвоєння частиною умови.",
     },
     {
       type: "warning",

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
+import { MousePointerClick } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import type { Group, Mesh } from "three";
 import { Scene3D, useThemeColors } from "@/components/viz/kit";
@@ -27,19 +28,18 @@ type Glass = {
   emissiveIntensity?: number;
 };
 
-function GlassMaterial({ color, transmission = 0.55, emissive, emissiveIntensity = 0 }: Glass) {
+/** Світле матове «скло» без райдужності: рівний колір, м'які відблиски. */
+function GlassMaterial({ color, transmission = 0.25, emissive, emissiveIntensity = 0 }: Glass) {
   return (
     <meshPhysicalMaterial
       color={color}
       transmission={transmission}
-      thickness={0.9}
-      roughness={0.12}
-      metalness={0.05}
+      thickness={0.6}
+      roughness={0.28}
+      metalness={0}
       ior={1.4}
-      clearcoat={1}
-      clearcoatRoughness={0.08}
-      iridescence={0.7}
-      iridescenceIOR={1.3}
+      clearcoat={0.6}
+      clearcoatRoughness={0.2}
       emissive={emissive ?? color}
       emissiveIntensity={emissiveIntensity}
     />
@@ -95,11 +95,11 @@ function SnakeRing({
         }}
       >
         <torusGeometry args={[0.95, 0.3, 32, 96]} />
-        <GlassMaterial color={color} emissiveIntensity={hover ? 0.35 : 0.08} />
+        <GlassMaterial color={color} emissiveIntensity={hover ? 0.18 : 0} />
       </mesh>
       <mesh position={eye}>
         <sphereGeometry args={[0.1, 20, 20]} />
-        <meshPhysicalMaterial color="#ffffff" clearcoat={1} roughness={0.1} />
+        <meshStandardMaterial color="#1c1c1e" roughness={0.4} />
       </mesh>
     </group>
   );
@@ -143,7 +143,7 @@ function Logo({ accent, accent2 }: { accent: string; accent2: string }) {
       {/* Скляне ядро */}
       <mesh>
         <icosahedronGeometry args={[0.36, 3]} />
-        <GlassMaterial color="#ffffff" transmission={0.85} />
+        <GlassMaterial color="#f2f2f7" transmission={0.3} />
       </mesh>
     </group>
   );
@@ -222,13 +222,11 @@ function Tokens({
               }}
             >
               <octahedronGeometry args={[0.14, 0]} />
-              <meshPhysicalMaterial
+              <meshStandardMaterial
                 color={color}
                 emissive={color}
-                emissiveIntensity={active ? 0.6 : 0.15}
-                clearcoat={1}
-                roughness={0.15}
-                iridescence={0.8}
+                emissiveIntensity={active ? 0.25 : 0}
+                roughness={0.35}
               />
             </mesh>
             <Html center position={[0, 0.34, 0]} zIndexRange={[20, 0]}>
@@ -237,11 +235,11 @@ function Tokens({
                 onPointerEnter={() => onHover(i)}
                 onPointerLeave={() => onHover(null)}
                 onClick={() => onSelect(i)}
-                className="pill pill-glass cursor-pointer select-none whitespace-nowrap font-mono text-[12px] font-semibold transition-transform duration-300"
+                className="cursor-pointer select-none whitespace-nowrap rounded-full border bg-white px-2.5 py-0.5 font-mono text-[12px] font-semibold shadow-sm transition-transform duration-300"
                 style={{
-                  transform: active ? "scale(1.18)" : "scale(1)",
-                  color: active ? "var(--accent)" : "var(--label)",
-                  boxShadow: active ? "0 0 0 1.5px var(--accent), 0 6px 22px -6px var(--accent)" : undefined,
+                  transform: active ? "scale(1.12)" : "scale(1)",
+                  color: active ? "color-mix(in oklab, var(--accent) 70%, black)" : "var(--label)",
+                  borderColor: active ? "var(--accent)" : "var(--separator)",
                 }}
               >
                 {tok.label}
@@ -265,8 +263,6 @@ export function HeroScene() {
   return (
     <div className="relative w-full">
       <Scene3D height={380} camera={[0, 1.4, 7.4]} fov={42} hint>
-        <pointLight position={[-4, 2, 3]} intensity={18} color={c.accent} distance={14} />
-        <pointLight position={[4, -1, 3]} intensity={14} color={c.accent2} distance={14} />
         <Fit width={6.6}>
           <Logo accent={c.accent} accent2={c.accent2} />
           <Tokens
@@ -289,9 +285,9 @@ export function HeroScene() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.97 }}
               transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              className="glass max-w-[min(300px,100%)] rounded-2xl px-4 py-3 text-left"
+              className="max-w-[min(300px,100%)] rounded-2xl border border-[color:var(--separator)] bg-white px-4 py-3 text-left shadow-sm"
             >
-              <div className="font-mono text-[13px] font-semibold text-[color:var(--accent)]">{tok.code}</div>
+              <div className="font-mono text-[13px] font-semibold" style={{ color: "color-mix(in oklab, var(--accent) 70%, black)" }}>{tok.code}</div>
               <div className="mt-1 text-[12.5px] leading-snug text-label-2">{tok.note}</div>
             </motion.div>
           ) : (
@@ -300,8 +296,9 @@ export function HeroScene() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="pill pill-glass text-[12px] text-label-2"
+              className="flex items-center gap-1.5 rounded-full border border-[color:var(--separator)] bg-white px-3 py-1 text-[12px] text-label-2 shadow-sm"
             >
+              <MousePointerClick size={14} strokeWidth={1.75} aria-hidden />
               Наведи на токен або клацни по кільцю
             </motion.div>
           )}

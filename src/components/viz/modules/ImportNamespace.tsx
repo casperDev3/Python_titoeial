@@ -2,8 +2,9 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { RefreshCw, Repeat } from "lucide-react";
+import { FileCode2, Package, RefreshCw, Repeat, TriangleAlert } from "lucide-react";
 import { Btn, ControlBar, Segmented } from "../kit";
+import { CONSOLE_BG, INK, RED, tint } from "./palette";
 
 type Mode = "import" | "from" | "as" | "star";
 
@@ -91,9 +92,9 @@ export function ImportNamespace() {
 
       <div className="grid gap-3 px-5 sm:grid-cols-2">
         {/* модуль math */}
-        <div className="rounded-2xl border border-separator p-3.5" style={{ background: "color-mix(in oklab, var(--accent-2) 8%, transparent)" }}>
+        <div className="rounded-2xl border border-separator p-3.5" style={{ background: tint(6, "--accent-2") }}>
           <div className="mb-2 flex items-center justify-between text-[12px] font-semibold text-label-2">
-            <span>📦 модуль <span className="font-mono text-label">math</span></span>
+            <span className="flex items-center gap-1.5"><Package className="size-4" strokeWidth={1.75} /> модуль <span className="font-mono text-label">math</span></span>
             <span className="font-mono text-[11px]">sys.modules[&quot;math&quot;]</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -109,7 +110,8 @@ export function ImportNamespace() {
                   transition={{ type: "spring", stiffness: 400, damping: 28 }}
                   className="rounded-[9px] px-2 py-1 font-mono text-[12px]"
                   style={{
-                    background: on ? "color-mix(in oklab, var(--accent) 22%, transparent)" : "var(--bg-elevated)",
+                    background: on ? tint(18) : "var(--bg-elevated)",
+                    color: on ? INK : undefined,
                     boxShadow: on ? "0 0 0 1px var(--accent)" : "0 0 0 1px var(--separator)",
                   }}
                 >
@@ -140,16 +142,16 @@ export function ImportNamespace() {
         </div>
 
         {/* namespace main.py */}
-        <div className="rounded-2xl border border-separator p-3.5" style={{ background: "color-mix(in oklab, var(--accent) 7%, transparent)" }}>
+        <div className="rounded-2xl border border-separator p-3.5" style={{ background: tint(6) }}>
           <div className="mb-2 flex items-center justify-between text-[12px] font-semibold text-label-2">
-            <span>📄 namespace <span className="font-mono text-label">main.py</span></span>
+            <span className="flex items-center gap-1.5"><FileCode2 className="size-4" strokeWidth={1.75} /> namespace <span className="font-mono text-label">main.py</span></span>
             <span className="font-mono text-[11px]">globals()</span>
           </div>
-          <div className="mb-2 rounded-xl bg-black/80 px-3 py-2 font-mono text-[12.5px] text-[#e5e5ea]">
+          <div className="mb-2 rounded-xl border border-separator px-3 py-2 font-mono text-[12.5px] text-label" style={{ background: CONSOLE_BG }}>
             <div>
-              <span style={{ color: "var(--accent)" }}>{m.stmt}</span>
+              <span style={{ color: INK }} className="font-semibold">{m.stmt}</span>
             </div>
-            <div className="text-[#a1a1aa]">{m.call}</div>
+            <div className="text-label-2">{m.call}</div>
           </div>
           <div className="flex min-h-[86px] flex-wrap content-start gap-1.5">
             <span className="rounded-[9px] bg-elevated/70 px-2 py-1 font-mono text-[12px] text-label-3">__name__</span>
@@ -162,17 +164,16 @@ export function ImportNamespace() {
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.6 }}
                   transition={{ type: "spring", stiffness: 380, damping: 26, delay: i * 0.035 }}
-                  className="rounded-[9px] px-2 py-1 font-mono text-[12px] font-semibold text-white"
+                  className="inline-flex items-center gap-1 rounded-[9px] px-2 py-1 font-mono text-[12px] font-semibold"
                   style={{
-                    background:
-                      mode === "star" && n === "pow"
-                        ? "#ff453a"
-                        : "linear-gradient(135deg, var(--accent), var(--accent-2))",
+                    background: mode === "star" && n === "pow" ? "#fff1f0" : tint(16),
+                    color: mode === "star" && n === "pow" ? RED : INK,
+                    boxShadow: `0 0 0 1px ${mode === "star" && n === "pow" ? RED : "color-mix(in oklab, var(--accent) 45%, transparent)"}`,
                   }}
                 >
                   {n}
                   {(mode === "import" || mode === "as") && <span className="font-normal opacity-80"> → &lt;module&gt;</span>}
-                  {mode === "star" && n === "pow" && <span className="font-normal"> ⚠ перекрито</span>}
+                  {mode === "star" && n === "pow" && <span className="inline-flex items-center gap-1 font-normal"><TriangleAlert className="size-3.5" strokeWidth={1.75} /> перекрито</span>}
                 </motion.span>
               ))}
             </AnimatePresence>
@@ -180,7 +181,7 @@ export function ImportNamespace() {
         </div>
       </div>
 
-      <div className="mx-5 mt-3 min-h-[64px] rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-snug" style={{ background: "color-mix(in oklab, var(--accent) 10%, transparent)" }}>
+      <div className="mx-5 mt-3 min-h-[64px] rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-snug" style={{ background: tint(9) }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={flash ?? mode}
@@ -202,10 +203,10 @@ export function ImportNamespace() {
 
       <ControlBar>
         <Btn variant="accent" onClick={again}>
-          <Repeat className="size-4" /> Імпортувати ще раз
+          <Repeat className="size-4" strokeWidth={1.75} /> Імпортувати ще раз
         </Btn>
         <Btn onClick={reload}>
-          <RefreshCw className="size-4" /> importlib.reload
+          <RefreshCw className="size-4" strokeWidth={1.75} /> importlib.reload
         </Btn>
       </ControlBar>
     </div>

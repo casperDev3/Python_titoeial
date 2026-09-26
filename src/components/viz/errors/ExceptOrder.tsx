@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, Reorder, useDragControls } from "motion/react";
-import { GripVertical } from "lucide-react";
+import { GripVertical, ShieldCheck, Zap } from "lucide-react";
 import { useState } from "react";
 import { Btn, ControlBar } from "../kit";
 import { isSubclass, mro } from "./hierarchy";
@@ -50,7 +50,7 @@ export function ExceptOrder() {
       </ControlBar>
 
       <div className="grid gap-4 px-5 pb-5 md:grid-cols-[1.3fr_1fr]">
-        <div className="rounded-[18px] border border-separator bg-black/[0.03] p-2 font-mono text-[13px] dark:bg-white/[0.04]">
+        <div className="rounded-[18px] border border-separator bg-elevated p-2 font-mono text-[13px]">
           <div className="px-3 pt-1 pb-0.5">try:</div>
           <div className="px-3 pb-2 text-label-2">
             {"    "}
@@ -96,18 +96,20 @@ export function ExceptOrder() {
               style={{
                 background:
                   matchIdx >= 0
-                    ? "color-mix(in oklab, var(--accent) 14%, transparent)"
-                    : "color-mix(in oklab, var(--accent-2) 14%, transparent)",
+                    ? "color-mix(in oklab, var(--accent) 12%, white)"
+                    : "color-mix(in oklab, var(--accent-2) 12%, white)",
               }}
             >
               {matchIdx >= 0 ? (
                 <>
-                  🛡️ <b>{thrown}</b> зловив <code className="inline-code">except {order[matchIdx]}</code> — це{" "}
+                  <ShieldCheck className="mr-1 inline size-4 -translate-y-px" strokeWidth={1.75} />
+                  <b>{thrown}</b> зловив <code className="inline-code">except {order[matchIdx]}</code> — це{" "}
                   {order[matchIdx] === thrown ? "той самий клас" : "його предок"}. Решту except Python навіть не перевіряє.
                 </>
               ) : (
                 <>
-                  💥 Жоден except не підійшов — <b>{thrown}</b> летить далі і, якщо його ніхто не зловить, зупинить
+                  <Zap className="mr-1 inline size-4 -translate-y-px" strokeWidth={1.75} />
+                  Жоден except не підійшов — <b>{thrown}</b> летить далі і, якщо його ніхто не зловить, зупинить
                   програму.
                   {thrown === "KeyboardInterrupt" && " Зверни увагу: навіть except Exception його не ловить!"}
                 </>
@@ -167,11 +169,11 @@ function Row({ c, i, st, dead, tick }: { c: string; i: number; st: Status; dead:
         style={{
           background:
             st === "match"
-              ? "var(--accent)"
+              ? "color-mix(in oklab, var(--accent) 78%, black)"
               : dead
                 ? "color-mix(in oklab, var(--accent-2) 20%, transparent)"
                 : "transparent",
-          color: st === "match" ? "white" : dead ? "var(--accent-2)" : "var(--label-3)",
+          color: st === "match" ? "white" : dead ? "color-mix(in oklab, var(--accent-2) 80%, var(--label))" : "var(--label-3)",
         }}
       >
         {st === "match" ? "ловить!" : dead ? "мертвий код" : st === "skip" ? "не підходить" : "не дійшло"}
